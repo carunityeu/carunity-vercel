@@ -1,0 +1,205 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@100..900&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 0 0% 3.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 3.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 3.9%;
+    --primary: 160 84% 39%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 0 0% 96.1%;
+    --secondary-foreground: 0 0% 9%;
+    --muted: 0 0% 96.1%;
+    --muted-foreground: 0 0% 45.1%;
+    --accent: 0 0% 96.1%;
+    --accent-foreground: 0 0% 9%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 0 0% 89.8%;
+    --input: 0 0% 89.8%;
+    --ring: 160 84% 39%;
+    --chart-1: 160 84% 39%;
+    --chart-2: 173 80% 40%;
+    --chart-3: 199 89% 48%;
+    --chart-4: 142 71% 45%;
+    --chart-5: 38 92% 50%;
+    --radius: 0.5rem;
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+
+  .dark {
+    /* Surfaces: page #101014, tiles #1B1B22, borders #292A32, fields #2A2B33 */
+    --background: 240 11% 7%;
+    --foreground: 0 0% 98%;
+    --card: 240 11% 12%;
+    --card-foreground: 0 0% 98%;
+    --popover: 240 11% 12%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 160 84% 39%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 240 11% 12%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 240 11% 12%;
+    --muted-foreground: 0 0% 63%;
+    --accent: 240 11% 12%;
+    --accent-foreground: 0 0% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 233 10% 18%;
+    --input: 233 10% 18%;
+    --ring: 160 84% 39%;
+    --chart-1: 160 84% 39%;
+    --chart-2: 173 80% 40%;
+    --chart-3: 199 89% 48%;
+    --chart-4: 142 71% 45%;
+    --chart-5: 38 92% 50%;
+    --sidebar-background: 240 11% 7%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 160 84% 39%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 11% 12%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 233 10% 18%;
+    --sidebar-ring: 160 84% 39%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    letter-spacing: -0.01em;
+  }
+}
+
+:root, .dark {
+  --caro-ink: #fafafa;
+  --caro-spark: #34d399;
+  --caro-badge: #065f46;
+  --caro-banner-start: #047857;
+  --caro-banner-end: #022c22;
+  --caro-action: #10b981;
+  --listing-page: #101014;
+  --listing-card: #1b1b21;
+  --listing-option: #191b1f;
+  --listing-field: #101014;
+  --listing-border: #292a32;
+  --listing-chip: #2a2b33;
+  --listing-text: #fafafa;
+  --listing-muted: #96969f;
+  --listing-primary: #0bb886;
+  --listing-check: #318763;
+  --listing-info: #272d59;
+  --listing-info-text: #c3d8fa;
+  --pricing-accent: #4bb77d;
+  --pricing-on-accent: #ffffff;
+  --pricing-tint: #1b382a;
+  --pricing-cta: #214e3a;
+  --pricing-purple: #b59af9;
+  --pricing-purple-tint: #342747;
+  --pricing-warning: #d6a629;
+  --pricing-warning-tint: #302b1c;
+  --promo-page: #111314;
+  --promo-panel: #141718;
+  --promo-option: #171b1d;
+  --promo-border: #292d30;
+  --promo-green: #51ce90;
+  --promo-text: #f3f5f5;
+  --promo-muted: #9ca3a5;
+  --promo-thumb: #22282b;
+  --promo-warning: #dabb77;
+}
+
+/* Listing tile actions (compare / wishlist): drop in from the top edge of the photo on hover
+   on pointer devices, stay visible on touch devices where hover does not exist */
+.tile-actions {
+  transition: opacity 0.2s ease, transform 0.25s ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .tile-actions {
+    opacity: 0;
+    transform: translateY(-150%);
+    pointer-events: none;
+  }
+
+  .tile-card:hover .tile-actions,
+  .tile-card:focus-within .tile-actions {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+}
+
+/* Side photo arrows on listing tiles: revealed on hover on pointer devices,
+   always available on touch devices where hover does not exist */
+.tile-photo-nav {
+  transition: opacity 0.2s ease, background-color 0.2s ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .tile-card .tile-photo-nav {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .tile-card:hover .tile-photo-nav,
+  .tile-card:focus-within .tile-photo-nav {
+    opacity: 1;
+    pointer-events: auto;
+  }
+}
+
+/* Skeleton placeholders — loading state instead of spinners */
+@keyframes skeleton-shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.skeleton-block {
+  position: relative;
+  overflow: hidden;
+  background-color: #e2e8f0;
+}
+
+.dark .skeleton-block {
+  background-color: #1f2430;
+}
+
+.skeleton-block::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.55), transparent);
+  animation: skeleton-shimmer 1.4s ease-in-out infinite;
+}
+
+.dark .skeleton-block::after {
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.07), transparent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton-block::after {
+    animation: none;
+  }
+}

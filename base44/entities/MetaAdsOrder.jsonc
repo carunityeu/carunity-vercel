@@ -1,0 +1,146 @@
+{
+  "name": "MetaAdsOrder",
+  "type": "object",
+  "properties": {
+    "package_id": {
+      "type": "string",
+      "enum": [
+        "meta_boost",
+        "meta_boost_plus",
+        "meta_premium",
+        "meta_top"
+      ],
+      "description": "ID \u0432\u044b\u0431\u0440\u0430\u043d\u043d\u043e\u0433\u043e \u043f\u0430\u043a\u0435\u0442\u0430"
+    },
+    "package_name": {
+      "type": "string",
+      "description": "\u041d\u0430\u0437\u0432\u0430\u043d\u0438\u0435 \u043f\u0430\u043a\u0435\u0442\u0430 (Meta Boost, Meta Boost+, ...)"
+    },
+    "price": {
+      "type": "number",
+      "description": "\u0426\u0435\u043d\u0430 \u043a\u043b\u0438\u0435\u043d\u0442\u0443 (EUR)"
+    },
+    "meta_budget": {
+      "type": "number",
+      "description": "\u0411\u044e\u0434\u0436\u0435\u0442 \u043d\u0430 Meta Ads (EUR)"
+    },
+    "carunity_margin": {
+      "type": "number",
+      "description": "\u041c\u0430\u0440\u0436\u0430 CarUnity (EUR)"
+    },
+    "listing_id": {
+      "type": "string",
+      "description": "ID \u043e\u0431\u044a\u044f\u0432\u043b\u0435\u043d\u0438\u044f"
+    },
+    "listing_type": {
+      "type": "string",
+      "enum": [
+        "car",
+        "motorcycle",
+        "truck",
+        "bus",
+        "boat",
+        "special_equipment",
+        "trailer",
+        "motorhome"
+      ],
+      "description": "\u0422\u0438\u043f \u043e\u0431\u044a\u044f\u0432\u043b\u0435\u043d\u0438\u044f"
+    },
+    "listing_title": {
+      "type": "string",
+      "description": "\u041d\u0430\u0437\u0432\u0430\u043d\u0438\u0435 \u043e\u0431\u044a\u044f\u0432\u043b\u0435\u043d\u0438\u044f"
+    },
+    "seller_email": {
+      "type": "string",
+      "description": "Email \u043f\u0440\u043e\u0434\u0430\u0432\u0446\u0430"
+    },
+    "dealer_id": {
+      "type": "string",
+      "description": "ID \u0434\u0438\u043b\u0435\u0440\u0430 (\u0435\u0441\u043b\u0438 \u0434\u0438\u043b\u0435\u0440)"
+    },
+    "platform_promotion_type": {
+      "type": "string",
+      "enum": [
+        "boost",
+        "top_spot",
+        "none"
+      ],
+      "description": "\u0422\u0438\u043f \u043f\u043b\u0430\u0442\u0444\u043e\u0440\u043c\u0435\u043d\u043d\u043e\u0433\u043e \u043f\u0440\u043e\u0434\u0432\u0438\u0436\u0435\u043d\u0438\u044f (boost \u0438\u043b\u0438 top_spot)"
+    },
+    "platform_promotion_days": {
+      "type": "number",
+      "description": "\u0414\u043d\u0435\u0439 \u043f\u043b\u0430\u0442\u0444\u043e\u0440\u043c\u0435\u043d\u043d\u043e\u0433\u043e \u043f\u0440\u043e\u0434\u0432\u0438\u0436\u0435\u043d\u0438\u044f"
+    },
+    "platform_promotion_until": {
+      "type": "string",
+      "format": "date-time",
+      "description": "\u0414\u043e \u043a\u0430\u043a\u043e\u0439 \u0434\u0430\u0442\u044b \u0430\u043a\u0442\u0438\u0432\u043d\u043e \u043f\u043b\u0430\u0442\u0444\u043e\u0440\u043c\u0435\u043d\u043d\u043e\u0435 \u043f\u0440\u043e\u0434\u0432\u0438\u0436\u0435\u043d\u0438\u0435"
+    },
+    "meta_campaign_id": {
+      "type": "string",
+      "description": "ID \u0440\u0435\u043a\u043b\u0430\u043c\u043d\u043e\u0439 \u043a\u0430\u043c\u043f\u0430\u043d\u0438\u0438 \u0432 Meta"
+    },
+    "meta_ad_set_id": {
+      "type": "string",
+      "description": "ID ad set \u0432 Meta"
+    },
+    "meta_ad_id": {
+      "type": "string",
+      "description": "ID \u0440\u0435\u043a\u043b\u0430\u043c\u044b \u0432 Meta"
+    },
+    "meta_ad_account_id": {
+      "type": "string",
+      "description": "ID \u0440\u0435\u043a\u043b\u0430\u043c\u043d\u043e\u0433\u043e \u0430\u043a\u043a\u0430\u0443\u043d\u0442\u0430 Meta (act_XXXXX)"
+    },
+    "meta_status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "created",
+        "active",
+        "failed",
+        "completed"
+      ],
+      "default": "pending",
+      "description": "\u0421\u0442\u0430\u0442\u0443\u0441 \u0441\u043e\u0437\u0434\u0430\u043d\u0438\u044f \u0440\u0435\u043a\u043b\u0430\u043c\u044b \u0432 Meta"
+    },
+    "meta_error": {
+      "type": "string",
+      "description": "\u041e\u0448\u0438\u0431\u043a\u0430 \u0441\u043e\u0437\u0434\u0430\u043d\u0438\u044f \u0440\u0435\u043a\u043b\u0430\u043c\u044b (\u0435\u0441\u043b\u0438 \u0435\u0441\u0442\u044c)"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "paid",
+        "fulfilling",
+        "completed",
+        "failed"
+      ],
+      "default": "pending",
+      "description": "\u041e\u0431\u0449\u0438\u0439 \u0441\u0442\u0430\u0442\u0443\u0441 \u0437\u0430\u043a\u0430\u0437\u0430"
+    },
+    "ad_duration_days": {
+      "type": "number",
+      "description": "\u0414\u043b\u0438\u0442\u0435\u043b\u044c\u043d\u043e\u0441\u0442\u044c \u0440\u0435\u043a\u043b\u0430\u043c\u044b \u0432 Meta (\u0434\u043d\u0435\u0439)"
+    },
+    "ad_start_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "\u0414\u0430\u0442\u0430 \u0437\u0430\u043f\u0443\u0441\u043a\u0430 \u0440\u0435\u043a\u043b\u0430\u043c\u044b"
+    },
+    "ad_end_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "\u0414\u0430\u0442\u0430 \u043e\u043a\u043e\u043d\u0447\u0430\u043d\u0438\u044f \u0440\u0435\u043a\u043b\u0430\u043c\u044b"
+    }
+  },
+  "required": [
+    "package_id",
+    "package_name",
+    "price",
+    "listing_id",
+    "listing_type",
+    "seller_email"
+  ]
+}

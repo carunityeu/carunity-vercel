@@ -1,0 +1,39 @@
+{
+  "name": "ListingRenewal",
+  "type": "object",
+  "properties": {
+    "car_id": {
+      "type": "string",
+      "description": "ID \u043e\u0431\u044a\u044f\u0432\u043b\u0435\u043d\u0438\u044f"
+    },
+    "seller_email": {
+      "type": "string",
+      "description": "Email \u043f\u0440\u043e\u0434\u0430\u0432\u0446\u0430"
+    },
+    "renewed_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "\u0414\u0430\u0442\u0430 \u043f\u0440\u043e\u0434\u043b\u0435\u043d\u0438\u044f"
+    },
+    "expires_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "\u041e\u0431\u044a\u044f\u0432\u043b\u0435\u043d\u0438\u0435 \u0430\u043a\u0442\u0438\u0432\u043d\u043e \u0434\u043e"
+    },
+    "bonus_until": {
+      "type": "string",
+      "format": "date-time",
+      "description": "\u0411\u043e\u043d\u0443\u0441\u043d\u044b\u0439 Boost \u0430\u043a\u0442\u0438\u0432\u0435\u043d \u0434\u043e"
+    },
+    "bonus_days": {
+      "type": "number",
+      "default": 3,
+      "description": "\u0414\u043d\u0435\u0439 \u0431\u043e\u043d\u0443\u0441\u043d\u043e\u0433\u043e Boost"
+    }
+  },
+  "required": [
+    "car_id",
+    "seller_email",
+    "expires_at"
+  ]
+}

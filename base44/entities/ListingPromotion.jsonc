@@ -1,0 +1,80 @@
+{
+  "name": "ListingPromotion",
+  "type": "object",
+  "properties": {
+    "listing_id": {
+      "type": "string",
+      "description": "ID \u043e\u0431\u044a\u044f\u0432\u043b\u0435\u043d\u0438\u044f"
+    },
+    "listing_type": {
+      "type": "string",
+      "enum": [
+        "car",
+        "motorcycle",
+        "truck",
+        "bus",
+        "boat",
+        "special_equipment",
+        "trailer",
+        "motorhome"
+      ],
+      "description": "\u0422\u0438\u043f \u043e\u0431\u044a\u044f\u0432\u043b\u0435\u043d\u0438\u044f"
+    },
+    "listing_title": {
+      "type": "string",
+      "description": "\u041d\u0430\u0437\u0432\u0430\u043d\u0438\u0435 \u043e\u0431\u044a\u044f\u0432\u043b\u0435\u043d\u0438\u044f"
+    },
+    "seller_email": {
+      "type": "string",
+      "description": "Email \u043f\u043e\u043a\u0443\u043f\u0430\u0442\u0435\u043b\u044f"
+    },
+    "dealer_id": {
+      "type": "string",
+      "description": "ID \u0434\u0438\u043b\u0435\u0440\u0430 (\u0435\u0441\u043b\u0438 \u043f\u043e\u043a\u0443\u043f\u043a\u0430 \u0434\u0438\u043b\u0435\u0440\u043e\u043c)"
+    },
+    "promotion_type": {
+      "type": "string",
+      "enum": [
+        "boost",
+        "top_spot"
+      ],
+      "description": "\u0422\u0438\u043f \u043f\u0440\u043e\u0434\u0432\u0438\u0436\u0435\u043d\u0438\u044f"
+    },
+    "days": {
+      "type": "number",
+      "description": "\u0414\u043b\u0438\u0442\u0435\u043b\u044c\u043d\u043e\u0441\u0442\u044c \u0432 \u0434\u043d\u044f\u0445"
+    },
+    "price": {
+      "type": "number",
+      "description": "\u0421\u0442\u043e\u0438\u043c\u043e\u0441\u0442\u044c EUR"
+    },
+    "purchased_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "\u0414\u0430\u0442\u0430 \u043f\u043e\u043a\u0443\u043f\u043a\u0438"
+    },
+    "expires_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "\u0414\u0430\u0442\u0430 \u043e\u043a\u043e\u043d\u0447\u0430\u043d\u0438\u044f \u043f\u0440\u043e\u0434\u0432\u0438\u0436\u0435\u043d\u0438\u044f"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "expired"
+      ],
+      "default": "active",
+      "description": "\u0421\u0442\u0430\u0442\u0443\u0441 \u043f\u0440\u043e\u0434\u0432\u0438\u0436\u0435\u043d\u0438\u044f"
+    }
+  },
+  "required": [
+    "listing_id",
+    "listing_type",
+    "seller_email",
+    "promotion_type",
+    "days",
+    "price",
+    "expires_at"
+  ]
+}

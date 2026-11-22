@@ -1,0 +1,22 @@
+{
+  "name": "Favorite",
+  "type": "object",
+  "properties": {
+    "user_email": {
+      "type": "string",
+      "description": "Email \u043f\u043e\u043b\u044c\u0437\u043e\u0432\u0430\u0442\u0435\u043b\u044f"
+    },
+    "car_id": {
+      "type": "string",
+      "description": "ID \u0430\u0432\u0442\u043e\u043c\u043e\u0431\u0438\u043b\u044f"
+    },
+    "description": {
+      "type": "string",
+      "description": "\u0417\u0430\u043c\u0435\u0442\u043a\u0430 \u043a \u0438\u0437\u0431\u0440\u0430\u043d\u043d\u043e\u043c\u0443"
+    }
+  },
+  "required": [
+    "user_email",
+    "car_id"
+  ]
+}

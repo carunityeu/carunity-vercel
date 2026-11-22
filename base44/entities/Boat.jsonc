@@ -1,0 +1,172 @@
+{
+  "name": "Boat",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "\u0417\u0430\u0433\u043e\u043b\u043e\u0432\u043e\u043a"
+    },
+    "brand": {
+      "type": "string",
+      "description": "\u041c\u0430\u0440\u043a\u0430 / \u0432\u0435\u0440\u0444\u044c"
+    },
+    "model": {
+      "type": "string",
+      "description": "\u041c\u043e\u0434\u0435\u043b\u044c"
+    },
+    "year": {
+      "type": "number",
+      "description": "\u0413\u043e\u0434 \u0432\u044b\u043f\u0443\u0441\u043a\u0430"
+    },
+    "price": {
+      "type": "number",
+      "description": "\u0426\u0435\u043d\u0430 EUR"
+    },
+    "original_price": {
+      "type": "number",
+      "description": "\u0426\u0435\u043d\u0430 \u0434\u043e \u0441\u043a\u0438\u0434\u043a\u0438"
+    },
+    "engine_power": {
+      "type": "number",
+      "description": "\u041c\u043e\u0449\u043d\u043e\u0441\u0442\u044c (\u043b.\u0441.)"
+    },
+    "boat_type": {
+      "type": "string",
+      "enum": [
+        "motorboat",
+        "sailboat",
+        "yacht",
+        "pontoon",
+        "speedboat",
+        "fishing",
+        "inflatable",
+        "catamaran",
+        "jet_ski",
+        "other"
+      ],
+      "description": "\u0422\u0438\u043f \u043b\u043e\u0434\u043a\u0438"
+    },
+    "length_m": {
+      "type": "number",
+      "description": "\u0414\u043b\u0438\u043d\u0430 (\u043c)"
+    },
+    "hull_material": {
+      "type": "string",
+      "enum": [
+        "fiberglass",
+        "aluminum",
+        "wood",
+        "steel",
+        "other"
+      ],
+      "description": "\u041c\u0430\u0442\u0435\u0440\u0438\u0430\u043b \u043a\u043e\u0440\u043f\u0443\u0441\u0430"
+    },
+    "trailer_included": {
+      "type": "string",
+      "enum": [
+        "yes",
+        "no"
+      ],
+      "description": "\u041f\u0440\u0438\u0446\u0435\u043f \u0432 \u043a\u043e\u043c\u043f\u043b\u0435\u043a\u0442\u0435"
+    },
+    "ce_category": {
+      "type": "string",
+      "enum": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "description": "\u041a\u0430\u0442\u0435\u0433\u043e\u0440\u0438\u044f CE-\u0441\u0435\u0440\u0442\u0438\u0444\u0438\u043a\u0430\u0446\u0438\u0438 (\u043c\u043e\u0440\u0435\u043f\u043b\u0430\u0432\u043d\u043e\u0441\u0442\u044c)"
+    },
+    "engines_count": {
+      "type": "number",
+      "description": "\u041a\u043e\u043b\u0438\u0447\u0435\u0441\u0442\u0432\u043e \u0434\u0432\u0438\u0433\u0430\u0442\u0435\u043b\u0435\u0439"
+    },
+    "vin": {
+      "type": "string",
+      "description": "VIN-\u043d\u043e\u043c\u0435\u0440 / HIN"
+    },
+    "fuel_type": {
+      "type": "string",
+      "enum": [
+        "petrol",
+        "diesel",
+        "electric",
+        "sail"
+      ],
+      "description": "\u0422\u0438\u043f \u0434\u0432\u0438\u0433\u0430\u0442\u0435\u043b\u044f"
+    },
+    "color": {
+      "type": "string",
+      "description": "\u0426\u0432\u0435\u0442"
+    },
+    "condition": {
+      "type": "string",
+      "enum": [
+        "new",
+        "used"
+      ],
+      "description": "\u0421\u043e\u0441\u0442\u043e\u044f\u043d\u0438\u0435"
+    },
+    "images": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "\u0424\u043e\u0442\u043e"
+    },
+    "description": {
+      "type": "string",
+      "description": "\u041e\u043f\u0438\u0441\u0430\u043d\u0438\u0435"
+    },
+    "location": {
+      "type": "string",
+      "description": "\u0413\u043e\u0440\u043e\u0434"
+    },
+    "country": {
+      "type": "string",
+      "description": "\u0421\u0442\u0440\u0430\u043d\u0430"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "sold",
+        "pending",
+        "rejected"
+      ],
+      "default": "pending"
+    },
+    "is_premium": {
+      "type": "boolean",
+      "default": false
+    },
+    "seller_type": {
+      "type": "string",
+      "enum": [
+        "private",
+        "dealer"
+      ]
+    },
+    "seller_id": {
+      "type": "string"
+    },
+    "views_count": {
+      "type": "number",
+      "default": 0
+    },
+    "features": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "required": [
+    "title",
+    "brand",
+    "year",
+    "price"
+  ]
+}

@@ -1,0 +1,105 @@
+{
+  "name": "PaymentPurchase",
+  "type": "object",
+  "properties": {
+    "session_id": {
+      "type": "string",
+      "description": "Stripe Checkout session id \u2014 used to grant each purchase exactly once"
+    },
+    "buyer_email": {
+      "type": "string",
+      "description": "Email of the buyer"
+    },
+    "amount": {
+      "type": "number",
+      "description": "Charged amount in EUR"
+    },
+    "currency": {
+      "type": "string",
+      "default": "eur"
+    },
+    "kind": {
+      "type": "string",
+      "enum": [
+        "listing",
+        "promotion",
+        "plan"
+      ],
+      "enumColors": [
+        "blue",
+        "purple",
+        "green"
+      ],
+      "description": "What was bought"
+    },
+    "items": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "amount": {
+            "type": "number"
+          },
+          "listing_id": {
+            "type": "string"
+          }
+        }
+      },
+      "description": "Line items as charged"
+    },
+    "reference_id": {
+      "type": "string",
+      "description": "Listing id or dealer id the purchase applies to"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "paid",
+        "refunded"
+      ],
+      "enumColors": [
+        "green",
+        "gray"
+      ],
+      "default": "paid"
+    }
+  },
+  "required": [
+    "session_id"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": {
+      "$or": [
+        {
+          "data.buyer_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

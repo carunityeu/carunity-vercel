@@ -1,0 +1,37 @@
+{
+  "name": "Message",
+  "type": "object",
+  "properties": {
+    "chat_id": {
+      "type": "string",
+      "description": "ID \u0447\u0430\u0442\u0430"
+    },
+    "sender_email": {
+      "type": "string",
+      "description": "Email \u043e\u0442\u043f\u0440\u0430\u0432\u0438\u0442\u0435\u043b\u044f"
+    },
+    "receiver_email": {
+      "type": "string",
+      "description": "Email \u043f\u043e\u043b\u0443\u0447\u0430\u0442\u0435\u043b\u044f"
+    },
+    "car_id": {
+      "type": "string",
+      "description": "ID \u0430\u0432\u0442\u043e\u043c\u043e\u0431\u0438\u043b\u044f (\u043a\u043e\u043d\u0442\u0435\u043a\u0441\u0442)"
+    },
+    "content": {
+      "type": "string",
+      "description": "\u0422\u0435\u043a\u0441\u0442 \u0441\u043e\u043e\u0431\u0449\u0435\u043d\u0438\u044f"
+    },
+    "is_read": {
+      "type": "boolean",
+      "default": false,
+      "description": "\u041f\u0440\u043e\u0447\u0438\u0442\u0430\u043d\u043e"
+    }
+  },
+  "required": [
+    "chat_id",
+    "sender_email",
+    "receiver_email",
+    "content"
+  ]
+}

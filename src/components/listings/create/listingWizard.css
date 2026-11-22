@@ -1,0 +1,60 @@
+.listing-create .lc-content.lc-wizard { padding-top:40px; }
+.listing-create .lc-shell.lc-content.lc-wizard.lc-vehicle-picker { max-width:1040px; padding-top:80px; padding-bottom:100px; }
+@media(max-width:639px) {
+ .listing-create .lc-shell.lc-content.lc-wizard.lc-vehicle-picker { padding-top:48px; padding-bottom:64px; }
+}
+.listing-create .lc-vehicle-picker-title { font-size:28px; font-weight:700; line-height:1.3; margin-bottom:10px; }
+.listing-create .lc-vehicle-tiles { grid-template-columns:repeat(4,minmax(0,1fr)); gap:14px; background:transparent; border:0; padding:0; margin:0; }
+.listing-create .lc-vehicle-tiles button { position:relative; isolation:isolate; overflow:hidden; height:auto; aspect-ratio:1.38; min-width:0; display:flex; align-items:flex-start; justify-content:flex-end; flex-direction:column; gap:5px; padding:18px; border:1px solid var(--listing-border); border-radius:18px; background:var(--listing-field); color:var(--listing-text); text-align:left; opacity:1; transition:border-color .18s ease; }
+.listing-create .lc-vehicle-tiles button::before { content:''; position:absolute; z-index:-2; width:115%; height:140%; left:12%; top:8%; border-radius:50%; border:1px solid color-mix(in srgb,var(--listing-primary) 25%,transparent); background:linear-gradient(145deg,color-mix(in srgb,var(--listing-primary) 17%,transparent),transparent 55%); transform:rotate(-35deg); }
+.listing-create .lc-vehicle-tiles button::after { content:''; position:absolute; inset:0; z-index:-1; background:linear-gradient(0deg,var(--listing-field),transparent 64%); pointer-events:none; }
+.listing-create .lc-vehicle-tiles .lc-vehicle-photo { position:absolute; z-index:-2; inset:0; width:100%; height:100%; max-width:none; object-fit:cover; mix-blend-mode:screen; }
+.listing-create .lc-vehicle-tiles .lc-vehicle-icon { width:28px; height:20px; object-fit:contain; mix-blend-mode:screen; }
+.listing-create .lc-vehicle-tiles .lc-vehicle-label { padding-right:25px; font-size:1rem; font-weight:600; line-height:1.2; overflow-wrap:anywhere; }
+.listing-create .lc-vehicle-tiles .lc-vehicle-arrow { position:absolute; right:14px; bottom:16px; width:30px; height:30px; display:grid; place-items:center; border-radius:50%; background:var(--listing-chip); color:var(--listing-text); }
+.listing-create .lc-vehicle-arrow svg { width:16px; height:16px; }
+@media(hover:hover) and (pointer:fine) {
+ .listing-create .lc-vehicle-tiles button:hover { border-color:var(--listing-primary); }
+}
+.listing-create .lc-vehicle-tiles button:focus-visible { border-color:var(--listing-primary); }
+@media(prefers-reduced-motion:reduce) { .listing-create .lc-vehicle-tiles button { transition:none; } }
+@media(max-width:767px) {
+ .listing-create .lc-vehicle-tiles { grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; }
+}
+@media(max-width:639px) {
+ .listing-create .lc-vehicle-picker-title { font-size:23px; margin-bottom:4px; }
+ .listing-create .lc-vehicle-tiles button { aspect-ratio:1.15; padding:14px 12px; border-radius:16px; }
+ .listing-create .lc-vehicle-tiles .lc-vehicle-label { font-size:.875rem; padding-right:22px; }
+ .listing-create .lc-vehicle-tiles .lc-vehicle-arrow { right:9px; bottom:12px; width:26px; height:26px; }
+}
+@media(max-width:359px) {
+ .listing-create .lc-vehicle-tiles { gap:8px; }
+ .listing-create .lc-vehicle-tiles button { padding:12px 9px; aspect-ratio:1; }
+ .listing-create .lc-vehicle-tiles .lc-vehicle-label { font-size:.8125rem; }
+}
+.listing-create .lc-section-menu { max-width:540px; width:100%; margin:10px auto 24px; }
+.listing-create .lc-section-menu h1 { font-size:28px; font-weight:700; line-height:1.2; max-width:440px; }
+.listing-create .lc-menu-vehicle { margin:18px 0 12px; font-weight:500; }
+.listing-create .lc-menu-row { display:flex; width:100%; align-items:center; gap:18px; text-align:left; padding:24px 0; border-bottom:1px solid var(--listing-border); }
+.listing-create .lc-menu-image { display:grid; place-items:center; width:84px; height:84px; flex-shrink:0; overflow:hidden; }
+.listing-create .lc-menu-image img { width:100%; height:100%; object-fit:contain; mix-blend-mode:lighten; }
+.listing-create .lc-menu-copy { flex:1; min-width:0; }
+.listing-create .lc-menu-copy strong { display:block; font-size:19px; line-height:1.3; }
+.listing-create .lc-menu-copy > span { display:block; font-size:13px; color:var(--listing-muted); margin-top:5px; }
+.listing-create .lc-menu-edit { display:flex; align-items:center; justify-content:center; gap:5px; flex-shrink:0; min-height:44px; padding:8px 12px; border:1px solid var(--listing-primary); border-radius:9px; color:var(--listing-primary); font-size:12px; }
+.listing-create .lc-menu-edit.is-saved { background:var(--listing-card); }
+.listing-create .lc-menu-note { margin-top:20px; color:var(--listing-muted); font-size:12px; }
+.listing-create .lc-next:disabled { background:var(--listing-chip); color:var(--listing-muted); }
+.listing-create .lc-wizard-back { display:inline-flex; align-items:center; gap:8px; min-height:44px; color:var(--listing-muted); margin-bottom:16px; }
+.listing-create .lc-draft-error { color:var(--listing-text); background:var(--listing-info); padding:14px; border-radius:12px; }
+@media(max-width:639px) {
+ .listing-create .lc-content.lc-wizard { padding-top:24px; }
+ .listing-create .lc-section-menu h1 { font-size:24px; }
+ .listing-create .lc-menu-row { gap:10px; padding:20px 0; }
+ .listing-create .lc-menu-image { width:64px; height:64px; }
+ .listing-create .lc-menu-copy strong { font-size:16px; }
+ .listing-create .lc-menu-copy > span { font-size:12px; }
+ .listing-create .lc-menu-edit { padding:8px; max-width:110px; flex-wrap:wrap; }
+ .listing-create .lc-wizard .lc-photo-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); }
+ .listing-create .lc-wizard .lc-photo-tile { width:100%; height:auto; aspect-ratio:4/3; }
+}

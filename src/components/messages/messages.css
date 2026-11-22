@@ -1,0 +1,6 @@
+.message-action { opacity: 1; }
+@media (hover: hover) and (pointer: fine) {
+  .message-action { opacity: 0; }
+  .group:hover .message-action,
+  .message-action:focus-visible { opacity: 1; }
+}

@@ -1,0 +1,16 @@
+export const compareGroups = [
+  ['car.specs_general', [['price','comparePage.price','EUR'],['year','car.spec_year'],['month_of_manufacture','listing.cr_month','month'],['mileage','car.spec_mileage','km'],['condition','car.spec_condition','conditions'],['body_type','car.spec_body','body_types'],['color','car.spec_color','colors'],['color_interior','car.spec_color_int','colors'],['doors','car.spec_doors'],['seats','car.spec_seats'],['owners_count','car.spec_owners']]],
+  ['car.specs_engine', [['fuel_type','car.spec_fuel','fuel_types'],['engine_volume','car.spec_engine_vol','liters'],['engine_volume_cc','car.spec_engine_cc','cc'],['engine_power','car.spec_power','kw'],['engine_code','car.spec_engine_code'],['engine_layout','car.spec_engine_layout'],['fuel_system','car.spec_fuel_system'],['turbo_type','car.spec_turbo'],['cylinders','car.spec_cylinders']]],
+  ['car.specs_transmission', [['transmission','car.spec_transmission','transmission_types'],['transmission_type','car.spec_transmission_type'],['drive_type','car.spec_drive','drive_types']]],
+  ['car.specs_performance', [['acceleration_0_100','car.spec_acceleration','sec'],['max_speed_kmh','car.spec_max_speed','kmh'],['fuel_consumption_combined','car.spec_fuel_combined','l_100km'],['fuel_consumption_city','car.spec_fuel_city','l_100km'],['fuel_consumption_highway','car.spec_fuel_highway','l_100km'],['energy_consumption','car.energy_consumption','kwh_100km'],['co2_emissions','car.spec_co2','g_km'],['emission_class','car.spec_emission'],['fuel_tank_volume','car.spec_tank','liters']]],
+  ['car.specs_dimensions', [['length_mm','car.spec_length','mm'],['width_mm','car.spec_width','mm'],['height_mm','car.spec_height','mm'],['wheelbase_mm','car.spec_wheelbase','mm'],['clearance_mm','car.spec_clearance','mm'],['weight_empty_kg','car.spec_weight_empty','kg'],['weight_max_kg','car.spec_weight_max','kg'],['trunk_volume','car.spec_trunk','liters'],['power_to_weight','car.spec_power_weight','kg_hp']]],
+  ['car.specs_suspension', [['front_suspension','car.spec_front_suspension'],['rear_suspension','car.spec_rear_suspension'],['front_brakes','car.spec_front_brakes'],['rear_brakes','car.spec_rear_brakes']]],
+  ['comparePage.other', [['trim_level','car.spec_trim'],['car_class','car.spec_class'],['technical_inspection_until','car.spec_tech_inspection','date'],['vin','comparePage.vin'],['location','car.seller_city'],['country','car.spec_country','country'],['seller_type','car.seller','seller'],['features','car.equipment','features']]],
+];
+export const comparisonKeys = [...new Set(compareGroups.flatMap(([,rows])=>rows.map(([key])=>key)).filter(key=>key!=='vin'))];
+export function bestValue(key, cars) {
+  if (!['price','mileage','engine_power','acceleration_0_100'].includes(key)) return null;
+  const values=cars.map(car=>car[key]).filter(value=>typeof value==='number'&&Number.isFinite(value));
+  if(values.length<2||new Set(values).size<2)return null;
+  return key==='engine_power'?Math.max(...values):Math.min(...values);
+}

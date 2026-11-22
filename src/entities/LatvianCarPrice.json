@@ -1,0 +1,31 @@
+{
+  "name": "LatvianCarPrice",
+  "type": "object",
+  "properties": {
+    "brand": {
+      "type": "string",
+      "description": "Марка автомобиля"
+    },
+    "model": {
+      "type": "string",
+      "description": "Модель автомобиля"
+    },
+    "year": {
+      "type": "number",
+      "description": "Год выпуска"
+    },
+    "engine": {
+      "type": "string",
+      "description": "Объем двигателя"
+    },
+    "mileage": {
+      "type": "number",
+      "description": "Пробег в км"
+    },
+    "price": {
+      "type": "number",
+      "description": "Цена в EUR (Латвия)"
+    }
+  },
+  "required": ["brand", "model", "year", "price"]
+}

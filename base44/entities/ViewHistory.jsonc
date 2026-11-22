@@ -1,0 +1,27 @@
+{
+  "name": "ViewHistory",
+  "type": "object",
+  "properties": {
+    "user_email": {
+      "type": "string",
+      "description": "Email \u043f\u043e\u043b\u044c\u0437\u043e\u0432\u0430\u0442\u0435\u043b\u044f"
+    },
+    "car_id": {
+      "type": "string",
+      "description": "ID \u0430\u0432\u0442\u043e\u043c\u043e\u0431\u0438\u043b\u044f"
+    },
+    "viewed_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "\u0414\u0430\u0442\u0430 \u043f\u0440\u043e\u0441\u043c\u043e\u0442\u0440\u0430"
+    },
+    "description": {
+      "type": "string",
+      "description": "\u0414\u043e\u043f\u043e\u043b\u043d\u0438\u0442\u0435\u043b\u044c\u043d\u043e\u0435 \u043e\u043f\u0438\u0441\u0430\u043d\u0438\u0435 \u0437\u0430\u043f\u0438\u0441\u0438 \u0438\u0441\u0442\u043e\u0440\u0438\u0438"
+    }
+  },
+  "required": [
+    "user_email",
+    "car_id"
+  ]
+}

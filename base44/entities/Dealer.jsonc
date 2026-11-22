@@ -1,0 +1,281 @@
+{
+  "name": "Dealer",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "\u041d\u0430\u0437\u0432\u0430\u043d\u0438\u0435 \u0430\u0432\u0442\u043e\u0441\u0430\u043b\u043e\u043d\u0430"
+    },
+    "logo": {
+      "type": "string",
+      "description": "URL \u043b\u043e\u0433\u043e\u0442\u0438\u043f\u0430"
+    },
+    "cover_image": {
+      "type": "string",
+      "description": "URL \u043e\u0431\u043b\u043e\u0436\u043a\u0438"
+    },
+    "cover_image_position": {
+      "type": "string",
+      "description": "\u041f\u043e\u0437\u0438\u0446\u0438\u044f \u0431\u0430\u043d\u043d\u0435\u0440\u0430 (\u043d\u0430\u043f\u0440\u0438\u043c\u0435\u0440 50% 30%)"
+    },
+    "description": {
+      "type": "string",
+      "description": "\u041e\u043f\u0438\u0441\u0430\u043d\u0438\u0435 \u0434\u0438\u043b\u0435\u0440\u0430"
+    },
+    "description_en": {
+      "type": "string",
+      "description": "\u041e\u043f\u0438\u0441\u0430\u043d\u0438\u0435 \u043d\u0430 \u0430\u043d\u0433\u043b\u0438\u0439\u0441\u043a\u043e\u043c"
+    },
+    "description_ru": {
+      "type": "string",
+      "description": "\u041e\u043f\u0438\u0441\u0430\u043d\u0438\u0435 \u043d\u0430 \u0440\u0443\u0441\u0441\u043a\u043e\u043c"
+    },
+    "description_et": {
+      "type": "string",
+      "description": "\u041e\u043f\u0438\u0441\u0430\u043d\u0438\u0435 \u043d\u0430 \u044d\u0441\u0442\u043e\u043d\u0441\u043a\u043e\u043c"
+    },
+    "description_lv": {
+      "type": "string",
+      "description": "\u041e\u043f\u0438\u0441\u0430\u043d\u0438\u0435 \u043d\u0430 \u043b\u0430\u0442\u044b\u0448\u0441\u043a\u043e\u043c"
+    },
+    "description_lt": {
+      "type": "string",
+      "description": "\u041e\u043f\u0438\u0441\u0430\u043d\u0438\u0435 \u043d\u0430 \u043b\u0438\u0442\u043e\u0432\u0441\u043a\u043e\u043c"
+    },
+    "address": {
+      "type": "string",
+      "description": "\u0410\u0434\u0440\u0435\u0441"
+    },
+    "city": {
+      "type": "string",
+      "description": "\u0413\u043e\u0440\u043e\u0434"
+    },
+    "country": {
+      "type": "string",
+      "description": "\u0421\u0442\u0440\u0430\u043d\u0430"
+    },
+    "phone": {
+      "type": "string",
+      "description": "\u0422\u0435\u043b\u0435\u0444\u043e\u043d"
+    },
+    "email": {
+      "type": "string",
+      "description": "Email"
+    },
+    "contact_person": {
+      "type": "string",
+      "description": "\u041a\u043e\u043d\u0442\u0430\u043a\u0442\u043d\u043e\u0435 \u043b\u0438\u0446\u043e (\u0438\u043c\u044f \u043c\u0435\u043d\u0435\u0434\u0436\u0435\u0440\u0430)"
+    },
+    "contact_person_photo": {
+      "type": "string",
+      "description": "URL \u0444\u043e\u0442\u043e \u043a\u043e\u043d\u0442\u0430\u043a\u0442\u043d\u043e\u0433\u043e \u043b\u0438\u0446\u0430"
+    },
+    "contact_person_role": {
+      "type": "string",
+      "description": "\u0414\u043e\u043b\u0436\u043d\u043e\u0441\u0442\u044c \u043a\u043e\u043d\u0442\u0430\u043a\u0442\u043d\u043e\u0433\u043e \u043b\u0438\u0446\u0430"
+    },
+    "contact_person_phone": {
+      "type": "string",
+      "description": "\u0422\u0435\u043b\u0435\u0444\u043e\u043d \u043a\u043e\u043d\u0442\u0430\u043a\u0442\u043d\u043e\u0433\u043e \u043b\u0438\u0446\u0430"
+    },
+    "contact_person_email": {
+      "type": "string",
+      "description": "Email \u043a\u043e\u043d\u0442\u0430\u043a\u0442\u043d\u043e\u0433\u043e \u043b\u0438\u0446\u0430"
+    },
+    "employees": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "\u0418\u043c\u044f \u0441\u043e\u0442\u0440\u0443\u0434\u043d\u0438\u043a\u0430"
+          },
+          "position": {
+            "type": "string",
+            "description": "\u0414\u043e\u043b\u0436\u043d\u043e\u0441\u0442\u044c"
+          },
+          "photo": {
+            "type": "string",
+            "description": "URL \u0444\u043e\u0442\u043e \u0441\u043e\u0442\u0440\u0443\u0434\u043d\u0438\u043a\u0430"
+          },
+          "email": {
+            "type": "string",
+            "description": "\u041b\u0438\u0447\u043d\u0430\u044f \u0440\u0430\u0431\u043e\u0447\u0430\u044f \u043f\u043e\u0447\u0442\u0430 \u0441\u043e\u0442\u0440\u0443\u0434\u043d\u0438\u043a\u0430"
+          },
+          "phones": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "\u0422\u0435\u043b\u0435\u0444\u043e\u043d\u044b \u0441\u043e\u0442\u0440\u0443\u0434\u043d\u0438\u043a\u0430"
+          },
+          "languages": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "\u042f\u0437\u044b\u043a\u0438 \u043e\u0431\u0449\u0435\u043d\u0438\u044f (\u043a\u043e\u0434\u044b: et, ru, en, lv, lt, fi, de, no, sv, pl)"
+          }
+        }
+      },
+      "description": "\u0421\u043e\u0442\u0440\u0443\u0434\u043d\u0438\u043a\u0438 \u0430\u0432\u0442\u043e\u0441\u0430\u043b\u043e\u043d\u0430"
+    },
+    "website": {
+      "type": "string",
+      "description": "\u0412\u0435\u0431-\u0441\u0430\u0439\u0442"
+    },
+    "working_hours": {
+      "type": "string",
+      "description": "\u0427\u0430\u0441\u044b \u0440\u0430\u0431\u043e\u0442\u044b (JSON)"
+    },
+    "owner_email": {
+      "type": "string",
+      "description": "Email \u0432\u043b\u0430\u0434\u0435\u043b\u044c\u0446\u0430 \u0430\u043a\u043a\u0430\u0443\u043d\u0442\u0430"
+    },
+    "subscription_type": {
+      "type": "string",
+      "enum": [
+        "starter",
+        "pro",
+        "premium"
+      ],
+      "default": "starter",
+      "description": "\u0422\u0438\u043f \u043f\u043e\u0434\u043f\u0438\u0441\u043a\u0438"
+    },
+    "subscription_until": {
+      "type": "string",
+      "format": "date",
+      "description": "\u041f\u043e\u0434\u043f\u0438\u0441\u043a\u0430 \u0430\u043a\u0442\u0438\u0432\u043d\u0430 \u0434\u043e"
+    },
+    "is_verified": {
+      "type": "boolean",
+      "default": false,
+      "description": "\u0412\u0435\u0440\u0438\u0444\u0438\u0446\u0438\u0440\u043e\u0432\u0430\u043d"
+    },
+    "rating": {
+      "type": "number",
+      "description": "\u0420\u0435\u0439\u0442\u0438\u043d\u0433"
+    },
+    "reviews_count": {
+      "type": "number",
+      "default": 0,
+      "description": "\u041a\u043e\u043b\u0438\u0447\u0435\u0441\u0442\u0432\u043e \u043e\u0442\u0437\u044b\u0432\u043e\u0432"
+    },
+    "brands": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "\u0411\u0440\u0435\u043d\u0434\u044b \u0430\u0432\u0442\u043e\u043c\u043e\u0431\u0438\u043b\u0435\u0439"
+    },
+    "social_youtube": {
+      "type": "string",
+      "description": "\u0421\u0441\u044b\u043b\u043a\u0430 \u043d\u0430 YouTube \u043a\u0430\u043d\u0430\u043b"
+    },
+    "social_instagram": {
+      "type": "string",
+      "description": "\u0421\u0441\u044b\u043b\u043a\u0430 \u043d\u0430 Instagram"
+    },
+    "social_tiktok": {
+      "type": "string",
+      "description": "\u0421\u0441\u044b\u043b\u043a\u0430 \u043d\u0430 TikTok"
+    },
+    "social_facebook": {
+      "type": "string",
+      "description": "\u0421\u0441\u044b\u043b\u043a\u0430 \u043d\u0430 Facebook"
+    },
+    "social_telegram": {
+      "type": "string",
+      "description": "\u0421\u0441\u044b\u043b\u043a\u0430 \u043d\u0430 Telegram"
+    },
+    "social_whatsapp": {
+      "type": "string",
+      "description": "\u0421\u0441\u044b\u043b\u043a\u0430 \u043d\u0430 WhatsApp"
+    },
+    "social_twitter": {
+      "type": "string",
+      "description": "\u0421\u0441\u044b\u043b\u043a\u0430 \u043d\u0430 X (Twitter)"
+    },
+    "social_vk": {
+      "type": "string",
+      "description": "\u0421\u0441\u044b\u043b\u043a\u0430 \u043d\u0430 \u0412\u041a\u043e\u043d\u0442\u0430\u043a\u0442\u0435"
+    },
+    "social_linkedin": {
+      "type": "string",
+      "description": "\u0421\u0441\u044b\u043b\u043a\u0430 \u043d\u0430 LinkedIn"
+    },
+    "primary_color": {
+      "type": "string",
+      "description": "\u041e\u0441\u043d\u043e\u0432\u043d\u043e\u0439 \u0446\u0432\u0435\u0442 (\u0430\u043a\u0446\u0435\u043d\u0442, \u043a\u043d\u043e\u043f\u043a\u0438, \u0441\u0441\u044b\u043b\u043a\u0438)"
+    },
+    "bg_color": {
+      "type": "string",
+      "description": "\u0426\u0432\u0435\u0442 \u0444\u043e\u043d\u0430 \u0441\u0442\u0440\u0430\u043d\u0438\u0446\u044b"
+    },
+    "header_bg_color": {
+      "type": "string",
+      "description": "\u0426\u0432\u0435\u0442 \u0444\u043e\u043d\u0430 \u0448\u0430\u043f\u043a\u0438"
+    },
+    "logo_bg_color": {
+      "type": "string",
+      "description": "\u0426\u0432\u0435\u0442 \u0444\u043e\u043d\u0430 \u043b\u043e\u0433\u043e\u0442\u0438\u043f\u0430"
+    },
+    "sidebar_bg_color": {
+      "type": "string",
+      "description": "\u0426\u0432\u0435\u0442 \u0444\u043e\u043d\u0430 \u0431\u043e\u043a\u043e\u0432\u043e\u0439 \u043f\u0430\u043d\u0435\u043b\u0438"
+    },
+    "card_bg_color": {
+      "type": "string",
+      "description": "\u0426\u0432\u0435\u0442 \u0444\u043e\u043d\u0430 \u043a\u0430\u0440\u0442\u043e\u0447\u0435\u043a"
+    },
+    "text_color": {
+      "type": "string",
+      "description": "\u0426\u0432\u0435\u0442 \u043e\u0441\u043d\u043e\u0432\u043d\u043e\u0433\u043e \u0442\u0435\u043a\u0441\u0442\u0430"
+    },
+    "secondary_text_color": {
+      "type": "string",
+      "description": "\u0426\u0432\u0435\u0442 \u0432\u0442\u043e\u0440\u0438\u0447\u043d\u043e\u0433\u043e \u0442\u0435\u043a\u0441\u0442\u0430"
+    },
+    "tab_active_color": {
+      "type": "string",
+      "description": "\u0426\u0432\u0435\u0442 \u0430\u043a\u0442\u0438\u0432\u043d\u043e\u0439 \u0432\u043a\u043b\u0430\u0434\u043a\u0438"
+    },
+    "price_color": {
+      "type": "string",
+      "description": "\u0426\u0432\u0435\u0442 \u0446\u0435\u043d\u044b \u0430\u0432\u0442\u043e\u043c\u043e\u0431\u0438\u043b\u044f"
+    },
+    "custom_pricing": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "service_id": {
+            "type": "string",
+            "description": "ID \u043f\u043b\u0430\u0442\u043d\u043e\u0439 \u0443\u0441\u043b\u0443\u0433\u0438"
+          },
+          "discount_percent": {
+            "type": "number",
+            "description": "\u0421\u043a\u0438\u0434\u043a\u0430 \u0432 \u043f\u0440\u043e\u0446\u0435\u043d\u0442\u0430\u0445"
+          },
+          "custom_price": {
+            "type": "number",
+            "description": "\u041a\u0430\u0441\u0442\u043e\u043c\u043d\u0430\u044f \u0446\u0435\u043d\u0430 \u0432 EUR"
+          }
+        }
+      },
+      "description": "\u0418\u043d\u0434\u0438\u0432\u0438\u0434\u0443\u0430\u043b\u044c\u043d\u044b\u0435 \u0441\u043a\u0438\u0434\u043a\u0438 \u0434\u043b\u044f \u043f\u043b\u0430\u0442\u043d\u044b\u0445 \u0443\u0441\u043b\u0443\u0433"
+    }
+  },
+  "required": [
+    "name",
+    "owner_email"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

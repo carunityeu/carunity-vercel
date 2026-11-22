@@ -1,0 +1,39 @@
+{
+  "name": "CarGeneration",
+  "type": "object",
+  "properties": {
+    "brand": {
+      "type": "string",
+      "description": "\u041c\u0430\u0440\u043a\u0430 \u0430\u0432\u0442\u043e\u043c\u043e\u0431\u0438\u043b\u044f"
+    },
+    "model": {
+      "type": "string",
+      "description": "\u041c\u043e\u0434\u0435\u043b\u044c \u0430\u0432\u0442\u043e\u043c\u043e\u0431\u0438\u043b\u044f"
+    },
+    "generation": {
+      "type": "string",
+      "description": "\u041d\u0430\u0437\u0432\u0430\u043d\u0438\u0435 \u043f\u043e\u043a\u043e\u043b\u0435\u043d\u0438\u044f"
+    },
+    "year_start": {
+      "type": "string",
+      "description": "\u0413\u043e\u0434 \u043d\u0430\u0447\u0430\u043b\u0430 \u0432\u044b\u043f\u0443\u0441\u043a\u0430"
+    },
+    "year_end": {
+      "type": "string",
+      "description": "\u0413\u043e\u0434 \u043e\u043a\u043e\u043d\u0447\u0430\u043d\u0438\u044f \u0432\u044b\u043f\u0443\u0441\u043a\u0430 (\u0438\u043b\u0438 Present)"
+    },
+    "code": {
+      "type": "string",
+      "description": "\u0417\u0430\u0432\u043e\u0434\u0441\u043a\u043e\u0439 \u043a\u043e\u0434 \u043f\u043e\u043a\u043e\u043b\u0435\u043d\u0438\u044f"
+    },
+    "description": {
+      "type": "string",
+      "description": "\u041e\u043f\u0438\u0441\u0430\u043d\u0438\u0435 \u043f\u043e\u043a\u043e\u043b\u0435\u043d\u0438\u044f \u0430\u0432\u0442\u043e\u043c\u043e\u0431\u0438\u043b\u044f"
+    }
+  },
+  "required": [
+    "brand",
+    "model",
+    "generation"
+  ]
+}

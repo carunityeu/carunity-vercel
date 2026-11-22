@@ -1,0 +1,123 @@
+// Car models database from CSV (Automaker → [models])
+export const carModelsDB = {
+  'AC': ['Cobra'],
+  'Abarth': ['124 Spider', '500', '500C', '595', '595C', '695', '695C', 'Grande Punto', 'Punto Evo'],
+  'Aixam': ['Crossline', '400', '500', 'a751', 'coupe', 'crossover', 'mega', 'scouty'],
+  'Alfa Romeo': ['147', '156', '156 Sportwagon', '159', '159 Sportwagon', '166', '4C', '8C', 'Brera', 'Giulia', 'Giulietta', 'GT', 'GTV', 'MiTo', 'Spider', 'Stelvio', 'SZ', '33'],
+  'Ariel': ['Atom'],
+  'Aston Martin': ['Cygnet', 'DB11', 'DB7', 'DB9', 'DBS', 'Rapide', 'Rapide S', 'Vanquish', 'Vantage', 'Virage', 'Vulcan', 'DB5'],
+  'Audi': ['A1', 'A2', 'A3', 'A3 Cabriolet', 'A4', 'A4 Allroad', 'A4 Avant', 'A4 Cabriolet', 'A5', 'A5 Cabriolet', 'A6', 'A7', 'A8', 'Allroad', 'Q2', 'Q3', 'Q5', 'Q7', 'Q8', 'quattro', 'R8', 'RS Q3', 'RS3', 'RS4', 'RS4 Avant', 'RS4 Cabriolet', 'RS4 Saloon', 'RS5', 'RS6', 'RS6 Avant', 'RS7', 'S1', 'S3', 'S4', 'S4 Avant', 'S4 Cabriolet', 'S5', 'S6 Avant', 'S6 Saloon', 'S7', 'S8', 'SQ2', 'SQ5', 'SQ7', 'TT', 'TT RS', 'TTS', 'E-TRON'],
+  'Bac': ['Mono'],
+  'Bentley': ['Arnage', 'Azure', 'Bentayga', 'Brooklands', 'Continental', 'Flying Spur', 'Mulsanne', 'Series I'],
+  'BMW': ['1 Series', '2 Series', '2 Series Active Tourer', '2 Series Gran Tourer', '3 Series', '3 Series Gran Turismo', '4 Series', '4 Series Gran Coupe', '5 Series', '5 Series Gran Turismo', '6 Series', '6 Series Gran Coupe', '6 Series Gran Turismo', '7 Series', '8 Series', 'Alpina B10', 'Alpina B3', 'Alpina B3 Bi-Turbo', 'Alpina B5', 'Alpina B6', 'Alpina D3', 'Alpina D3 Bi-Turbo', 'Alpina D4', 'Alpina D5 Bi-Turbo', 'Alpina Roadster', 'Alpina Xd3 Bi-Turbo', 'i3', 'i8', 'M1', 'M2', 'M3', 'M4', 'M5', 'M6', 'M6 Gran Coupe', 'X1', 'X2', 'X3', 'X4', 'X5', 'X5M', 'X6', 'X6M', 'X7', 'Z3', 'Z3M', 'Z4', 'Z4M', 'Z8'],
+  'Bristol': ['Fighter'],
+  'Brooke': ['Double R'],
+  'Bugatti': ['Veyron'],
+  'Cadillac': ['BLS', 'CTS', 'Escalade', 'SRX', 'STS'],
+  'Caterham': ['Seven'],
+  'Chevrolet': ['Astro', 'Aveo', 'Blazer', 'Camaro', 'Captiva', 'Corvette', 'Cruze', 'Epica', 'Impala', 'Kalos', 'Lacetti', 'Matiz', 'Orlando', 'Spark', 'Ssr', 'Tacuma', 'Tahoe', 'Trax', 'Volt'],
+  'Chrysler': ['300C', 'Crossfire', 'Delta', 'Grand Voyager', 'Neon', 'Prowler', 'PT Cruiser', 'Sebring', 'Voyager', 'Ypsilon'],
+  'Citroen': ['2 CV', 'Berlingo', 'Berlingo Multispace', 'C-Crosser', 'C-Zero', 'C1', 'C2', 'C3', 'C3 Aircross', 'C3 Picasso', 'C3 Pluriel', 'C4', 'C4 Cactus', 'C4 Picasso', 'C5', 'C6', 'C8', 'Dispatch', 'Grand C4 Picasso', 'Nemo Multispace', 'Saxo', 'SpaceTourer', 'Synergie', 'Xantia', 'Xsara', 'Xsara Picasso'],
+
+  'Corvette': ['C6', 'C7', 'Stingray'],
+  'DAX': ['Tojeiro'],
+  'DS': ['3', '3 Cabrio', '4', '4 Crossback', '5', '7'],
+  'Dacia': ['Duster', 'Logan MCV', 'Sandero', 'Sandero Stepway'],
+  'Daewoo': ['Kalos', 'Lacetti', 'Lanos', 'Leganza', 'Matiz', 'Musso', 'Nubira', 'Tacuma'],
+  'Daihatsu': ['Atrai 7', 'Charade', 'Copen', 'Cuore', 'Fourtrak', 'Materia', 'Sirion', 'Terios', 'YRV'],
+  'Daimler': ['Super Eight', 'XJ Series'],
+  'Dodge': ['Avenger', 'Caliber', 'Challenger', 'Charger', 'Journey', 'Nitro', 'RAM'],
+  'Ferrari': ['308', '360', '430', '456', '456M', '458', '488', '550', '575M', '599', '612', '812 Superfast', 'California', 'Dino', 'Enzo', 'F12berlinetta', 'F355', 'F430', 'FF', 'Gtc4lusso', 'Laferrari', 'Portofino', 'Scuderia Spider'],
+  'Fiat': ['124 Spider', '500', '500C', '500L', '500X', '850', 'Abarth', 'Barchetta', 'Brava', 'Bravo', 'Croma', 'Doblo', 'Fiorino', 'Fullback', 'Grande Punto', 'Idea', 'Marea', 'Multipla', 'Panda', 'Punto', 'Punto Evo', 'Qubo', 'Scudo', 'Sedici', 'Seicento', 'Spider', 'Stilo', 'Talento', 'Tipo', 'Ulysse'],
+  'Ford': ['B-Max', 'C-Max', 'Cougar', 'EcoSport', 'Edge', 'Escape', 'Escort', 'Expedition', 'Explorer', 'F1', 'F150', 'F250', 'Fiesta', 'Focus', 'Focus C-Max', 'Focus CC', 'Freedom', 'Freda', 'Fusion', 'Galaxy', 'Grand C-Max', 'Grand Tourneo Connect', 'GT', 'Independence', 'Ka', 'Ka+', 'Kuga', 'Maverick', 'Mondeo', 'Mustang', 'Puma', 'Ranger', 'S-Max', 'Streetka', 'Thames', 'Tourneo Connect', 'Tourneo Courier', 'Tourneo Custom', 'Transit Connect', 'Transit Courier', 'Transit Custom'],
+  'Ginetta': ['G40R'],
+  'GMC': ['Sierra', 'Yukon'],
+  'Great Wall': ['Steed'],
+  'Grinnall': ['Scorpion'],
+  'Honda': ['Accord', 'Civic', 'CR-V', 'CR-Z', 'Element', 'Elysion', 'FR-V', 'HR-V', 'Insight', 'Integra', 'Jazz', 'Legend', 'NSX', 'Odyssey', 'Prelude', 'S-Mx', 'S2000', 'Stepwagon', 'Stream'],
+  'Hummer': ['H1', 'H2', 'H3'],
+  'Hyundai': ['Accent', 'Amica', 'Coupe', 'Elantra', 'Genesis', 'Getz', 'Grandeur', 'i10', 'i20', 'i30', 'I30 N', 'i40', 'i800', 'Ioniq', 'ix20', 'ix35', 'Kona', 'Matrix', 'S-Coupe', 'Santa Fe', 'Sonata', 'Terracan', 'Trajet', 'Tucson', 'Veloster', 'XG30'],
+  'Infiniti': ['EX', 'FX', 'G', 'M', 'Q30', 'Q50', 'Q60', 'Q70', 'QX30', 'QX50', 'QX70', 'Vettel'],
+  'Isuzu': ['Bighorn', 'D-Max', 'Rodeo', 'Trooper'],
+  'Jaguar': ['E-PACE', 'EAGLE', 'F-PACE', 'F-Type', 'I-PACE', 'S-Type', 'X-Type', 'XE', 'XF', 'XJ', 'XK', 'XK8', 'XKR', 'XKR-S'],
+  'Jeep': ['Cherokee', 'Commander', 'Compass', 'Grand Cherokee', 'Patriot', 'Renegade', 'Wrangler'],
+  'Jensen': ['GT'],
+  'Kia': ["Carens", "Cee'd", "Cerato", "Magentis", "Niro", "Optima", "Picanto", "Pro_Cee'd", "Rio", "Sedona", "Sorento", "Soul", "Soul EV", "Sportage", "Stinger", "Stonic", "Sephia", "Venga", "Xceed"],
+  'Koenigsegg': ['Ccx'],
+  'KTM': ['X-Bow'],
+  'Lamborghini': ['Aventador', 'Diablo', 'Gallardo', 'Huracan', 'Murcielago'],
+  'Lancia': ['Ypsilon'],
+  'Land Rover': ['110', 'Defender 110', 'Defender 130', 'Defender 90', 'Defender Unspecified', 'Discovery', 'Discovery 2', 'Discovery 3', 'Discovery 4', 'Discovery Sport', 'Freelander', 'Freelander 2', 'Range Rover', 'Range Rover Evoque', 'Range Rover Sport', 'Range Rover Velar', 'Series III'],
+  'Lexus': ['CT', 'ES', 'GS', 'IS', 'LC', 'LS', 'NX', 'RC', 'RX', 'SC', 'UX'],
+  'Lincoln': ['Navigator', 'Town Car'],
+  'London Taxis International': ['TX4', 'Txi', 'Txii'],
+  'Lotus': ['2-Eleven', '3-Eleven', 'Elise', 'Elise S', 'Esprit', 'Evora', 'Exige'],
+  'Maserati': ['3200', '4200', 'Cambiocorsa', 'Coupe', 'Ghibli', 'GranCabrio', 'Gransport', 'Granturismo', 'Levante', 'Quattroporte', 'Spyder'],
+  'Maybach': ['57', '62'],
+  'Mazda': ['323', '626', 'B2500', 'Bongo', 'BT-50', 'CX-3', 'CX-5', 'CX-7', 'Demio', 'Mazda2', 'Mazda3', 'Mazda5', 'Mazda6', 'MPV', 'MX-5', 'MX-5 RF', 'Premacy', 'RX-8', 'Tribute'],
+  'McLaren': ['12C', '540C', '570GT', '570S', '600LT', '650S', '675LT', '720S', 'P1'],
+  'Mercedes-Benz': ['200', '220', '230', '250', '320', '350', '500', 'A Class', 'AMG', 'Amg Gt', 'B Class', 'C Class', 'Citan', 'Citan Traveliner', 'CL', 'CLA Class', 'CLC Class', 'CLK', 'CLS', 'E Class', 'G Class', 'GL Class', 'GLA Class', 'GLC Class', 'GLE Class', 'GLS Class', 'M Class', 'R Class', 'S Class', 'SL Class', 'SLC', 'SLK', 'SLR McLaren', 'SLS', 'Sprinter', 'V Class', 'Vaneo', 'Viano', 'Vito', 'X Class'],
+  'Messerschmitt': ['KR200'],
+  'MEV': ['Exocet'],
+  'MG': ['GS', 'MG3', 'MG6', 'MGF', 'TF', 'XS', 'ZR', 'ZS', 'ZT', 'ZT-T'],
+  'Microcar': ['M', 'M.GO'],
+  'Mini': ['Clubman', 'Clubvan', 'Convertible', 'Cooper s', 'Countryman', 'Coupe', 'Hatch', 'John Cooper Works', 'Paceman', 'Roadster'],
+
+  'Mitsubishi': ['ASX', 'Carisma', 'Colt', 'Colt Cabriolet', 'Colt Space Star', 'Delica', 'Eclipse Cross', 'FTO', 'Galant', 'Grandis', 'Gto', 'i', 'L200', 'Lancer', 'Mirage', 'Outlander', 'Pajero', 'Shogun', 'Shogun Pinin', 'Shogun Sport', 'Space Star', 'Space Wagon'],
+  'Morgan': ['4', 'Aero', 'Plus 4', 'Plus 8', 'Roadster'],
+  'Nissan': ['350 Z', '370 Z', 'Almera', 'Almera Tino', 'Cube', 'Cubic', 'e-NV200', 'Elgrand', 'eNV200 Evalia', 'Fairlady', 'Figaro', 'Gloria', 'GT-R', 'Juke', 'Largo', 'Leaf', 'Micra', 'Micra C+C', 'Murano', 'Navara', 'Note', 'NV200', 'NV300', 'Pathfinder', 'Patrol', 'Patrol GR', 'Pickup', 'Pixo', 'President', 'Primastar', 'Primera', 'Pulsar', 'Qashqai', 'Qashqai+2', 'Serena', 'Skyline', 'Stagea', 'Terrano', 'Terrano II', 'Tiida', 'X-Trail'],
+  'Noble': ['M12', 'M600'],
+  'Opel': ['Astra', 'Insignia', 'Zafira'],
+  'Pagani': ['Huayra'],
+  'Perodua': ['Kelisa', 'Kenari', 'Myvi'],
+  'Peugeot': ['106', '107', '108', '1007', '2008', '206', '206 CC', '206 SW', '207', '207 CC', '207 SW', '208', '3008', '306', '307', '307 CC', '307 SW', '308', '308 CC', '308 SW', '4007', '406', '407', '407 SW', '5008', '508', '508 SW', '607', '806', '807', 'Bipper Tepee', 'Boxer', 'Expert', 'Expert Combi', 'Expert Tepee', 'Independence', 'iOn', 'Partner', 'Partner Combi', 'Partner Tepee', 'RCZ', 'Rifter', 'Traveller'],
+  'Pilgrim': ['3000'],
+  'Porsche': ['356', '718 Boxster', '718 Cayman', '911', '918', 'Boxster', 'Carrera Gt', 'Cayenne', 'Cayman', 'Macan', 'Panamera'],
+  'Proton': ['GEN-2', 'Impian', 'Jumbuck', 'Persona', 'Satria Neo', 'Savvy', 'Wira'],
+  'Radical': ['SR3'],
+  'Raw': ['Falcrum'],
+  'Renault': ['Captur', 'Clio', 'Espace', 'Fluence', 'Grand Espace', 'Grand Modus', 'Grand Scenic', 'Kadjar', 'Kangoo', 'Koleos', 'Laguna', 'Master', 'Megane', 'Modus', 'Scenic', 'Scenic RX4', 'Scenic Xmod', 'Trafic', 'Twingo', 'Twizy', 'Vel Satis', 'Wind', 'Zoe'],
+  'Reva': ['G-Wiz'],
+  'Rolls-Royce': ['Corniche', 'Dawn', 'Ghost', 'Phantom', 'Silver Seraph', 'Wraith'],
+  'Rover': ['25', '45', '75', '75 Tourer', '600', 'City Rover', 'Mini', 'Streetwise'],
+  'Saab': ['9-3', '9-3X', '9-5'],
+  'Santana': ['PS10'],
+  'Seat': ['Alhambra', 'Altea', 'Altea XL', 'Arona', 'Arosa', 'Ateca', 'Cordoba', 'Exeo', 'Ibiza', 'Leon', 'Mii', 'Tarraco', 'Toledo'],
+
+  'Skoda': ['Citigo', 'Fabia', 'Felicia', 'Karoq', 'Kodiaq', 'Octavia', 'Rapid', 'Rapid Spaceback', 'Roomster', 'Scala', 'Superb', 'Yeti'],
+
+  'Smart': ['forfour', 'fortwo', 'Roadster'],
+  'SsangYong': ['Korando', 'Korando Sports', 'Kyron', 'Musso', 'Rexton', 'Rodius', 'Tivoli', 'Tivoli XLV', 'Turismo'],
+
+  'Subaru': ['BRZ', 'Forester', 'Impreza', 'Justy', 'Legacy', 'Levorg', 'Outback', 'Sambar', 'Tribeca', 'WRX STI', 'XV'],
+  'Suzuki': ['Alto', 'Baleno', 'Celerio', 'Grand Vitara', 'Ignis', 'Jimny', 'Kizashi', 'Liana', 'Splash', 'Swift', 'SX4', 'SX4 S-Cross', 'Vitara', 'Wagon R'],
+  'Tata': ['Safari'],
+  'Tesla': ['Model 3', 'Model S', 'Model X'],
+  'Tiger': ['Avon', 'Super Six'],
+  'Toyota': ['4-Runner', 'Alphard', 'Auris', 'Avensis', 'Avensis Verso', 'AYGO', 'BB', 'C-HR', 'Camry', 'Celica', 'Corolla', 'Corolla Verso', 'Emina', 'Estima', 'Fj Cruiser', 'Granvia', 'GT86', 'HiAce', 'Hilux', 'iQ', 'Land Cruiser', 'Land Cruiser Amazon', 'Land Cruiser Colorado', 'Lucida', 'MR2', 'Noah', 'Picnic', 'Prado', 'Previa', 'Prius', 'Prius+', 'Proace', 'PROACE Verso', 'RAV4', 'Soarer', 'Starlet', 'Supra', 'Surf', 'Urbancruiser', 'Verso', 'Verso S', 'Voxy', 'Wish', 'Yaris', 'Yaris Verso'],
+  'TVR': ['Cerbera', 'Sagaris', 'T350', 'Tuscan'],
+  'Ultima': ['Can-Am'],
+  'Vauxhall': ['ADAM', 'Agila', 'Ampera', 'Antara', 'Astra', 'Astra GTC', 'Cascada', 'Combo Tour', 'Corsa', 'Crossland X', 'Frontera', 'Grandland X', 'Insignia', 'Meriva', 'Mokka', 'Mokka X', 'Monaro', 'Movano', 'Omega', 'Signum', 'Tigra', 'Vectra', 'Viva', 'Vivaro', 'VX220', 'VXR8', 'Zafira', 'Zafira Tourer'],
+  'Volkswagen': ['Amarok', 'Arteon', 'Beetle', 'Bora', 'Caddy', 'Caddy Life', 'Caddy Maxi', 'Caddy Maxi Life', 'California', 'Campervan', 'Caravelle', 'CC', 'E-Golf', 'Eos', 'Fox', 'Golf', 'Golf Plus', 'Golf SV', 'Jetta', 'Lupo', 'Passat', 'Phaeton', 'Polo', 'Scirocco', 'Sharan', 'T-Cross', 'T-Roc', 'Tiguan', 'Tiguan Allspace', 'Touareg', 'Touran', 'Transporter', 'Transporter Shuttle', 'Transporter Sportline', 'up!', 'Vento', 'XL1'],
+  'Volvo': ['C30', 'C70', 'S40', 'S60', 'S70', 'S80', 'S90', 'V40', 'V40 Cross Country', 'V50', 'V60', 'V60 Cross Country', 'V70', 'V70 Cross Country', 'V90', 'V90 Cross Country', 'XC40', 'XC60', 'XC70', 'XC90'],
+  'Westfield': ['Sport', 'XI'],
+  'Yamaha': ['Yxz 1000r'],
+  'Zenos': ['E10'],
+  'Acura': ['TL'],
+  'Alpine': ['A110'],
+};
+
+// Get models for a brand (case-insensitive lookup)
+export function getModelsForBrand(brand) {
+  if (!brand) return [];
+  // Direct match first
+  if (carModelsDB[brand]) return carModelsDB[brand];
+  // Case-insensitive fallback
+  const key = Object.keys(carModelsDB).find(k => k.toLowerCase() === brand.toLowerCase());
+  return key ? carModelsDB[key] : [];
+}
+
+// All brands from CSV sorted
+export const csvBrands = Object.keys(carModelsDB)
+  .filter((b, i, arr) => arr.findIndex(k => k.toLowerCase() === b.toLowerCase()) === i)
+  .sort((a, b) => a.localeCompare(b));

@@ -1,0 +1,29 @@
+.detailed-search { min-height:70vh; }
+.detailed-search .ds-shell { max-width:1040px; margin-inline:auto; padding:32px 20px; }
+.detailed-search .ds-header { display:flex; flex-wrap:wrap; align-items:flex-start; justify-content:space-between; gap:16px; margin-bottom:26px; }
+.detailed-search .ds-title { font-size:26px; font-weight:700; line-height:1.25; margin-top:12px; }
+.detailed-search .ds-intro { max-width:650px; margin-top:9px; color:var(--listing-muted); font-size:14px; line-height:1.6; }
+.detailed-search .ds-card { background:var(--listing-card); border:1px solid var(--listing-border); border-radius:20px; overflow:hidden; margin-top:16px; }
+.detailed-search .ds-heading { display:flex; align-items:center; justify-content:space-between; gap:16px; width:100%; min-height:68px; padding:20px 24px; text-align:left; font-size:17px; font-weight:600; }
+.detailed-search .ds-heading > svg { flex-shrink:0; color:var(--listing-muted); }
+.detailed-search .ds-body { padding:0 24px 24px; }
+.detailed-search .ds-fields { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:22px 16px; }
+.detailed-search .lc-input { height:44px; border-radius:12px; }
+.detailed-search .lc-label { margin-bottom:9px; color:var(--listing-muted); }
+.detailed-search .ds-check { display:flex; align-items:center; gap:10px; min-height:44px; cursor:pointer; font-size:13px; }
+.detailed-search .lc-colors, .detailed-search .lc-equipment { margin-top:0; }
+.detailed-search .lc-colors > h4, .detailed-search .lc-equipment > h4 { display:none; }
+.detailed-search .ds-actions { display:flex; justify-content:flex-end; margin-top:24px; }
+.detailed-search .lc-next { width:280px; }
+@media(max-width:899px) { .detailed-search .ds-fields { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+@media(max-width:639px) {
+ .detailed-search .ds-shell { padding:24px 12px; }
+ .detailed-search .ds-header { gap:12px; margin-bottom:20px; }
+ .detailed-search .ds-title { font-size:24px; }
+ .detailed-search .ds-card { border-radius:18px; }
+ .detailed-search .ds-heading { min-height:62px; padding:18px 16px; font-size:16px; }
+ .detailed-search .ds-body { padding:0 16px 20px; }
+ .detailed-search .ds-fields { grid-template-columns:minmax(0,1fr); gap:18px; }
+ .detailed-search .lc-input { min-height:46px; font-size:16px; }
+ .detailed-search .lc-next { width:100%; min-height:48px; }
+}

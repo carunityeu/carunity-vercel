@@ -1,0 +1,8 @@
+const labels = {
+  ru: ['Балтийский рынок','Справедливая цена','Выгодная цена','Выше рынка','Средняя оценка по Балтии','выше','ниже','среднего на','Выгоднее','Дороже','Этот авто','Продавец здесь','Здесь дешевле на','Здесь дороже на','Цена рынка','Ориентировочная оценка по региональным коэффициентам, а не по актуальным предложениям рынка.'],
+  en: ['Baltic market','Fair price','Good price','Above market','Baltic average estimate','above','below','the average by','Better value','More expensive','This car','Seller here','Cheaper here by','More expensive here by','Market price','Indicative estimate using regional coefficients, not current market listings.'],
+  et: ['Balti turg','Õiglane hind','Soodne hind','Üle turuhinna','Baltikumi keskmine hinnang','üle','alla','keskmise võrra','Soodsam','Kallim','See auto','Müüja siin','Siin odavam','Siin kallim','Turuhind','Ligikaudne hinnang piirkondlike kordajate, mitte praeguste turupakkumiste põhjal.'],
+  lv: ['Baltijas tirgus','Taisnīga cena','Izdevīga cena','Virs tirgus cenas','Baltijas vidējais novērtējums','virs','zem','vidējā par','Izdevīgāk','Dārgāk','Šis auto','Pārdevējs šeit','Šeit lētāk par','Šeit dārgāk par','Tirgus cena','Aptuvens novērtējums pēc reģionālajiem koeficientiem, nevis aktuālajiem tirgus piedāvājumiem.'],
+  lt: ['Baltijos rinka','Teisinga kaina','Gera kaina','Virš rinkos kainos','Baltijos vidutinis įvertis','virš','žemiau','vidurkio per','Pigiau','Brangiau','Šis auto','Pardavėjas čia','Čia pigiau','Čia brangiau','Rinkos kaina','Orientacinis įvertis pagal regioninius koeficientus, o ne dabartinius rinkos pasiūlymus.']
+};
+export default function countryPriceLabels(lang) { return labels[lang?.split('-')[0]] || labels.en; }

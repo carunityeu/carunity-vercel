@@ -1,0 +1,13 @@
+.dealer-registration .da-pricing { background:var(--listing-info); color:var(--listing-info-text); }
+.dealer-registration .da-form .lc-content { padding-top:30px; padding-bottom:32px; }
+.dealer-registration #da-form-top { scroll-margin-top:200px; }
+.dealer-registration .da-description { min-height:100px; resize:vertical; border:1px solid var(--listing-border); border-radius:15px; background:var(--listing-field); color:var(--listing-text); padding:12px 16px; font-size:13px; }
+.dealer-registration .da-description:focus { outline:none; border-color:var(--listing-primary); box-shadow:none; }
+.dealer-registration fieldset:disabled { opacity:.65; }
+.dealer-registration .lc-next:disabled { opacity:.6; }
+@media(max-width:639px) {
+  .dealer-registration .lc-fields { grid-template-columns:minmax(0,1fr); }
+  .dealer-registration .lc-input { min-height:44px; font-size:16px; }
+  .dealer-registration .da-description { font-size:16px; }
+  .dealer-registration #da-form-top { scroll-margin-top:130px; }
+}

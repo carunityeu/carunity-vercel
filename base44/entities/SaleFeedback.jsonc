@@ -1,0 +1,88 @@
+{
+  "name": "SaleFeedback",
+  "type": "object",
+  "properties": {
+    "listing_id": {
+      "type": "string",
+      "description": "ID \u043e\u0431\u044a\u044f\u0432\u043b\u0435\u043d\u0438\u044f"
+    },
+    "listing_type": {
+      "type": "string",
+      "default": "car",
+      "description": "\u0422\u0438\u043f \u043e\u0431\u044a\u044f\u0432\u043b\u0435\u043d\u0438\u044f"
+    },
+    "listing_title": {
+      "type": "string",
+      "description": "\u041d\u0430\u0437\u0432\u0430\u043d\u0438\u0435 \u043e\u0431\u044a\u044f\u0432\u043b\u0435\u043d\u0438\u044f \u043d\u0430 \u043c\u043e\u043c\u0435\u043d\u0442 \u043e\u0442\u0432\u0435\u0442\u0430"
+    },
+    "seller_email": {
+      "type": "string",
+      "description": "Email \u043f\u0440\u043e\u0434\u0430\u0432\u0446\u0430"
+    },
+    "dealer_id": {
+      "type": "string",
+      "description": "ID \u0434\u0438\u043b\u0435\u0440\u0430 (\u0435\u0441\u043b\u0438 \u043f\u0440\u043e\u0434\u0430\u0432\u0435\u0446 \u2014 \u0434\u0438\u043b\u0435\u0440)"
+    },
+    "answer": {
+      "type": "string",
+      "enum": [
+        "sold",
+        "not_sold"
+      ],
+      "enumColors": [
+        "green",
+        "gray"
+      ],
+      "description": "\u041e\u0442\u0432\u0435\u0442 \u043f\u0440\u043e\u0434\u0430\u0432\u0446\u0430 \u043d\u0430 \u0432\u043e\u043f\u0440\u043e\u0441 \u00ab\u041c\u0430\u0448\u0438\u043d\u0430 \u043f\u0440\u043e\u0434\u0430\u043d\u0430?\u00bb"
+    },
+    "price": {
+      "type": "number",
+      "description": "\u0426\u0435\u043d\u0430 \u043e\u0431\u044a\u044f\u0432\u043b\u0435\u043d\u0438\u044f (EUR)"
+    },
+    "views": {
+      "type": "number",
+      "description": "\u041f\u0440\u043e\u0441\u043c\u043e\u0442\u0440\u044b \u043e\u0431\u044a\u044f\u0432\u043b\u0435\u043d\u0438\u044f \u043d\u0430 \u043c\u043e\u043c\u0435\u043d\u0442 \u043e\u0442\u0432\u0435\u0442\u0430"
+    },
+    "days_listed": {
+      "type": "number",
+      "description": "\u0421\u043a\u043e\u043b\u044c\u043a\u043e \u0434\u043d\u0435\u0439 \u043e\u0431\u044a\u044f\u0432\u043b\u0435\u043d\u0438\u0435 \u0431\u044b\u043b\u043e \u0430\u043a\u0442\u0438\u0432\u043d\u043e"
+    },
+    "responded_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "\u0414\u0430\u0442\u0430 \u043e\u0442\u0432\u0435\u0442\u0430"
+    }
+  },
+  "required": [
+    "listing_id",
+    "seller_email",
+    "answer"
+  ],
+  "rls": {
+    "create": {
+      "created_by_id": "{{user.id}}"
+    },
+    "read": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

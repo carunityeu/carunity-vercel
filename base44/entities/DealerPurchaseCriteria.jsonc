@@ -1,0 +1,75 @@
+{
+  "name": "DealerPurchaseCriteria",
+  "type": "object",
+  "properties": {
+    "dealer_id": {
+      "type": "string",
+      "description": "ID \u0434\u0438\u043b\u0435\u0440\u0430"
+    },
+    "dealer_email": {
+      "type": "string",
+      "description": "Email \u0434\u0438\u043b\u0435\u0440\u0430"
+    },
+    "dealer_name": {
+      "type": "string",
+      "description": "\u041d\u0430\u0437\u0432\u0430\u043d\u0438\u0435 \u0434\u0438\u043b\u0435\u0440\u0430"
+    },
+    "enabled": {
+      "type": "boolean",
+      "default": false,
+      "description": "\u0410\u043a\u0442\u0438\u0432\u043d\u044b \u043b\u0438 \u043a\u0440\u0438\u0442\u0435\u0440\u0438\u0438 \u043f\u043e\u043a\u0443\u043f\u043a\u0438"
+    },
+    "brands": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "\u0418\u043d\u0442\u0435\u0440\u0435\u0441\u0443\u044e\u0449\u0438\u0435 \u043c\u0430\u0440\u043a\u0438"
+    },
+    "body_types": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "\u0418\u043d\u0442\u0435\u0440\u0435\u0441\u0443\u044e\u0449\u0438\u0435 \u0442\u0438\u043f\u044b \u043a\u0443\u0437\u043e\u0432\u0430"
+    },
+    "fuel_types": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "\u0418\u043d\u0442\u0435\u0440\u0435\u0441\u0443\u044e\u0449\u0438\u0435 \u0442\u0438\u043f\u044b \u0442\u043e\u043f\u043b\u0438\u0432\u0430"
+    },
+    "price_min": {
+      "type": "number",
+      "description": "\u041c\u0438\u043d\u0438\u043c\u0430\u043b\u044c\u043d\u0430\u044f \u0446\u0435\u043d\u0430 EUR"
+    },
+    "price_max": {
+      "type": "number",
+      "description": "\u041c\u0430\u043a\u0441\u0438\u043c\u0430\u043b\u044c\u043d\u0430\u044f \u0446\u0435\u043d\u0430 EUR"
+    },
+    "year_min": {
+      "type": "number",
+      "description": "\u041c\u0438\u043d\u0438\u043c\u0430\u043b\u044c\u043d\u044b\u0439 \u0433\u043e\u0434 \u0432\u044b\u043f\u0443\u0441\u043a\u0430"
+    },
+    "year_max": {
+      "type": "number",
+      "description": "\u041c\u0430\u043a\u0441\u0438\u043c\u0430\u043b\u044c\u043d\u044b\u0439 \u0433\u043e\u0434 \u0432\u044b\u043f\u0443\u0441\u043a\u0430"
+    },
+    "mileage_max": {
+      "type": "number",
+      "description": "\u041c\u0430\u043a\u0441\u0438\u043c\u0430\u043b\u044c\u043d\u044b\u0439 \u043f\u0440\u043e\u0431\u0435\u0433 \u043a\u043c"
+    },
+    "countries": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "\u0421\u0442\u0440\u0430\u043d\u044b, \u0438\u0437 \u043a\u043e\u0442\u043e\u0440\u044b\u0445 \u0433\u043e\u0442\u043e\u0432 \u043f\u043e\u043a\u0443\u043f\u0430\u0442\u044c"
+    }
+  },
+  "required": [
+    "dealer_id",
+    "dealer_email"
+  ]
+}

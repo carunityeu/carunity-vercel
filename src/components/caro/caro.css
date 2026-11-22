@@ -1,0 +1,36 @@
+.caro-brand { display:inline-flex; align-items:center; gap:8px; color:var(--caro-ink); font-size:36px; font-weight:800; letter-spacing:-.04em; line-height:1.1; }
+.caro-brand > svg { color:var(--caro-spark); width:27px; height:27px; }
+.caro-ai { background:var(--caro-badge); color:var(--caro-ink); border-radius:6px; padding:4px 6px; font-size:12px; letter-spacing:0; }
+.caro-banner { display:flex; align-items:center; justify-content:space-between; gap:24px; padding:22px 26px; border-radius:18px; background:linear-gradient(110deg,var(--caro-banner-start),var(--caro-banner-end)); color:var(--caro-ink); }
+.caro-banner p { margin-top:8px; font-size:14px; line-height:1.5; }
+.caro-cta { display:inline-flex; justify-content:center; align-items:center; gap:10px; min-height:46px; padding:12px 20px; border-radius:9px; font-weight:600; font-size:14px; background:var(--caro-action); color:var(--caro-ink); flex-shrink:0; }
+.caro-cta:hover { filter:brightness(1.15); }
+.caro-page { height:calc(100dvh - var(--caro-header-height, 120px)); min-height:480px; display:flex; flex-direction:column; background:hsl(var(--card)); color:hsl(var(--foreground)); }
+.caro-top { display:flex; align-items:flex-start; justify-content:space-between; gap:18px; padding:18px 24px; flex-shrink:0; }
+.caro-disclaimer { max-width:590px; margin:0 auto; text-align:center; font-size:12px; line-height:1.7; color:hsl(var(--muted-foreground)); }
+.caro-new { display:inline-flex; align-items:center; justify-content:center; gap:8px; min-height:42px; padding:10px 14px; border:1px solid hsl(var(--border)); border-radius:10px; background:hsl(var(--secondary)); font-size:13px; white-space:nowrap; }
+.caro-scroll { flex:1; min-height:0; overflow-y:auto; overscroll-behavior:contain; }
+.caro-thread { width:100%; max-width:1000px; margin:auto; padding:24px; }
+.caro-welcome { padding:34px 16px; text-align:center; }
+.caro-welcome h1 { font-size:34px; font-weight:600; line-height:1.2; margin-bottom:6px; }
+.caro-welcome .caro-brand { font-size:46px; }
+.caro-welcome p { margin-top:18px; color:hsl(var(--muted-foreground)); font-size:15px; }
+.caro-message { margin:0 0 26px; min-width:0; }
+.caro-user { margin-left:auto; width:fit-content; max-width:85%; background:hsl(var(--background)); border:1px solid hsl(var(--border)); border-radius:18px 18px 4px 18px; padding:12px 18px; white-space:pre-wrap; overflow-wrap:anywhere; }
+.caro-answer { font-size:15px; line-height:1.75; overflow-wrap:anywhere; }
+.caro-answer p + p { margin-top:12px; }
+.caro-answer ul, .caro-answer ol { padding-left:22px; list-style:revert; }
+.caro-answer a { text-decoration:underline; }
+.caro-results { display:flex; flex-direction:column; gap:12px; margin-top:18px; }
+.caro-status { display:flex; align-items:center; gap:8px; margin-top:10px; font-size:12px; color:hsl(var(--muted-foreground)); }
+.caro-bottom { padding:14px 24px max(12px, env(safe-area-inset-bottom)); background:hsl(var(--card)); flex-shrink:0; }
+.caro-composer { max-width:760px; margin:auto; display:flex; align-items:flex-end; gap:8px; background:hsl(var(--background)); border:1px solid hsl(var(--border)); border-radius:16px; padding:10px; }
+.caro-composer:focus-within { border-color:var(--caro-spark); }
+.caro-composer textarea { background:transparent; border:0; outline:none; box-shadow:none; resize:none; flex:1; min-width:0; height:48px; max-height:130px; padding:12px; font-size:16px; color:hsl(var(--foreground)); }
+.caro-composer button { min-width:46px; min-height:46px; display:flex; align-items:center; justify-content:center; color:var(--caro-spark); border-radius:10px; }
+.caro-composer button:disabled { opacity:.4; cursor:not-allowed; }
+.caro-links { display:flex; justify-content:center; flex-wrap:wrap; gap:12px 20px; font-size:12px; color:hsl(var(--muted-foreground)); margin-top:10px; }
+.caro-error { max-width:760px; margin:0 auto 10px; display:flex; justify-content:space-between; align-items:center; gap:12px; font-size:13px; color:hsl(var(--foreground)); }
+.caro-error button { text-decoration:underline; min-height:40px; }
+@media (max-width:767px) { .caro-top { padding:14px 16px; flex-wrap:wrap; gap:10px; } .caro-disclaimer { order:3; flex-basis:100%; } .caro-thread { padding:20px 12px; } .caro-bottom { padding-left:12px; padding-right:12px; } .caro-welcome { padding-top:26px; } }
+@media (max-width:639px) { .caro-page { min-height:320px; } .caro-banner { padding:22px 20px; align-items:stretch; flex-direction:column; gap:18px; } .caro-brand { font-size:32px; } .caro-cta { width:100%; } .caro-welcome h1 { font-size:28px; } .caro-welcome .caro-brand { font-size:40px; } .caro-disclaimer { font-size:11px; } }
