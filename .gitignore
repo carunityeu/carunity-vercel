@@ -29,3 +29,6 @@ dist-ssr
 
 .env
 base44/.app.jsonc
+
+# Exported production data (personal data)
+migration-data/

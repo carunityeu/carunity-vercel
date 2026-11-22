@@ -111,6 +111,7 @@ out.push('');
 
 const files = fs.readdirSync(entitiesDir).filter((f) => f.endsWith('.jsonc')).sort();
 const seen = new Set();
+const columnMap = {}; // { Entity: { table, columns: { name: type } } } for the data importer
 for (const file of files) {
   const entity = JSON.parse(stripComments(fs.readFileSync(path.join(entitiesDir, file), 'utf8')));
   const table = TABLES[entity.name];
@@ -147,6 +148,13 @@ for (const file of files) {
     if (c) comments.push(`comment on column public.${table}.${name} is ${q(c)};`);
   }
 
+  columnMap[entity.name] = {
+    table,
+    columns: Object.fromEntries(columns.map((c) => {
+      const [name, ...rest] = c.split(' ');
+      return [name, rest.join(' ').match(/^(double precision|text\[\]|\w+)/)[1]];
+    })),
+  };
   out.push(`-- ${entity.name}`);
   out.push(`create table public.${table} (\n  ${columns.join(',\n  ')}\n);`);
   out.push(`comment on table public.${table} is ${q(`Base44 entity ${entity.name}`)};`);
@@ -165,4 +173,6 @@ if (missing.length) throw new Error(`Entities in TABLES without a definition: ${
 
 fs.mkdirSync(path.dirname(outFile), { recursive: true });
 fs.writeFileSync(outFile, out.join('\n'));
-console.log(`Wrote ${path.relative(root, outFile)}: ${files.length} tables`);
+const mapFile = path.join(root, 'supabase/schema-columns.json');
+fs.writeFileSync(mapFile, JSON.stringify(columnMap, null, 2) + '\n');
+console.log(`Wrote ${path.relative(root, outFile)}: ${files.length} tables, and ${path.relative(root, mapFile)}`);

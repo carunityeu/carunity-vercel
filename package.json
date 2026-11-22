@@ -11,7 +11,8 @@
     "typecheck": "tsc -p ./jsconfig.json",
     "preview": "vite preview",
     "db:schema": "node scripts/generate-schema.mjs",
-    "db:test": "node supabase/tests/rls-test.mjs"
+    "db:test": "node supabase/tests/rls-test.mjs",
+    "db:import": "node scripts/import-base44.mjs"
   },
   "dependencies": {
     "@base44/sdk": "^0.8.63",
