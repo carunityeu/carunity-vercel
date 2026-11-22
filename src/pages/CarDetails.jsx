@@ -3,6 +3,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
+import { entities, db } from '@/api/entities';
 import { useAuth } from '@/lib/AuthContext';
 import { redirectToAccount } from '@/components/auth/requireAccount';
 import { Button } from '@/components/ui/button';
@@ -65,10 +66,10 @@ export default function CarDetails() {
     queryFn: async () => {
       try {
         if (shortId) {
-          const cars = await base44.entities.Car.filter({ short_id: Number(shortId) });
+          const cars = await entities.Car.filter({ short_id: Number(shortId) });
           return cars[0] || null;
         }
-        return await base44.entities.Car.get(carId);
+        return await entities.Car.get(carId);
       } catch (error) {
         if (error.status === 404 || error.response?.status === 404) return null;
         throw error;
@@ -90,7 +91,7 @@ export default function CarDetails() {
     return () => meta.remove();
   }, [isLoading, isError, car]);
 
-  useEffect(() => base44.entities.Car.subscribe(event => {
+  useEffect(() => entities.Car.subscribe(event => {
     if (event.id !== carId) return;
     if (event.type === 'delete') {
       queryClient.setQueryData(['car', urlParams.get('id'), shortId], null);
@@ -124,7 +125,7 @@ export default function CarDetails() {
     queryKey: ['dealer', car?.dealer_id],
     queryFn: async () => {
       if (!car?.dealer_id) return null;
-      const dealers = await base44.entities.Dealer.filter({ id: car.dealer_id });
+      const dealers = await entities.Dealer.filter({ id: car.dealer_id });
       return dealers[0] || null;
     },
     enabled: !!car?.dealer_id,
@@ -159,7 +160,7 @@ export default function CarDetails() {
     viewIncremented.current = true;
     const prev = JSON.parse(localStorage.getItem('recentlyViewed') || '[]');
     localStorage.setItem('recentlyViewed', JSON.stringify([carId, ...prev.filter((id) => id !== carId)].slice(0, 10)));
-    base44.entities.Car.update(carId, { views_count: (car.views_count || 0) + 1 }).catch(() => {});
+    db.supabase.rpc('increment_listing_views', { p_table: 'cars', p_id: carId }).then(() => {}, () => {});
   }, [carId, car]);
 
   // Add to view history — runs once when user is available
@@ -176,7 +177,7 @@ export default function CarDetails() {
     queryKey: ['similarCars', car?.brand],
     queryFn: async () => {
       if (!car) return [];
-      const cars = await base44.entities.Car.filter({ brand: car.brand, status: 'active' }, '-created_date', 4);
+      const cars = await entities.Car.filter({ brand: car.brand, status: 'active' }, '-created_date', 4);
       return cars.filter((c) => c.id !== carId);
     },
     enabled: !!car,
@@ -198,7 +199,7 @@ export default function CarDetails() {
 
   const handleSendMessage = async () => {
     if (isClosed || requireLogin()) return;
-    const available = await base44.entities.Car.filter({ id: carId, status: 'active' }, '-created_date', 1);
+    const available = await entities.Car.filter({ id: carId, status: 'active' }, '-created_date', 1);
     if (!available.length) {
       setShowContactForm(false);
       queryClient.invalidateQueries({ queryKey: ['car'] });

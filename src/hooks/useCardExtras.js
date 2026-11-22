@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
+import { entities } from '@/api/entities';
 
 /**
  * Extra tile data for a page of listings: the price rating (how expensive the car
@@ -38,7 +39,7 @@ export default function useCardExtras(cars = []) {
     enabled: ids.length > 0,
     staleTime: 5 * 60 * 1000,
     queryFn: async () => {
-      const found = await base44.entities.ListingPromotion.filter({
+      const found = await entities.ListingPromotion.filter({
         listing_id: { $in: ids },
         status: 'active'
       });

@@ -2,7 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { getCarDetailsPath } from '@/lib/shortIdUtils';
-import { base44 } from '@/api/base44Client';
+import { entities } from '@/api/entities';
 import { useQuery } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -177,7 +177,7 @@ export default function Home() {
 
   const { data: brandCars = [] } = useQuery({
     queryKey: ['brandCarsForCount', searchBrands[0]],
-    queryFn: () => base44.entities.Car.filter({ status: 'active', brand: searchBrands[0] }, '-created_date', 100),
+    queryFn: () => entities.Car.filter({ status: 'active', brand: searchBrands[0] }, '-created_date', 100),
     enabled: searchBrands.length > 0,
     staleTime: 10 * 60 * 1000
   });
@@ -199,7 +199,7 @@ export default function Home() {
   // Single merged query for home car listings — replaces 3 separate queries (promotedCars 60, dealerCarsHero 5, latestCars 80)
   const { data: activeCars = [], isLoading: loadingLatest } = useQuery({
     queryKey: ['homeActiveCars'],
-    queryFn: () => base44.entities.Car.filter({ status: 'active' }, '-created_date', 80),
+    queryFn: () => entities.Car.filter({ status: 'active' }, '-created_date', 80),
     staleTime: 5 * 60 * 1000
   });
 
@@ -207,7 +207,7 @@ export default function Home() {
 
   const { data: landingTopCar, isLoading: loadingTopCar } = useQuery({
     queryKey: ['homeTopCar', '6acc10916a11ff189c3417cc'],
-    queryFn: () => base44.entities.Car.get('6acc10916a11ff189c3417cc'),
+    queryFn: () => entities.Car.get('6acc10916a11ff189c3417cc'),
     staleTime: 5 * 60 * 1000
   });
 

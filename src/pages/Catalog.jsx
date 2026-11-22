@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation } from 'react-router-dom';
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
-import { base44 } from '@/api/base44Client';
+import { entities } from '@/api/entities';
 import useSearchSaveToggle from '@/hooks/useSearchSaveToggle';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -82,13 +82,13 @@ export default function Catalog() {
     queryKey: ['cars', carQuery, sortBy],
     initialPageParam: null,
     staleTime: 60 * 1000,
-    queryFn: ({ pageParam }) => base44.entities.Car.filter(carQuery, { sort: sortBy, limit: PAGE_SIZE, ...(pageParam ? { cursor: pageParam } : {}) }),
+    queryFn: ({ pageParam }) => entities.Car.filter(carQuery, { sort: sortBy, limit: PAGE_SIZE, ...(pageParam ? { cursor: pageParam } : {}) }),
     getNextPageParam: lastPage => lastPage.has_more ? lastPage.next_cursor : undefined,
   });
   const cars = data?.pages.flatMap(result => result.items) || [];
   const { data: totalCount = 0 } = useQuery({
     queryKey: ['catalogCount', carQuery],
-    queryFn: () => base44.entities.Car.count(carQuery),
+    queryFn: () => entities.Car.count(carQuery),
     staleTime: 60 * 1000,
   });
   const { data: modelCounts = {} } = useQuery({
@@ -96,7 +96,7 @@ export default function Catalog() {
     enabled: !!filters.brand,
     staleTime: 60 * 1000,
     queryFn: async () => {
-      const result = await base44.entities.Car.aggregate({ query: carQuery, groupBy: 'model', limit: 1000 });
+      const result = await entities.Car.aggregate({ query: carQuery, groupBy: 'model', limit: 1000 });
       return Object.fromEntries(result.rows.map(row => [row.model, row.count]));
     },
   });
@@ -152,7 +152,7 @@ export default function Catalog() {
     enabled: dealerIds.length > 0,
     staleTime: 5 * 60 * 1000,
     queryFn: async () => {
-      const list = await base44.entities.Dealer.filter({ id: { $in: dealerIds } });
+      const list = await entities.Dealer.filter({ id: { $in: dealerIds } });
       return Object.fromEntries(list.map((d) => [d.id, d]));
     }
   });
