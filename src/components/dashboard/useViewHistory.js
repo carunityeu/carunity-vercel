@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { base44 } from '@/api/base44Client';
+import { entities } from '@/api/entities';
 
 export default function useViewHistory(user) {
   const [cursors, setCursors] = useState([null]);
@@ -9,12 +9,12 @@ export default function useViewHistory(user) {
   const history = useQuery({
     queryKey: ['viewHistory', user.email, before],
     queryFn: async () => {
-      const result = await base44.entities.ViewHistory.aggregate({
+      const result = await entities.ViewHistory.aggregate({
         query, groupBy: 'car_id', max: 'viewed_at', sort: '-max_viewed_at', limit: 6,
         ...(before ? { having: { max_viewed_at: { $lt: before } } } : {})
       });
       const ids = result.rows.map(row => row.car_id);
-      const page = ids.length ? await base44.entities.Car.filter({ id: { $in: ids }, status: 'active' }, { limit: 6 }) : { items: [] };
+      const page = ids.length ? await entities.Car.filter({ id: { $in: ids }, status: 'active' }, { limit: 6 }) : { items: [] };
       const byId = Object.fromEntries(page.items.map(car => [car.id, car]));
       return { rows: result.rows.map(row => ({ ...row, car: byId[row.car_id] })), hasMore: result.truncated };
     }
@@ -22,7 +22,7 @@ export default function useViewHistory(user) {
   const count = useQuery({
     queryKey: ['viewHistory', user.email, 'count'],
     queryFn: async () => {
-      const result = await base44.entities.ViewHistory.aggregate({ query, countDistinct: 'car_id' });
+      const result = await entities.ViewHistory.aggregate({ query, countDistinct: 'car_id' });
       return result.rows[0]?.countDistinct_car_id ?? result.rows[0]?.count_distinct_car_id ?? 0;
     }
   });

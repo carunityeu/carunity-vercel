@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
+import { entities } from '@/api/entities';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -60,8 +61,8 @@ export default function AccountSettingsPanel({ user, onUserUpdate, locale }) {
     queryFn: async () => {
       const norm = (res) => (Array.isArray(res) ? res : (res?.items || []));
       const [promotions, metaAds] = await Promise.all([
-        base44.entities.ListingPromotion.filter({ seller_email: user.email }, '-purchased_at', 20),
-        base44.entities.MetaAdsOrder.filter({ seller_email: user.email }, '-created_date', 20)
+        entities.ListingPromotion.filter({ seller_email: user.email }, '-purchased_at', 20),
+        entities.MetaAdsOrder.filter({ seller_email: user.email }, '-created_date', 20)
       ]);
       const list = [
         ...norm(promotions).map((item) => ({

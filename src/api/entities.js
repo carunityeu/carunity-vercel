@@ -77,12 +77,45 @@ function makeEntity(name) {
     async delete(id) {
       await run(supabase.from(table).delete().eq('id', id));
     },
-    // Live updates are not wired up yet; pages still work, they just do not refresh by themselves.
-    subscribe() {
-      return () => {};
+    bulkCreate(records) {
+      return run(supabase.from(table).insert(records).select());
     },
+    // updateMany(query, { $set: {...} }) — the only update operator the site uses.
+    async updateMany(query, change) {
+      const values = change?.$set || change;
+      let q = supabase.from(table).update(values);
+      const filters = toFilters(query || {}, columns);
+      if (!filters.length) throw new Error('updateMany without a filter');
+      for (const expr of filters) q = q.or(expr);
+      await run(q);
+    },
+    async deleteMany(query) {
+      let q = supabase.from(table).delete();
+      const filters = toFilters(query || {}, columns);
+      if (!filters.length) throw new Error('deleteMany without a filter');
+      for (const expr of filters) q = q.or(expr);
+      await run(q);
+    },
+    // Live changes, in Base44's event shape: { type: 'create' | 'update' | 'delete', id, data }.
+    // Rows arrive only for tables in the supabase_realtime publication, filtered by RLS.
+    subscribe(callback) {
+      const channel = supabase
+        .channel(`${table}-${Math.random().toString(36).slice(2)}`)
+        .on('postgres_changes', { event: '*', schema: 'public', table }, (payload) => {
+          const type = { INSERT: 'create', UPDATE: 'update', DELETE: 'delete' }[payload.eventType];
+          const data = payload.eventType === 'DELETE' ? payload.old : payload.new;
+          callback({ type, id: data?.id, data });
+        })
+        .subscribe();
+      return () => { supabase.removeChannel(channel); };
+    },
+    table,
   };
 }
+
+// Counts a listing view on the server (owners cannot set views_count themselves).
+export const countView = (entityName, id) =>
+  supabase.rpc('increment_listing_views', { p_table: schema[entityName]?.table, p_id: id }).then(() => {}, () => {});
 
 const cache = {};
 export const entities = new Proxy({}, {

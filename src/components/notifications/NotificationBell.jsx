@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { base44 } from '@/api/base44Client';
+import { entities } from '@/api/entities';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Bell, Heart, Search, Zap, ZapOff, MessageSquare, Tag, CheckCheck, TrendingDown } from 'lucide-react';
@@ -36,7 +36,7 @@ export default function NotificationBell({ userEmail }) {
 
   const { data: notifications = [] } = useQuery({
     queryKey: ['notifications', userEmail],
-    queryFn: () => base44.entities.Notification.filter({ user_email: userEmail }, '-created_date', 20),
+    queryFn: () => entities.Notification.filter({ user_email: userEmail }, '-created_date', 20),
     enabled: !!userEmail,
     refetchInterval: 30000,
   });
@@ -46,14 +46,14 @@ export default function NotificationBell({ userEmail }) {
   const markAllRead = useMutation({
     mutationFn: async () => {
       const unread = notifications.filter(n => !n.is_read);
-      await Promise.all(unread.map(n => base44.entities.Notification.update(n.id, { is_read: true })));
+      await Promise.all(unread.map(n => entities.Notification.update(n.id, { is_read: true })));
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['notifications', userEmail] }),
   });
 
   const markOneRead = async (notification) => {
     if (!notification.is_read) {
-      await base44.entities.Notification.update(notification.id, { is_read: true });
+      await entities.Notification.update(notification.id, { is_read: true });
       queryClient.invalidateQueries({ queryKey: ['notifications', userEmail] });
     }
     const link = notification.link || (notification.car_id ? `/CarDetails?id=${notification.car_id}` : '/Notifications');

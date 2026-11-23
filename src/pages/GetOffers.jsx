@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { base44 } from '@/api/base44Client';
+import { entities } from '@/api/entities';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
@@ -58,7 +58,7 @@ export default function GetOffers() {
   // Load cars with get_offers tag
   const { data: allCars = [], isLoading } = useQuery({
     queryKey: ['getOffersCars'],
-    queryFn: () => base44.entities.Car.filter({ status: 'active' }, '-created_date', 200),
+    queryFn: () => entities.Car.filter({ status: 'active' }, '-created_date', 200),
   });
 
   const cars = allCars.filter(c =>
@@ -79,7 +79,7 @@ export default function GetOffers() {
   // Offers (for logged-in users)
   const { data: offers = [] } = useQuery({
     queryKey: ['myTradeInOffers', user?.email],
-    queryFn: () => base44.entities.TradeInOffer.filter({ seller_email: user.email }, '-created_date'),
+    queryFn: () => entities.TradeInOffer.filter({ seller_email: user.email }, '-created_date'),
     enabled: !!user
   });
 
@@ -92,7 +92,7 @@ export default function GetOffers() {
 
   const submitResponse = async () => {
     const statusMap = { accept: 'accepted', reject: 'rejected', info: 'more_info_requested' };
-    await base44.entities.TradeInOffer.update(selectedOffer.id, {
+    await entities.TradeInOffer.update(selectedOffer.id, {
       status: statusMap[respondAction],
       seller_response: responseText
     });

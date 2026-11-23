@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { base44 } from '@/api/base44Client';
+import { entities } from '@/api/entities';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 
@@ -12,9 +12,9 @@ export default function SaleCheckPrompt({ car, sellerEmail, daysLeft, onAnswered
     setSaving(answer);
     try {
       if (answer === 'sold') {
-        await base44.entities.Car.update(car.id, { status: 'sold' });
+        await entities.Car.update(car.id, { status: 'sold' });
       }
-      await base44.entities.SaleFeedback.create({
+      await entities.SaleFeedback.create({
         listing_id: car.id,
         listing_type: 'car',
         listing_title: `${car.brand || ''} ${car.model || ''} ${car.year || ''}`.trim(),

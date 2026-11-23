@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
+import { entities } from '@/api/entities';
 import { redirectToAccount } from '@/components/auth/requireAccount';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -56,7 +57,7 @@ export default function DealerProfile() {
   const { data: dealer, isLoading } = useQuery({
     queryKey: ['dealer', dealerId],
     queryFn: async () => {
-      const dealers = await base44.entities.Dealer.filter({ id: dealerId });
+      const dealers = await entities.Dealer.filter({ id: dealerId });
       return dealers[0] || null;
     },
     enabled: !!dealerId
@@ -64,19 +65,19 @@ export default function DealerProfile() {
 
   const { data: cars = [] } = useQuery({
     queryKey: ['dealerCars', dealerId],
-    queryFn: () => base44.entities.Car.filter({ dealer_id: dealerId, status: 'active' }, '-created_date'),
+    queryFn: () => entities.Car.filter({ dealer_id: dealerId, status: 'active' }, '-created_date'),
     enabled: !!dealerId
   });
 
   const { data: reviews = [] } = useQuery({
     queryKey: ['dealerReviews', dealerId],
-    queryFn: () => base44.entities.Review.filter({ dealer_id: dealerId }, '-created_date'),
+    queryFn: () => entities.Review.filter({ dealer_id: dealerId }, '-created_date'),
     enabled: !!dealerId
   });
 
   const handleSubmitReview = async () => {
     if (!user) { redirectToAccount(); return; }
-    await base44.entities.Review.create({
+    await entities.Review.create({
       author_email: user.email,
       dealer_id: dealerId,
       rating: reviewRating,

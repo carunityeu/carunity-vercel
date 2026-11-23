@@ -6,6 +6,7 @@ import '@/components/messages/messages.css';
 import { createPageUrl } from '@/utils';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
+import { entities } from '@/api/entities';
 import { Button } from '@/components/ui/button';
 
 import {
@@ -90,8 +91,8 @@ export default function Messages() {
     if (!user) return;
     const load = async () => {
       const [sent, received] = await Promise.all([
-        base44.entities.Message.filter({ sender_email: user.email }, '-created_date'),
-        base44.entities.Message.filter({ receiver_email: user.email }, '-created_date')
+        entities.Message.filter({ sender_email: user.email }, '-created_date'),
+        entities.Message.filter({ receiver_email: user.email }, '-created_date')
       ]);
       const all = [...sent, ...received];
       const unique = [...new Map(all.map(m => [m.id, m])).values()];
@@ -103,7 +104,7 @@ export default function Messages() {
   // Real-time subscription
   useEffect(() => {
     if (!user) return;
-    const unsub = base44.entities.Message.subscribe((event) => {
+    const unsub = entities.Message.subscribe((event) => {
       const msg = event.data;
       if (event.type === 'create') {
         if (msg.sender_email === user.email || msg.receiver_email === user.email) {
@@ -170,7 +171,7 @@ export default function Messages() {
     queryFn: async () => {
       const carIds = [...new Set(chats.map(c => c.carId).filter(Boolean))];
       if (!carIds.length) return {};
-      const allCars = await base44.entities.Car.list('-created_date', 100);
+      const allCars = await entities.Car.list('-created_date', 100);
       const map = {};
       allCars.forEach(car => { if (carIds.includes(car.id)) map[car.id] = car; });
       return map;
@@ -180,7 +181,7 @@ export default function Messages() {
 
   const { data: chatOffers = [], refetch: refetchOffers } = useQuery({
     queryKey: ['chatOffers', selectedChatId],
-    queryFn: () => base44.entities.PriceOffer.filter({ car_id: selectedChat.carId }),
+    queryFn: () => entities.PriceOffer.filter({ car_id: selectedChat.carId }),
     enabled: !!selectedChat?.carId
   });
 
@@ -189,7 +190,7 @@ export default function Messages() {
     inputRef.current?.focus();
     const unread = chat.messages.filter(m => m.receiver_email === user.email && !m.is_read);
     for (const msg of unread) {
-      await base44.entities.Message.update(msg.id, { is_read: true });
+      await entities.Message.update(msg.id, { is_read: true });
     }
   };
 
@@ -199,7 +200,7 @@ export default function Messages() {
     setNewMessage('');
     setIsSending(true);
     try {
-      await base44.entities.Message.create({
+      await entities.Message.create({
         chat_id: selectedChat.id,
         sender_email: user.email,
         receiver_email: selectedChat.otherUser,
@@ -245,9 +246,9 @@ export default function Messages() {
     const amount = parseInt(msg.content.replace('__OFFER__:', ''));
     const offer = chatOffers.find(o => o.buyer_email === msg.sender_email && o.status === 'pending');
     if (offer) {
-      await base44.entities.PriceOffer.update(offer.id, { status: action === 'accept' ? 'accepted' : 'rejected' });
+      await entities.PriceOffer.update(offer.id, { status: action === 'accept' ? 'accepted' : 'rejected' });
     }
-    await base44.entities.Message.create({
+    await entities.Message.create({
       chat_id: selectedChat.id,
       sender_email: user.email,
       receiver_email: selectedChat.otherUser,
@@ -335,7 +336,7 @@ export default function Messages() {
     }
 
     const handleReport = async () => {
-      await base44.entities.Report.create({
+      await entities.Report.create({
         reporter_email: user.email, target_type: 'user', target_id: msg.sender_email,
         reason: 'inappropriate', description: `Report on message: "${msg.content.slice(0, 100)}"`
       });

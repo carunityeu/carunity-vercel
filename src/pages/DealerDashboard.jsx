@@ -4,6 +4,7 @@ import { createPageUrl } from '@/utils';
 import { getCarDetailsPath } from '@/lib/shortIdUtils';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
+import { entities } from '@/api/entities';
 import { Button } from '@/components/ui/button';
 import ListPagination from '@/components/ui/ListPagination';
 import { Input } from '@/components/ui/input';
@@ -80,11 +81,11 @@ export default function DealerDashboard() {
 
   const markViewDeclineAsRead = async (carId) => {
     try {
-      const notifs = await base44.entities.Notification.filter({
+      const notifs = await entities.Notification.filter({
         user_email: dealer?.email, type: 'view_decline', car_id: carId, is_read: false,
       });
       for (const n of notifs) {
-        await base44.entities.Notification.update(n.id, { is_read: true });
+        await entities.Notification.update(n.id, { is_read: true });
       }
       queryClient.invalidateQueries(['viewDeclineNotifs', dealer?.email]);
     } catch (e) { console.error('markViewDeclineAsRead error:', e); }
@@ -126,12 +127,12 @@ export default function DealerDashboard() {
       const impersonateEmail = impersonated?.type === 'dealer' ? impersonated.email : null;
       if (impersonateEmail) setImpersonating(true);
       const dealerEmail = impersonateEmail || userData.email;
-      const { items: requests } = await base44.entities.DealerApplication.filter({ applicant_email: dealerEmail }, { sort: '-created_date', limit: 1, fields: ['status'] });
+      const { items: requests } = await entities.DealerApplication.filter({ applicant_email: dealerEmail }, { sort: '-created_date', limit: 1, fields: ['status'] });
       if (requests[0] && requests[0].status !== 'approved') { navigate('/DealerRegister?apply=1', { replace: true }); return; }
       const impersonatedDealer = impersonated?.type === 'dealer' && impersonated.id
-        ? await base44.entities.Dealer.get(impersonated.id).catch(() => null)
+        ? await entities.Dealer.get(impersonated.id).catch(() => null)
         : null;
-      const dealers = impersonatedDealer ? [impersonatedDealer] : await base44.entities.Dealer.filter({ owner_email: dealerEmail });
+      const dealers = impersonatedDealer ? [impersonatedDealer] : await entities.Dealer.filter({ owner_email: dealerEmail });
       // Private accounts have no dealer panel at all
       if (dealers.length === 0 && userData.user_type !== 'dealer' && !impersonateEmail) {
         navigate(createPageUrl('Dashboard'), { replace: true });
@@ -172,7 +173,7 @@ export default function DealerDashboard() {
 
   const { data: dealerCars = [], isLoading: loadingCars } = useQuery({
     queryKey: ['dealerOwnCars', dealer?.id],
-    queryFn: () => base44.entities.Car.filter({ dealer_id: dealer.id, seller_type: 'dealer' }, '-created_date', 200),
+    queryFn: () => entities.Car.filter({ dealer_id: dealer.id, seller_type: 'dealer' }, '-created_date', 200),
     enabled: !!dealer?.id
   });
 
@@ -183,24 +184,24 @@ export default function DealerDashboard() {
 
   const { data: dealerReviews = [] } = useQuery({
     queryKey: ['dealerReviews', dealer?.id],
-    queryFn: () => base44.entities.Review.filter({ dealer_id: dealer.id }, '-created_date', 50),
+    queryFn: () => entities.Review.filter({ dealer_id: dealer.id }, '-created_date', 50),
     enabled: !!dealer?.id
   });
 
   const { data: dealerMessages = [] } = useQuery({
     queryKey: ['dealerMessages', dealer?.email],
-    queryFn: () => base44.entities.Message.filter({ receiver_email: dealer.email }, '-created_date', 50),
+    queryFn: () => entities.Message.filter({ receiver_email: dealer.email }, '-created_date', 50),
     enabled: !!dealer?.email
   });
 
   const { data: priceOffers = [] } = useQuery({
     queryKey: ['dealerOffers', dealer?.email],
-    queryFn: () => base44.entities.PriceOffer.filter({ seller_email: dealer.email }, '-created_date', 50),
+    queryFn: () => entities.PriceOffer.filter({ seller_email: dealer.email }, '-created_date', 50),
     enabled: !!dealer?.email
   });
 
   const deleteCar = useMutation({
-    mutationFn: (id) => base44.entities.Car.delete(id),
+    mutationFn: (id) => entities.Car.delete(id),
     onSuccess: () => { queryClient.invalidateQueries(['dealerOwnCars']); toast.success(t('dealer.listing_deleted')); }
   });
 
@@ -252,7 +253,7 @@ ${profileForm.description}`,
         }
       }
 
-      await base44.entities.Dealer.update(dealer.id, formToSave);
+      await entities.Dealer.update(dealer.id, formToSave);
       setDealer({ ...dealer, ...formToSave });
       toast.success(t('dealer.profile_saved'));
     } catch (e) {
@@ -263,7 +264,7 @@ ${profileForm.description}`,
 
   const handleSaveCover = async () => {
     setIsSaving(true);
-    await base44.entities.Dealer.update(dealer.id, coverForm);
+    await entities.Dealer.update(dealer.id, coverForm);
     setDealer({ ...dealer, ...coverForm });
     toast.success(t('dealer.profile_saved'));
     setIsSaving(false);
@@ -286,7 +287,7 @@ ${profileForm.description}`,
   const handleSaveEmployees = async (employees) => {
     setIsSaving(true);
     try {
-      await base44.entities.Dealer.update(dealer.id, { employees });
+      await entities.Dealer.update(dealer.id, { employees });
       setEmployeesForm(employees);
       setDealer(prev => ({ ...prev, employees }));
       toast.success(t('dealerEmployees.saved'));
@@ -299,7 +300,7 @@ ${profileForm.description}`,
     setIsSaving(true);
     try {
       const socials = Object.fromEntries(SOCIAL_PLATFORMS.map(({ key }) => [key, profileForm[key] || '']));
-      await base44.entities.Dealer.update(dealer.id, socials);
+      await entities.Dealer.update(dealer.id, socials);
       setDealer({ ...dealer, ...socials });
       toast.success(t('dealer.profile_saved'));
     } finally {
@@ -308,7 +309,7 @@ ${profileForm.description}`,
   };
 
   const handleAssignEmployee = async (car, employeeName) => {
-    await base44.entities.Car.update(car.id, { assigned_employee: employeeName });
+    await entities.Car.update(car.id, { assigned_employee: employeeName });
     queryClient.invalidateQueries(['dealerOwnCars']);
     toast.success(t('dealerEmployees.assign_saved'));
   };

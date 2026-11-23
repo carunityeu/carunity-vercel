@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useCallback } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { base44 } from '@/api/base44Client';
+import { entities } from '@/api/entities';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -87,14 +87,14 @@ export default function DealerLeads({ dealerId, dealerIds, cars, dealerEmail }) 
   const { data: leads = [], isLoading } = useQuery({
     queryKey: ['dealerLeads', salonIds.join(',')],
     queryFn: async () => {
-      const { items } = await base44.entities.DealerLead.filter({ dealer_id: { $in: salonIds } }, { sort: '-created_date', limit: 200 });
+      const { items } = await entities.DealerLead.filter({ dealer_id: { $in: salonIds } }, { sort: '-created_date', limit: 200 });
       return items;
     },
     enabled: salonIds.length > 0,
   });
 
   const updateLead = useMutation({
-    mutationFn: ({ id, data }) => base44.entities.DealerLead.update(id, data),
+    mutationFn: ({ id, data }) => entities.DealerLead.update(id, data),
     onSuccess: () => { queryClient.invalidateQueries(['dealerLeads']); toast.success(t('dealer.lead_updated')); setSelectedLead(null); },
   });
 
@@ -105,13 +105,13 @@ export default function DealerLeads({ dealerId, dealerIds, cars, dealerEmail }) 
 
   const { data: tasks = [] } = useQuery({
     queryKey: ['leadTasks', selectedLead?.id],
-    queryFn: () => base44.entities.LeadTask.filter({ lead_id: selectedLead.id }, '-created_date'),
+    queryFn: () => entities.LeadTask.filter({ lead_id: selectedLead.id }, '-created_date'),
     enabled: !!selectedLead?.id,
   });
 
-  const createTask = useMutation({ mutationFn: (data) => base44.entities.LeadTask.create(data), onSuccess: () => { queryClient.invalidateQueries(['leadTasks', selectedLead?.id]); setTaskTitle(''); setTaskDue(''); toast.success(t('dealer.lead_task_added')); } });
-  const updateTask = useMutation({ mutationFn: ({ id, data }) => base44.entities.LeadTask.update(id, data), onSuccess: () => queryClient.invalidateQueries(['leadTasks', selectedLead?.id]) });
-  const deleteTask = useMutation({ mutationFn: (id) => base44.entities.LeadTask.delete(id), onSuccess: () => queryClient.invalidateQueries(['leadTasks', selectedLead?.id]) });
+  const createTask = useMutation({ mutationFn: (data) => entities.LeadTask.create(data), onSuccess: () => { queryClient.invalidateQueries(['leadTasks', selectedLead?.id]); setTaskTitle(''); setTaskDue(''); toast.success(t('dealer.lead_task_added')); } });
+  const updateTask = useMutation({ mutationFn: ({ id, data }) => entities.LeadTask.update(id, data), onSuccess: () => queryClient.invalidateQueries(['leadTasks', selectedLead?.id]) });
+  const deleteTask = useMutation({ mutationFn: (id) => entities.LeadTask.delete(id), onSuccess: () => queryClient.invalidateQueries(['leadTasks', selectedLead?.id]) });
 
   const handleAddTask = () => {
     if (!taskTitle.trim() || !selectedLead) return;

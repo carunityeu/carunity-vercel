@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { base44 } from '@/api/base44Client';
+import { entities } from '@/api/entities';
 import { Button } from '@/components/ui/button';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 
@@ -118,14 +119,14 @@ export default function Header() {
 
   const { data: unreadMessages = [] } = useQuery({
     queryKey: ['unreadMessages', user?.email],
-    queryFn: () => base44.entities.Message.filter({ receiver_email: user.email, is_read: false }),
+    queryFn: () => entities.Message.filter({ receiver_email: user.email, is_read: false }),
     enabled: !!user,
     staleTime: 60000
   });
 
   const { data: recentNotifications = [] } = useQuery({
     queryKey: ['headerNotifications', user?.email],
-    queryFn: () => base44.entities.Notification.filter({ user_email: user.email }, '-created_date', 8),
+    queryFn: () => entities.Notification.filter({ user_email: user.email }, '-created_date', 8),
     enabled: !!user,
     staleTime: 60000
   });
@@ -133,10 +134,10 @@ export default function Header() {
   // Counters refresh on realtime events instead of frequent polling
   useEffect(() => {
     if (!user?.email) return;
-    const unsubscribeMessages = base44.entities.Message.subscribe(() => {
+    const unsubscribeMessages = entities.Message.subscribe(() => {
       queryClient.invalidateQueries({ queryKey: ['unreadMessages', user.email] });
     });
-    const unsubscribeNotifications = base44.entities.Notification.subscribe(() => {
+    const unsubscribeNotifications = entities.Notification.subscribe(() => {
       queryClient.invalidateQueries({ queryKey: ['headerNotifications', user.email] });
     });
     return () => {
@@ -151,7 +152,7 @@ export default function Header() {
 
   const markNotificationsRead = async () => {
     for (const n of unreadNotifications) {
-      await base44.entities.Notification.update(n.id, { is_read: true });
+      await entities.Notification.update(n.id, { is_read: true });
     }
   };
 

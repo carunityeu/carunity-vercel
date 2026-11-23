@@ -2,7 +2,7 @@ import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useQuery } from '@tanstack/react-query';
-import { base44 } from '@/api/base44Client';
+import { entities } from '@/api/entities';
 import { getCarDetailsPath } from '@/lib/shortIdUtils';
 import { Search, Star, Heart, MessageSquare, Tag, Plus, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -34,14 +34,14 @@ export default function OverviewPanel({ user, myListings = [], favoritesCount = 
   const { data: activeCars = 0 } = useQuery({
     queryKey: ['overviewActiveCars'],
     staleTime: 5 * 60 * 1000,
-    queryFn: () => base44.entities.Car.count({ status: 'active' })
+    queryFn: () => entities.Car.count({ status: 'active' })
   });
 
   const { data: unreadMessages = 0 } = useQuery({
     queryKey: ['overviewUnread', user?.email],
     enabled: !!user?.email,
     staleTime: 60 * 1000,
-    queryFn: () => base44.entities.Message.count({ receiver_email: user.email, is_read: false })
+    queryFn: () => entities.Message.count({ receiver_email: user.email, is_read: false })
   });
 
   const money = (value) => new Intl.NumberFormat(locale, { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(value || 0);

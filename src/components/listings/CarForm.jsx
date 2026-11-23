@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { createPageUrl } from '@/utils';
 import { base44 } from '@/api/base44Client';
+import { entities } from '@/api/entities';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -225,7 +226,7 @@ export default function CarForm({ user, dealerId, onBack }) {
       seller_type: dealerId ? 'dealer' : 'private', seller_id: user?.email, dealer_id: dealerId || user?.dealer_id || null,
       status: 'active', views_count: 0,
     };
-    const created = await base44.entities.Car.create(carData);
+    const created = await entities.Car.create(carData);
     setCreatedCarId(created.id);
     setIsSubmitting(false);
     setStep(6);
@@ -237,7 +238,7 @@ export default function CarForm({ user, dealerId, onBack }) {
   const sendConfirmationEmail = async () => {
     if (!user?.email || !createdCarId) return;
     try {
-      const car = await base44.entities.Car.get(createdCarId);
+      const car = await entities.Car.get(createdCarId);
       const shortId = car.short_id || await ensureShortId(car);
       const listingUrl = shortId
         ? `${window.location.origin}/cardetails/${shortId}`

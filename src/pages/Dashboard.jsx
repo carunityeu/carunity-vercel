@@ -6,6 +6,7 @@ import { isDealerUser, syncAccountType } from '@/lib/accountType';
 import { resolveViewAsUser } from '@/lib/adminViewAs';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
+import { entities } from '@/api/entities';
 import { Loader2, Bookmark, History } from 'lucide-react';
 import { toast } from 'sonner';
 import UserSidebar from '@/components/dashboard/UserSidebar';
@@ -69,7 +70,7 @@ export default function Dashboard() {
 
   const { data: myListings = [], isLoading: loadingListings } = useQuery({
     queryKey: ['myListings', user?.email],
-    queryFn: () => base44.entities.Car.filter(
+    queryFn: () => entities.Car.filter(
       { $or: [{ created_by_id: user.id }, { seller_id: user.email }] },
       '-created_date',
       100
@@ -79,7 +80,7 @@ export default function Dashboard() {
 
   const { data: favorites = [], isLoading: loadingFavorites } = useQuery({
     queryKey: ['favorites', user?.email],
-    queryFn: () => base44.entities.Favorite.filter({ user_email: user.email }, '-created_date'),
+    queryFn: () => entities.Favorite.filter({ user_email: user.email }, '-created_date'),
     enabled: !!user
   });
 
@@ -88,7 +89,7 @@ export default function Dashboard() {
     queryKey: ['favoriteCars', favorites],
     queryFn: async () => {
       const ids = [...new Set(favorites.map(f => f.car_id))].slice(0, 50);
-      const { items } = await base44.entities.Car.filter({ id: { $in: ids } }, { limit: 50 });
+      const { items } = await entities.Car.filter({ id: { $in: ids } }, { limit: 50 });
       const byId = new Map(items.map(car => [car.id, car]));
       return ids.map(id => byId.get(id) || { id, status: 'inactive', is_missing: true });
     },
@@ -99,20 +100,20 @@ export default function Dashboard() {
 
   const { data: savedSearches = [] } = useQuery({
     queryKey: ['savedSearches', user?.email],
-    queryFn: () => base44.entities.SavedSearch.filter({ user_email: user.email }, '-created_date'),
+    queryFn: () => entities.SavedSearch.filter({ user_email: user.email }, '-created_date'),
     enabled: !!user
   });
 
   const handleUserUpdate = (patch) => setUser((prev) => ({ ...prev, ...patch }));
 
   const deleteSavedSearch = async (id) => {
-    await base44.entities.SavedSearch.delete(id);
+    await entities.SavedSearch.delete(id);
     queryClient.invalidateQueries(['savedSearches']);
     toast.success(t('dashboard.search_deleted'));
   };
 
   const toggleIamLooking = async (id, currentValue) => {
-    await base44.entities.SavedSearch.update(id, { is_i_am_looking: !currentValue });
+    await entities.SavedSearch.update(id, { is_i_am_looking: !currentValue });
     queryClient.invalidateQueries(['savedSearches']);
     toast.success(currentValue ? t('dashboard.iam_looking_removed') : t('dashboard.iam_looking_added'));
   };

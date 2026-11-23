@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { base44 } from '@/api/base44Client';
+import { entities } from '@/api/entities';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -39,14 +40,14 @@ export default function CarModelDetails() {
 
   const { data: modelInfo, isLoading } = useQuery({
     queryKey: ['carModelInfo', modelId],
-    queryFn: () => base44.entities.CarModelInfo.filter({ id: modelId }),
+    queryFn: () => entities.CarModelInfo.filter({ id: modelId }),
     select: (data) => data[0],
     enabled: !!modelId
   });
 
   const { data: cars = [] } = useQuery({
     queryKey: ['modelCars', modelInfo?.brand, modelInfo?.model],
-    queryFn: () => base44.entities.Car.filter({ brand: modelInfo.brand, model: modelInfo.model, status: 'active' }, '-created_date', 8),
+    queryFn: () => entities.Car.filter({ brand: modelInfo.brand, model: modelInfo.model, status: 'active' }, '-created_date', 8),
     enabled: !!modelInfo?.brand && !!modelInfo?.model
   });
 
@@ -56,7 +57,7 @@ export default function CarModelDetails() {
       const currentVotes = modelInfo.rating_votes || 0;
       const newVotes = currentVotes + 1;
       const newRating = ((currentRating * currentVotes) + rating) / newVotes;
-      return base44.entities.CarModelInfo.update(modelId, {
+      return entities.CarModelInfo.update(modelId, {
         user_rating: Math.round(newRating * 10) / 10,
         rating_votes: newVotes
       });

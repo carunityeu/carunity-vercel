@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { useRef, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { base44 } from '@/api/base44Client';
+import { entities } from '@/api/entities';
 import { useAuth } from '@/lib/AuthContext';
 
 // Изображения для конкретного языка: локализованный вариант, если есть; иначе fallback на images
@@ -24,7 +24,7 @@ export function getLinkUrlForLang(config, lang) {
 export function useAdConfigurations() {
   return useQuery({
     queryKey: ['adConfigurations'],
-    queryFn: () => base44.entities.AdConfiguration.list(),
+    queryFn: () => entities.AdConfiguration.list(),
     staleTime: 30000,
   });
 }

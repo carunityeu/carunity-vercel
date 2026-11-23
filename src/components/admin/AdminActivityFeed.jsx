@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { base44 } from '@/api/base44Client';
+import { entities } from '@/api/entities';
 import { Loader2, Search, Activity as ActivityIcon, Users, Clock, ChevronDown, ChevronUp, TrendingUp } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { cn } from '@/lib/utils';
@@ -182,7 +182,7 @@ export default function AdminActivityFeed(props) {
       var results = await Promise.all(
         VEHICLE_ENTITIES.map(async function(v) {
           try {
-            var data = await base44.entities[v[0]].list('-created_date', 50);
+            var data = await entities[v[0]].list('-created_date', 50);
             return { entity: v, data: data };
           } catch (e) {
             return { entity: v, data: [] };
@@ -196,37 +196,37 @@ export default function AdminActivityFeed(props) {
 
   var priceOffersQ = useQuery({
     queryKey: ['activity_priceOffers'],
-    queryFn: function() { return base44.entities.PriceOffer.list('-created_date', 100); },
+    queryFn: function() { return entities.PriceOffer.list('-created_date', 100); },
     staleTime: 60000,
   });
 
   var favoritesQ = useQuery({
     queryKey: ['activity_favorites'],
-    queryFn: function() { return base44.entities.Favorite.list('-created_date', 100); },
+    queryFn: function() { return entities.Favorite.list('-created_date', 100); },
     staleTime: 60000,
   });
 
   var savedSearchesQ = useQuery({
     queryKey: ['activity_savedSearches'],
-    queryFn: function() { return base44.entities.SavedSearch.list('-created_date', 100); },
+    queryFn: function() { return entities.SavedSearch.list('-created_date', 100); },
     staleTime: 60000,
   });
 
   var reviewsQ = useQuery({
     queryKey: ['activity_reviews'],
-    queryFn: function() { return base44.entities.Review.list('-created_date', 100); },
+    queryFn: function() { return entities.Review.list('-created_date', 100); },
     staleTime: 60000,
   });
 
   var articlesQ = useQuery({
     queryKey: ['activity_articles'],
-    queryFn: function() { return base44.entities.Article.list('-created_date', 50); },
+    queryFn: function() { return entities.Article.list('-created_date', 50); },
     staleTime: 60000,
   });
 
   var tradeInQ = useQuery({
     queryKey: ['activity_tradeIn'],
-    queryFn: function() { return base44.entities.TradeInOffer.list('-created_date', 50); },
+    queryFn: function() { return entities.TradeInOffer.list('-created_date', 50); },
     staleTime: 60000,
   });
 

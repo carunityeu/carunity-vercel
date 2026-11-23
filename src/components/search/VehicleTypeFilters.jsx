@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useQuery } from '@tanstack/react-query';
-import { base44 } from '@/api/base44Client';
+import { entities } from '@/api/entities';
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue
 } from '@/components/ui/select';
@@ -225,8 +225,8 @@ export default function VehicleTypeFilters({ vehicleType, filters, setFilters })
     queryFn: async () => {
       if (!f.brand) return [];
       const [asc, desc] = await Promise.all([
-        base44.entities.MotorcycleModelInfo.filter({ brand: f.brand }, 'model', 10000),
-        base44.entities.MotorcycleModelInfo.filter({ brand: f.brand }, '-model', 10000),
+        entities.MotorcycleModelInfo.filter({ brand: f.brand }, 'model', 10000),
+        entities.MotorcycleModelInfo.filter({ brand: f.brand }, '-model', 10000),
       ]);
       const all = [...asc, ...desc];
       return [...new Set(all.map(r => r.model).filter(Boolean))].sort();

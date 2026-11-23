@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { base44 } from '@/api/base44Client';
+import { entities } from '@/api/entities';
 import requireAccount from '@/components/auth/requireAccount';
 import { Search, Loader2, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -76,7 +77,7 @@ export default function ContextSearchBar({ className }) {
 
       if (isAuth) {
         const user = await base44.auth.me();
-        const savedSearches = await base44.entities.SavedSearch.filter({ user_email: user.email }, '-created_date', 3);
+        const savedSearches = await entities.SavedSearch.filter({ user_email: user.email }, '-created_date', 3);
         for (const ss of savedSearches) {
           if (ss.name) suggestions.push(ss.name);
           if (ss.filters?.brand && ss.filters.brand !== 'any') brands[ss.filters.brand] = (brands[ss.filters.brand] || 0) + 2;
@@ -84,7 +85,7 @@ export default function ContextSearchBar({ className }) {
       }
 
       if (recentIds.length > 0) {
-        const recentCars = await base44.entities.Car.filter({ status: 'active' }, '-created_date', 20)
+        const recentCars = await entities.Car.filter({ status: 'active' }, '-created_date', 20)
           .then(cars => cars.filter(c => recentIds.includes(c.id)));
         for (const car of recentCars) {
           if (car.brand) brands[car.brand] = (brands[car.brand] || 0) + 1;

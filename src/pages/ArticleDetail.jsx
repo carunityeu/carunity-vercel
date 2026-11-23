@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { base44 } from '@/api/base44Client';
+import { entities } from '@/api/entities';
 import { useQuery } from '@tanstack/react-query';
 import { ArrowLeft, Loader2 } from 'lucide-react';
 import { format } from 'date-fns';
@@ -56,7 +56,7 @@ export default function ArticleDetail() {
 
   const { data: article, isLoading } = useQuery({
     queryKey: ['article', articleId],
-    queryFn: () => base44.entities.Article.filter({ id: articleId }),
+    queryFn: () => entities.Article.filter({ id: articleId }),
     enabled: !!articleId,
     select: (data) => data[0]
   });
@@ -69,7 +69,7 @@ export default function ArticleDetail() {
       const parts = tag.split(' ');
       const brand = parts[0];
       const model = parts.slice(1).join(' ');
-      const cars = await base44.entities.Car.filter({ status: 'active', brand }, '-created_date', 6);
+      const cars = await entities.Car.filter({ status: 'active', brand }, '-created_date', 6);
       if (model) return cars.filter(c => c.model?.toLowerCase().includes(model.toLowerCase())).slice(0, 6);
       return cars.slice(0, 6);
     },
@@ -78,7 +78,7 @@ export default function ArticleDetail() {
 
   const { data: moreArticles = [] } = useQuery({
     queryKey: ['moreArticles', articleId],
-    queryFn: () => base44.entities.Article.filter({ is_published: true }, '-published_at', 6),
+    queryFn: () => entities.Article.filter({ is_published: true }, '-published_at', 6),
     select: (data) => data.filter(a => a.id !== articleId).slice(0, 3),
     enabled: !!articleId
   });

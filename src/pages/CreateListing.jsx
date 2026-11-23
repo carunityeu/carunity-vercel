@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
+import { entities } from '@/api/entities';
 import { createPageUrl } from '@/utils';
 import { Check, Loader2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
@@ -193,7 +194,7 @@ export default function CreateListing() {
 
       let carId = createdCarId;
       if (!carId) {
-        const created = await base44.entities.Car.create(carData);
+        const created = await entities.Car.create(carData);
         carId = created.id;
         setCreatedCarId(carId);
         if (user?.email) grantMainBonus(user.email, 'listing_created').catch(() => {});

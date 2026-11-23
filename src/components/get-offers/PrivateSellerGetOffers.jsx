@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { base44 } from '@/api/base44Client';
+import { entities } from '@/api/entities';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Link } from 'react-router-dom';
@@ -27,7 +27,7 @@ export default function PrivateSellerGetOffers({ user }) {
   // My cars that are opted into Get Offers
   const { data: myCars = [], isLoading: loadingCars } = useQuery({
     queryKey: ['myGetOffersCars', user?.email],
-    queryFn: () => base44.entities.Car.filter({ created_by: user.email, status: 'active' }, '-created_date'),
+    queryFn: () => entities.Car.filter({ created_by: user.email, status: 'active' }, '-created_date'),
     enabled: !!user,
   });
 
@@ -36,12 +36,12 @@ export default function PrivateSellerGetOffers({ user }) {
   // My incoming trade-in offers
   const { data: offers = [], isLoading: loadingOffers } = useQuery({
     queryKey: ['myTradeInOffers', user?.email],
-    queryFn: () => base44.entities.TradeInOffer.filter({ seller_email: user.email }, '-created_date'),
+    queryFn: () => entities.TradeInOffer.filter({ seller_email: user.email }, '-created_date'),
     enabled: !!user,
   });
 
   const handleResponse = async (offer, status, response = '') => {
-    await base44.entities.TradeInOffer.update(offer.id, { status, seller_response: response });
+    await entities.TradeInOffer.update(offer.id, { status, seller_response: response });
     queryClient.invalidateQueries(['myTradeInOffers']);
     toast.success(status === 'accepted' ? 'Предложение принято!' : 'Предложение отклонено');
   };

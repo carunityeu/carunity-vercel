@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useQuery } from '@tanstack/react-query';
-import { base44 } from '@/api/base44Client';
+import { entities } from '@/api/entities';
 import useSearchSaveToggle from '@/hooks/useSearchSaveToggle';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -148,7 +148,7 @@ export default function VehicleCatalog() {
 
   const { data: items = [], isLoading } = useQuery({
     queryKey: [entityName, 'catalog'],
-    queryFn: () => base44.entities[entityName].list('-created_date', 200),
+    queryFn: () => entities[entityName].list('-created_date', 200),
     enabled: !!entityName,
   });
 

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { base44 } from '@/api/base44Client';
+import { entities } from '@/api/entities';
 import { useQuery } from '@tanstack/react-query';
 import { Loader2, ChevronLeft } from 'lucide-react';
 import { format } from 'date-fns';
@@ -18,7 +18,7 @@ export default function AutoNews() {
 
   const { data: articles = [], isLoading } = useQuery({
     queryKey: ['articles'],
-    queryFn: () => base44.entities.Article.filter({ is_published: true }, '-published_at', 50)
+    queryFn: () => entities.Article.filter({ is_published: true }, '-published_at', 50)
   });
 
   const PAGE_SIZE = 9;

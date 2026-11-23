@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
+import { entities } from '@/api/entities';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -44,21 +45,21 @@ export default function AIMatchDashboard() {
   const [expandedDealerStats, setExpandedDealerStats] = useState(null);
   const queryClient = useQueryClient();
 
-  const { data: viewHistory = [] } = useQuery({ queryKey: ['allViewHistory'], queryFn: () => base44.entities.ViewHistory.list('-viewed_at', 500) });
-  const { data: favorites = [] } = useQuery({ queryKey: ['allFavorites'], queryFn: () => base44.entities.Favorite.list('-created_date', 500) });
-  const { data: offers = [] } = useQuery({ queryKey: ['allOffers'], queryFn: () => base44.entities.PriceOffer.list('-created_date', 200) });
-  const { data: messages = [] } = useQuery({ queryKey: ['allMessages'], queryFn: () => base44.entities.Message.list('-created_date', 500) });
-  const { data: allCars = [] } = useQuery({ queryKey: ['allCarsForMatch'], queryFn: () => base44.entities.Car.list('-created_date', 300) });
-  const { data: dealers = [] } = useQuery({ queryKey: ['dealersForMatch'], queryFn: () => base44.entities.Dealer.list('-created_date', 100) });
-  const { data: existingLeads = [], isLoading: loadingLeads } = useQuery({ queryKey: ['dealerLeads'], queryFn: () => base44.entities.DealerLead.list('-created_date', 200) });
+  const { data: viewHistory = [] } = useQuery({ queryKey: ['allViewHistory'], queryFn: () => entities.ViewHistory.list('-viewed_at', 500) });
+  const { data: favorites = [] } = useQuery({ queryKey: ['allFavorites'], queryFn: () => entities.Favorite.list('-created_date', 500) });
+  const { data: offers = [] } = useQuery({ queryKey: ['allOffers'], queryFn: () => entities.PriceOffer.list('-created_date', 200) });
+  const { data: messages = [] } = useQuery({ queryKey: ['allMessages'], queryFn: () => entities.Message.list('-created_date', 500) });
+  const { data: allCars = [] } = useQuery({ queryKey: ['allCarsForMatch'], queryFn: () => entities.Car.list('-created_date', 300) });
+  const { data: dealers = [] } = useQuery({ queryKey: ['dealersForMatch'], queryFn: () => entities.Dealer.list('-created_date', 100) });
+  const { data: existingLeads = [], isLoading: loadingLeads } = useQuery({ queryKey: ['dealerLeads'], queryFn: () => entities.DealerLead.list('-created_date', 200) });
 
   const createLead = useMutation({
-    mutationFn: (data) => base44.entities.DealerLead.create(data),
+    mutationFn: (data) => entities.DealerLead.create(data),
     onSuccess: () => queryClient.invalidateQueries(['dealerLeads']),
   });
 
   const updateLead = useMutation({
-    mutationFn: ({ id, data }) => base44.entities.DealerLead.update(id, data),
+    mutationFn: ({ id, data }) => entities.DealerLead.update(id, data),
     onSuccess: () => { queryClient.invalidateQueries(['dealerLeads']); toast.success('Статус обновлён'); }
   });
 

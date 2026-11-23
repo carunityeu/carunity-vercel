@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
+import { entities } from '@/api/entities';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -74,13 +75,13 @@ export default function ServiceBook({ carId, isOwner }) {
 
   const { data: records = [], isLoading } = useQuery({
     queryKey: ['serviceRecords', carId],
-    queryFn: () => base44.entities.ServiceRecord.filter({ car_id: carId }, '-date', 50),
+    queryFn: () => entities.ServiceRecord.filter({ car_id: carId }, '-date', 50),
     enabled: !!carId,
   });
 
   const addRecord = useMutation({
     mutationFn: async (data) => {
-      await base44.entities.ServiceRecord.create({ ...data, car_id: carId });
+      await entities.ServiceRecord.create({ ...data, car_id: carId });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['serviceRecords', carId] });
@@ -95,7 +96,7 @@ export default function ServiceBook({ carId, isOwner }) {
 
   const updateRecord = useMutation({
     mutationFn: async ({ id, data }) => {
-      await base44.entities.ServiceRecord.update(id, data);
+      await entities.ServiceRecord.update(id, data);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['serviceRecords', carId] });
@@ -150,7 +151,7 @@ ${text}`,
 
   const deleteRecord = useMutation({
     mutationFn: async (id) => {
-      await base44.entities.ServiceRecord.delete(id);
+      await entities.ServiceRecord.delete(id);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['serviceRecords', carId] });

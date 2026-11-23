@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { base44 } from '@/api/base44Client';
+import { entities } from '@/api/entities';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { ChevronRight, ChevronLeft, Heart, MapPin, Fuel, Gauge, Calendar, SlidersHorizontal, RotateCcw } from 'lucide-react';
@@ -14,13 +14,13 @@ export default function LuxuryBrand() {
 
   const { data: brandInfo } = useQuery({
     queryKey: ['luxuryBrandInfo', brand],
-    queryFn: () => base44.entities.LuxuryBrand.filter({ name: brand, is_published: true }, 'sort_order', 1).then(r => r[0]),
+    queryFn: () => entities.LuxuryBrand.filter({ name: brand, is_published: true }, 'sort_order', 1).then(r => r[0]),
     enabled: !!brand
   });
 
   const { data: cars = [], isLoading } = useQuery({
     queryKey: ['luxuryBrand', brand],
-    queryFn: () => base44.entities.LuxuryCar.filter({ brand, is_published: true }, '-created_date'),
+    queryFn: () => entities.LuxuryCar.filter({ brand, is_published: true }, '-created_date'),
     enabled: !!brand
   });
 

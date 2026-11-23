@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { base44 } from '@/api/base44Client';
+import { entities } from '@/api/entities';
 import { getCarDetailsPath } from '@/lib/shortIdUtils';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -55,7 +55,7 @@ export default function MyListingsPanel({ user, cars = [], isLoading = false, lo
   const { data: renewals = [] } = useQuery({
     queryKey: ['listingRenewals', user?.email],
     queryFn: async () => {
-      const { items } = await base44.entities.ListingRenewal.filter({ seller_email: user.email }, { sort: '-created_date', limit: 200 });
+      const { items } = await entities.ListingRenewal.filter({ seller_email: user.email }, { sort: '-created_date', limit: 200 });
       return items;
     },
     enabled: !!user?.email,
@@ -63,7 +63,7 @@ export default function MyListingsPanel({ user, cars = [], isLoading = false, lo
   const { data: saleFeedback = [] } = useQuery({
     queryKey: ['saleFeedback', user?.email],
     queryFn: async () => {
-      const { items } = await base44.entities.SaleFeedback.filter({ seller_email: user.email }, { sort: '-created_date', limit: 200 });
+      const { items } = await entities.SaleFeedback.filter({ seller_email: user.email }, { sort: '-created_date', limit: 200 });
       return items;
     },
     enabled: !!user?.email,
@@ -116,7 +116,7 @@ export default function MyListingsPanel({ user, cars = [], isLoading = false, lo
     setSavingPrice(true);
     const updates = { price: parsed, price_updated_at: new Date().toISOString() };
     updates.original_price = parsed < car.price ? (car.original_price || car.price) : null;
-    await base44.entities.Car.update(car.id, updates);
+    await entities.Car.update(car.id, updates);
     refresh();
     toast.success(t('dashboard.price_updated'));
     setEditPriceCarId(null);
@@ -125,12 +125,12 @@ export default function MyListingsPanel({ user, cars = [], isLoading = false, lo
 
   const handleRemoveConfirm = async (carId, reason) => {
     if (reason === 'sold') {
-      await base44.entities.Car.update(carId, { status: 'sold' });
+      await entities.Car.update(carId, { status: 'sold' });
       toast.success(t('dashboard.marked_sold'));
     } else {
-      await base44.entities.Car.delete(carId);
+      await entities.Car.delete(carId);
       // Снятое объявление не должно оставаться в просмотренных
-      base44.entities.ViewHistory.deleteMany({ car_id: carId }).catch(() => {});
+      entities.ViewHistory.deleteMany({ car_id: carId }).catch(() => {});
       try {
         const recent = JSON.parse(localStorage.getItem('recentlyViewed') || '[]');
         localStorage.setItem('recentlyViewed', JSON.stringify(recent.filter((id) => id !== carId)));

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { base44 } from '@/api/base44Client';
+import { entities } from '@/api/entities';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -44,7 +44,7 @@ export default function DealerCarsToBuy({ dealer }) {
       const filters = { status: 'active', seller_type: 'private' };
       if (filterCountry) filters.country = filterCountry;
       if (filterBrand) filters.brand = filterBrand;
-      const all = await base44.entities.Car.filter(filters, '-created_date', 50);
+      const all = await entities.Car.filter(filters, '-created_date', 50);
       return all.filter(c => {
         const m = c.dealer_distribution_mode;
         if (!m || m === 'none') return false;
@@ -58,7 +58,7 @@ export default function DealerCarsToBuy({ dealer }) {
 
   const { data: myOffers = [] } = useQuery({
     queryKey: ['dealerTradeInOffers', dealer?.id],
-    queryFn: () => base44.entities.TradeInOffer.filter({ dealer_id: dealer.id }),
+    queryFn: () => entities.TradeInOffer.filter({ dealer_id: dealer.id }),
     enabled: !!dealer?.id
   });
 
@@ -82,7 +82,7 @@ export default function DealerCarsToBuy({ dealer }) {
     if (offerType === 'consignment' && !commissionPercent) { toast.error(t('dealer.specify_commission')); return; }
 
     setSubmitting(true);
-    await base44.entities.TradeInOffer.create({
+    await entities.TradeInOffer.create({
       car_id: selectedCar.id,
       dealer_id: dealer.id,
       dealer_name: dealer.name,

@@ -2,7 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { base44 } from '@/api/base44Client';
+import { entities } from '@/api/entities';
 import { translateNotification } from '@/utils/notificationI18n';
 import { cn } from '@/lib/utils';
 
@@ -17,7 +17,7 @@ export default function CabinetNotifications({ user }) {
     queryKey: ['cabinetNotifications', user?.email],
     enabled: !!user?.email,
     queryFn: async () => {
-      const { items } = await base44.entities.Notification.filter(
+      const { items } = await entities.Notification.filter(
         { user_email: user.email },
         { sort: '-created_date', limit: 4 }
       );
@@ -29,7 +29,7 @@ export default function CabinetNotifications({ user }) {
 
   const open = async (notification) => {
     if (!notification.is_read) {
-      await base44.entities.Notification.update(notification.id, { is_read: true });
+      await entities.Notification.update(notification.id, { is_read: true });
       queryClient.invalidateQueries(['cabinetNotifications', user?.email]);
       queryClient.invalidateQueries(['notifications', user?.email]);
     }

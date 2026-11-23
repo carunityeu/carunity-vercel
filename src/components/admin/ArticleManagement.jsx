@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { base44 } from '@/api/base44Client';
+import { entities } from '@/api/entities';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -172,15 +173,15 @@ export default function ArticleManagement({ user }) {
 
   const { data: articles = [], isLoading } = useQuery({
     queryKey: ['adminArticles'],
-    queryFn: () => base44.entities.Article.list('-created_date', 100)
+    queryFn: () => entities.Article.list('-created_date', 100)
   });
 
   const saveMutation = useMutation({
     mutationFn: async (data) => {
       const payload = { ...data, content: JSON.stringify(data.blocks) };
       delete payload.blocks;
-      if (editingArticle) return base44.entities.Article.update(editingArticle.id, payload);
-      return base44.entities.Article.create({ ...payload, author_email: user.email, author_name: user.full_name });
+      if (editingArticle) return entities.Article.update(editingArticle.id, payload);
+      return entities.Article.create({ ...payload, author_email: user.email, author_name: user.full_name });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['adminArticles'] });
@@ -193,7 +194,7 @@ export default function ArticleManagement({ user }) {
   });
 
   const deleteMutation = useMutation({
-    mutationFn: (id) => base44.entities.Article.delete(id),
+    mutationFn: (id) => entities.Article.delete(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['adminArticles'] });
       queryClient.invalidateQueries({ queryKey: ['articles'] });

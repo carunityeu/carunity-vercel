@@ -2,7 +2,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { base44 } from '@/api/base44Client';
+import { entities } from '@/api/entities';
 import { format } from 'date-fns';
 import NewsGridSkeleton from '@/components/news/NewsGridSkeleton';
 import { ru, enUS, et, lv, lt } from 'date-fns/locale';
@@ -21,7 +21,7 @@ export default function NewsSection() {
   };
   const { data: articles = [], isLoading } = useQuery({
     queryKey: ['latestArticles'],
-    queryFn: () => base44.entities.Article.filter({ is_published: true }, '-published_at', 6),
+    queryFn: () => entities.Article.filter({ is_published: true }, '-published_at', 6),
     staleTime: 10 * 60 * 1000,
   });
 

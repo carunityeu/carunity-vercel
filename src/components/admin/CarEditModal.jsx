@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
+import { entities } from '@/api/entities';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -189,7 +190,7 @@ export default function CarEditModal({ car, open, onOpenChange, onSaved }) {
         data[f] = Number(data[f]);
       }
     });
-    await base44.entities.Car.update(car.id, data);
+    await entities.Car.update(car.id, data);
     setIsSaving(false);
     toast.success('Объявление сохранено');
     onSaved?.();

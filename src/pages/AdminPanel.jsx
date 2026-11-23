@@ -4,6 +4,7 @@ import { createPageUrl } from '@/utils';
 import { formatPrice } from '@/utils/format';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
+import { entities } from '@/api/entities';
 import { Button } from '@/components/ui/button';
 import ListPagination from '@/components/ui/ListPagination';
 import { Input } from '@/components/ui/input';
@@ -94,71 +95,71 @@ export default function AdminPanel() {
 
   const { data: allCars = [], isLoading: loadingCars } = useQuery({
     queryKey: ['adminCars'],
-    queryFn: () => base44.entities.Car.list('-created_date', 200),
+    queryFn: () => entities.Car.list('-created_date', 200),
     enabled: isAdmin
   });
 
   const { data: dealers = [], isLoading: loadingDealers } = useQuery({
     queryKey: ['adminDealers'],
-    queryFn: () => base44.entities.Dealer.list('-created_date', 100),
+    queryFn: () => entities.Dealer.list('-created_date', 100),
     enabled: isAdmin
   });
 
   const { data: applications = [], isLoading: loadingApps } = useQuery({
     queryKey: ['dealerApplications'],
-    queryFn: () => base44.entities.DealerApplication.list('-created_date', 100),
+    queryFn: () => entities.DealerApplication.list('-created_date', 100),
     enabled: isAdmin
   });
 
   const { data: reports = [] } = useQuery({
     queryKey: ['adminReports'],
-    queryFn: () => base44.entities.Report.filter({ status: 'pending' }, '-created_date'),
+    queryFn: () => entities.Report.filter({ status: 'pending' }, '-created_date'),
     enabled: isAdmin
   });
 
   const { data: allMessages = [], isLoading: loadingMessages } = useQuery({
     queryKey: ['adminMessages'],
-    queryFn: () => base44.entities.Message.list('-created_date', 500),
+    queryFn: () => entities.Message.list('-created_date', 500),
     enabled: isAdmin
   });
 
   const { data: carModels = [], isLoading: loadingModels } = useQuery({
     queryKey: ['adminCarModels'],
-    queryFn: () => base44.entities.CarModelInfo.list('-created_date', 100),
+    queryFn: () => entities.CarModelInfo.list('-created_date', 100),
     enabled: isAdmin
   });
 
   const { data: dealerLeads = [] } = useQuery({
     queryKey: ['adminDealerLeads'],
-    queryFn: () => base44.entities.DealerLead.list('-created_date', 200),
+    queryFn: () => entities.DealerLead.list('-created_date', 200),
     enabled: isAdmin
   });
 
   const { data: saleFeedback = [] } = useQuery({
     queryKey: ['adminSaleFeedback'],
-    queryFn: () => base44.entities.SaleFeedback.list('-created_date', 500),
+    queryFn: () => entities.SaleFeedback.list('-created_date', 500),
     enabled: isAdmin
   });
 
   const { data: appUsers = [] } = useQuery({
     queryKey: ['adminUsers'],
-    queryFn: () => base44.entities.User.list('-created_date', 500),
+    queryFn: () => entities.User.list('-created_date', 500),
     enabled: isAdmin
   });
 
   const { data: viewHistory = [] } = useQuery({
     queryKey: ['adminViewHistory'],
-    queryFn: () => base44.entities.ViewHistory.list('-created_date', 500),
+    queryFn: () => entities.ViewHistory.list('-created_date', 500),
     enabled: isAdmin
   });
 
   const deleteMessage = useMutation({
-    mutationFn: (id) => base44.entities.Message.delete(id),
+    mutationFn: (id) => entities.Message.delete(id),
     onSuccess: () => { queryClient.invalidateQueries(['adminMessages']); toast.success('Сообщение удалено'); }
   });
 
   const deleteModel = useMutation({
-    mutationFn: (id) => base44.entities.CarModelInfo.delete(id),
+    mutationFn: (id) => entities.CarModelInfo.delete(id),
     onSuccess: () => {
       queryClient.invalidateQueries(['adminCarModels']);
       queryClient.invalidateQueries(['publishedCarModels']);
@@ -167,17 +168,17 @@ export default function AdminPanel() {
   });
 
   const updateCar = useMutation({
-    mutationFn: ({ id, data }) => base44.entities.Car.update(id, data),
+    mutationFn: ({ id, data }) => entities.Car.update(id, data),
     onSuccess: () => { queryClient.invalidateQueries(['adminCars']); setEditingCar(null); toast.success('Объявление обновлено'); }
   });
 
   const deleteCar = useMutation({
-    mutationFn: (id) => base44.entities.Car.delete(id),
+    mutationFn: (id) => entities.Car.delete(id),
     onSuccess: () => { queryClient.invalidateQueries(['adminCars']); toast.success('Объявление удалено'); }
   });
 
   const updateDealer = useMutation({
-    mutationFn: ({ id, data }) => base44.entities.Dealer.update(id, data),
+    mutationFn: ({ id, data }) => entities.Dealer.update(id, data),
     onSuccess: () => { queryClient.invalidateQueries(['adminDealers']); toast.success('Дилер обновлён'); }
   });
 

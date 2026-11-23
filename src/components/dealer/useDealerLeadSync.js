@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { base44 } from '@/api/base44Client';
+import { entities } from '@/api/entities';
 
 const SCORE_WEIGHTS = { view: 1, favorite: 5, offer: 8 };
 const MIN_RAW_SCORE = 8; // один оффер, избранное с просмотрами или несколько просмотров
@@ -34,9 +34,9 @@ export default function useDealerLeadSync({ salonIds, cars, dealerEmail, leads, 
       const carIds = cars.map(car => car.id);
       const query = { car_id: { $in: carIds } };
       const [viewsRes, favoritesRes, offersRes] = await Promise.all([
-        base44.entities.ViewHistory.filter(query, { sort: '-viewed_at', limit: 500 }),
-        base44.entities.Favorite.filter(query, { limit: 300 }),
-        base44.entities.PriceOffer.filter(query, { limit: 200 }),
+        entities.ViewHistory.filter(query, { sort: '-viewed_at', limit: 500 }),
+        entities.Favorite.filter(query, { limit: 300 }),
+        entities.PriceOffer.filter(query, { limit: 200 }),
       ]);
       if (cancelled) return;
 
@@ -86,7 +86,7 @@ export default function useDealerLeadSync({ salonIds, cars, dealerEmail, leads, 
         };
       });
 
-      await base44.entities.DealerLead.bulkCreate(records);
+      await entities.DealerLead.bulkCreate(records);
       if (!cancelled) onSyncedRef.current?.();
     };
 

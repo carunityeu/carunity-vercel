@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
+import { entities } from '@/api/entities';
 import requireAccount from '@/components/auth/requireAccount';
 import { useTranslation } from 'react-i18next';
 import { useLocation } from 'react-router-dom';
@@ -46,7 +47,7 @@ export default function LuxuryCatalog() {
 
   const { data: allCarsRaw = [], isLoading } = useQuery({
     queryKey: ['activeCarsForPremium'],
-    queryFn: () => base44.entities.Car.filter({ status: 'active' }, '-created_date', 1000),
+    queryFn: () => entities.Car.filter({ status: 'active' }, '-created_date', 1000),
     staleTime: 5 * 60 * 1000,
   });
 
@@ -199,7 +200,7 @@ export default function LuxuryCatalog() {
     const brandPart = filters.brand && filters.brand !== 'any' ? filters.brand : '';
     const pricePart = (filters.priceRange?.[0] > 0 || filters.priceRange?.[1] < 200000) ? `, ${filters.priceRange[0] || ''}–${filters.priceRange[1] === 200000 ? '' : filters.priceRange[1]}€` : '';
     const name = brandPart ? `${brandPart}${filters.model && filters.model !== 'any' ? ' ' + filters.model : ''}${pricePart}` : t('catalog.search_name_default');
-    await base44.entities.SavedSearch.create({ user_email: user.email, name, filters: flat });
+    await entities.SavedSearch.create({ user_email: user.email, name, filters: flat });
     queryClient.invalidateQueries({ queryKey: ['recentSearches'] });
     toast.success(t('catalog.search_saved'));
   };

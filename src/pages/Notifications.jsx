@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
+import { entities } from '@/api/entities';
 import { Button } from '@/components/ui/button';
 import ListPagination from '@/components/ui/ListPagination';
 import { Bell, Heart, Search, Zap, ZapOff, MessageSquare, Tag, CheckCheck, Trash2, ArrowLeft, TrendingDown, Rocket } from 'lucide-react';
@@ -52,7 +53,7 @@ export default function Notifications() {
 
   const { data: notifications = [], isLoading } = useQuery({
     queryKey: ['notifications-page', user?.email],
-    queryFn: () => base44.entities.Notification.filter({ user_email: user.email }, '-created_date', 100),
+    queryFn: () => entities.Notification.filter({ user_email: user.email }, '-created_date', 100),
     enabled: !!user?.email,
   });
 
@@ -70,7 +71,7 @@ export default function Notifications() {
   const markAllRead = useMutation({
     mutationFn: async () => {
       const unread = notifications.filter(n => !n.is_read);
-      await Promise.all(unread.map(n => base44.entities.Notification.update(n.id, { is_read: true })));
+      await Promise.all(unread.map(n => entities.Notification.update(n.id, { is_read: true })));
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['notifications-page', user?.email] });
@@ -79,7 +80,7 @@ export default function Notifications() {
   });
 
   const deleteNotification = useMutation({
-    mutationFn: (id) => base44.entities.Notification.delete(id),
+    mutationFn: (id) => entities.Notification.delete(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['notifications-page', user?.email] });
       queryClient.invalidateQueries({ queryKey: ['notifications', user?.email] });
@@ -88,7 +89,7 @@ export default function Notifications() {
 
   const handleClick = async (n) => {
     if (!n.is_read) {
-      await base44.entities.Notification.update(n.id, { is_read: true });
+      await entities.Notification.update(n.id, { is_read: true });
       queryClient.invalidateQueries({ queryKey: ['notifications-page', user?.email] });
       queryClient.invalidateQueries({ queryKey: ['notifications', user?.email] });
     }
@@ -202,7 +203,7 @@ export default function Notifications() {
                         onClick={(e) => {
                           e.stopPropagation();
                           if (!n.is_read) {
-                            base44.entities.Notification.update(n.id, { is_read: true });
+                            entities.Notification.update(n.id, { is_read: true });
                             queryClient.invalidateQueries({ queryKey: ['notifications-page', user?.email] });
                           }
                           navigate(`/DealerDashboard?promote=${n.car_id}`);

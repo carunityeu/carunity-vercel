@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { base44 } from '@/api/base44Client';
+import { entities } from '@/api/entities';
 import { ArrowLeft, MapPin } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
@@ -14,7 +14,7 @@ export default function LuxuryCarDetails() {
     const params = new URLSearchParams(window.location.search);
     const id = params.get('id');
     if (id) {
-      base44.entities.LuxuryCar.filter({ id }).then(([data]) => {
+      entities.LuxuryCar.filter({ id }).then(([data]) => {
         setCar(data);
         setLoading(false);
       });

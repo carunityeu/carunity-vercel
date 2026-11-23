@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { base44 } from '@/api/base44Client';
+import { entities } from '@/api/entities';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -19,7 +19,7 @@ export default function FastSaleOffers({ user }) {
 
   const { data: offers = [], isLoading } = useQuery({
     queryKey: ['fastSaleSellerOffers', user?.email],
-    queryFn: () => base44.entities.TradeInOffer.filter({ seller_email: user.email, fast_sale: true }, '-created_date', 200),
+    queryFn: () => entities.TradeInOffer.filter({ seller_email: user.email, fast_sale: true }, '-created_date', 200),
     enabled: !!user
   });
 
@@ -43,16 +43,16 @@ export default function FastSaleOffers({ user }) {
     setAccepting(true);
     try {
       // 1. Accept the offer
-      await base44.entities.TradeInOffer.update(selectedOffer.id, {
+      await entities.TradeInOffer.update(selectedOffer.id, {
         status: 'accepted', deal_status: 'in_contact', seller_phone: user.phone || ''
       });
       // 2. Reject all other pending offers for the same car
-      await base44.entities.TradeInOffer.updateMany(
+      await entities.TradeInOffer.updateMany(
         { car_id: selectedOffer.car_id, status: 'pending', fast_sale: true },
         { $set: { status: 'rejected' } }
       );
       // 3. Notify dealer
-      await base44.entities.Notification.create({
+      await entities.Notification.create({
         user_email: selectedOffer.dealer_email, type: 'offer_accepted',
         title: t('fast_sale.dealer_notif_title', { car: selectedOffer.car_title }),
         content: `${selectedOffer.car_title} — ${formatPrice(selectedOffer.offered_price)}`,
@@ -69,7 +69,7 @@ export default function FastSaleOffers({ user }) {
 
   const handleReject = async (offer) => {
     try {
-      await base44.entities.TradeInOffer.update(offer.id, { status: 'rejected', seller_response: 'rejected' });
+      await entities.TradeInOffer.update(offer.id, { status: 'rejected', seller_response: 'rejected' });
       queryClient.invalidateQueries(['fastSaleSellerOffers', user?.email]);
       toast.success(t('fast_sale.offer_rejected_success'));
     } catch (e) { toast.error(e.message); }
@@ -77,7 +77,7 @@ export default function FastSaleOffers({ user }) {
 
   const handleUpdateDealStatus = async (offer, status) => {
     try {
-      await base44.entities.TradeInOffer.update(offer.id, { deal_status: status, status: status === 'completed' ? 'completed' : offer.status });
+      await entities.TradeInOffer.update(offer.id, { deal_status: status, status: status === 'completed' ? 'completed' : offer.status });
       queryClient.invalidateQueries(['fastSaleSellerOffers', user?.email]);
       toast.success(t('fast_sale.deal_status_updated'));
     } catch (e) { toast.error(e.message); }

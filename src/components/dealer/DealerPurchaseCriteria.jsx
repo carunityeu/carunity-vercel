@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { base44 } from '@/api/base44Client';
+import { entities } from '@/api/entities';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -24,7 +24,7 @@ export default function DealerPurchaseCriteria({ dealer }) {
     queryKey: ['dealerCriteria', dealer?.id],
     queryFn: async () => {
       if (!dealer?.id) return null;
-      const existing = await base44.entities.DealerPurchaseCriteria.filter({ dealer_id: dealer.id });
+      const existing = await entities.DealerPurchaseCriteria.filter({ dealer_id: dealer.id });
       if (existing && existing.length > 0) return existing[0];
       return null;
     },
@@ -83,9 +83,9 @@ export default function DealerPurchaseCriteria({ dealer }) {
         mileage_max: form.mileage_max ? Number(form.mileage_max) : null,
       };
       if (criteria) {
-        await base44.entities.DealerPurchaseCriteria.update(criteria.id, payload);
+        await entities.DealerPurchaseCriteria.update(criteria.id, payload);
       } else {
-        await base44.entities.DealerPurchaseCriteria.create({
+        await entities.DealerPurchaseCriteria.create({
           ...payload,
           dealer_id: dealer.id,
           dealer_email: dealer.email,

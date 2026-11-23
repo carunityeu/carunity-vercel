@@ -5,7 +5,7 @@ import ValuationHeader from '@/components/cars/valuation/ValuationHeader';
 import ValuationSearchForm from '@/components/cars/valuation/ValuationSearchForm';
 import '@/components/cars/valuation/valuation.css';
 import { getCarDetailsPath } from '@/lib/shortIdUtils';
-import { base44 } from '@/api/base44Client';
+import { entities } from '@/api/entities';
 import {
   Dialog, DialogContent,
 } from '@/components/ui/dialog';
@@ -32,13 +32,13 @@ export default function CarValuationModal({ open, onOpenChange }) {
     try {
       // Search by license plate or VIN
       const filter = plateNorm ? { license_plate: plateNorm } : { vin: vinNorm };
-      const cars = await base44.entities.Car.filter(filter, '-created_date', 20);
+      const cars = await entities.Car.filter(filter, '-created_date', 20);
 
       if (cars && cars.length > 0) {
         const car = cars[0];
         // Find similar active cars (same brand + model, year ±3)
         const similarFilter = { status: 'active', brand: car.brand };
-        const similarCars = await base44.entities.Car.filter(similarFilter, '-created_date', 100);
+        const similarCars = await entities.Car.filter(similarFilter, '-created_date', 100);
 
         const sameModel = similarCars.filter((c) =>
           c.model === car.model &&

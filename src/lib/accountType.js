@@ -1,4 +1,5 @@
 import { base44 } from '@/api/base44Client';
+import { entities } from '@/api/entities';
 
 // Account type is stored on the User record as user_type: 'private' | 'dealer'.
 export function isDealerUser(user) {
@@ -11,7 +12,7 @@ export async function syncAccountType(user) {
   if (!user?.email) return user;
   if (user.user_type === 'dealer' && user.dealer_id) return user;
 
-  const dealers = await base44.entities.Dealer.filter({ owner_email: user.email }, { limit: 1 });
+  const dealers = await entities.Dealer.filter({ owner_email: user.email }, { limit: 1 });
   const found = (Array.isArray(dealers) ? dealers : dealers?.items || [])[0];
 
   if (found) {

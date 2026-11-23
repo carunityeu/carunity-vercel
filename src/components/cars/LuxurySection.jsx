@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { base44 } from '@/api/base44Client';
+import { entities } from '@/api/entities';
 import { ArrowRight } from 'lucide-react';
 
 export default function LuxurySection() {
@@ -9,7 +9,7 @@ export default function LuxurySection() {
 
   const { data: brands = [] } = useQuery({
     queryKey: ['luxuryBrandsPublished'],
-    queryFn: () => base44.entities.LuxuryBrand.filter({ is_published: true }, 'sort_order', 20),
+    queryFn: () => entities.LuxuryBrand.filter({ is_published: true }, 'sort_order', 20),
     staleTime: 10 * 60 * 1000,
   });
 

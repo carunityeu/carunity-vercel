@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
+import { entities } from '@/api/entities';
 import { Switch } from '@/components/ui/switch';
 import { Loader2, Settings2, Plus, Globe, X } from 'lucide-react';
 import { toast } from 'sonner';
@@ -53,17 +54,17 @@ export default function AdminAds() {
 
   const { data: configs = [], isLoading } = useQuery({
     queryKey: ['adConfigurations'],
-    queryFn: () => base44.entities.AdConfiguration.list(),
+    queryFn: () => entities.AdConfiguration.list(),
   });
 
   // Read-modify-write against fresh server data so a save never drops images added a moment ago
   const saveMutation = useMutation({
     mutationFn: async ({ slotId, title, build }) => {
-      const list = await base44.entities.AdConfiguration.filter({ slot: slotId });
+      const list = await entities.AdConfiguration.filter({ slot: slotId });
       const existing = list[0] || null;
       const next = build(existing);
-      if (existing) return base44.entities.AdConfiguration.update(existing.id, next);
-      return base44.entities.AdConfiguration.create({ slot: slotId, title, ...next });
+      if (existing) return entities.AdConfiguration.update(existing.id, next);
+      return entities.AdConfiguration.create({ slot: slotId, title, ...next });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['adConfigurations'] });

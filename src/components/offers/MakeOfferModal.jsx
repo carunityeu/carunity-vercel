@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { base44 } from '@/api/base44Client';
+import { entities } from '@/api/entities';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import {
@@ -75,7 +76,7 @@ export default function MakeOfferModal({
     }
 
     setIsSubmitting(true);
-    const available = await base44.entities.Car.filter({ id: car.id, status: 'active' }, '-created_date', 1);
+    const available = await entities.Car.filter({ id: car.id, status: 'active' }, '-created_date', 1);
     if (!available.length) {
       setIsSubmitting(false);
       toast.error(t('car.inactive_view_only'));
@@ -94,7 +95,7 @@ export default function MakeOfferModal({
     }
 
     // Create offer
-    await base44.entities.PriceOffer.create({
+    await entities.PriceOffer.create({
       car_id: car.id,
       buyer_email: user.email,
       seller_email: sellerEmail,
@@ -105,7 +106,7 @@ export default function MakeOfferModal({
 
     // Send offer as a message in chat
     const chatId = [user.email, sellerEmail, car.id].join('-').replace(/[^a-zA-Z0-9]/g, '_');
-    await base44.entities.Message.create({
+    await entities.Message.create({
       chat_id: chatId,
       sender_email: user.email,
       receiver_email: sellerEmail,

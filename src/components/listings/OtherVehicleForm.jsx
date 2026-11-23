@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { createPageUrl } from '@/utils';
 import { base44 } from '@/api/base44Client';
+import { entities } from '@/api/entities';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { grantMainBonus } from '@/lib/referralUtils';
@@ -272,7 +273,7 @@ export default function OtherVehicleForm({ user, vehicleType, entityName, onBack
     // Remove empty strings
     Object.keys(data).forEach(k => { if (data[k] === '' || data[k] === undefined) delete data[k]; });
 
-    const created = await base44.entities[entityName].create(data);
+    const created = await entities[entityName].create(data);
     setCreatedId(created.id);
     setIsSubmitting(false);
     setStep(4);

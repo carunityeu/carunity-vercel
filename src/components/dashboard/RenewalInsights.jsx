@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { base44 } from '@/api/base44Client';
+import { entities } from '@/api/entities';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 
@@ -17,9 +18,9 @@ export default function RenewalInsights({ car, onRenewed }) {
     queryKey: ['renewalStats', car.id],
     queryFn: async () => {
       const [favorites, messages, similar] = await Promise.all([
-        base44.entities.Favorite.count({ car_id: car.id }),
-        base44.entities.Message.count({ car_id: car.id }),
-        base44.entities.Car.filter({ brand: car.brand, status: 'active' }, { sort: '-created_date', limit: 60 }),
+        entities.Favorite.count({ car_id: car.id }),
+        entities.Message.count({ car_id: car.id }),
+        entities.Car.filter({ brand: car.brand, status: 'active' }, { sort: '-created_date', limit: 60 }),
       ]);
       const prices = (similar?.items || [])
         .filter(other => other.id !== car.id && other.price > 0 && (

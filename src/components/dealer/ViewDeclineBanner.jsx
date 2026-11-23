@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { base44 } from '@/api/base44Client';
+import { entities } from '@/api/entities';
 import { TrendingDown, X, Rocket } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useTranslation } from 'react-i18next';
@@ -16,7 +16,7 @@ export default function ViewDeclineBanner({ dealer, onPromote }) {
 
   const { data: viewDeclineNotifs = [] } = useQuery({
     queryKey: ['viewDeclineNotifs', dealer?.email],
-    queryFn: () => base44.entities.Notification.filter({
+    queryFn: () => entities.Notification.filter({
       user_email: dealer.email, type: 'view_decline', is_read: false,
     }, '-created_date', 50),
     enabled: !!dealer?.email && !dismissed,

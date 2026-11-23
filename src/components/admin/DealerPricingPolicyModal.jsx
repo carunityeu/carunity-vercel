@@ -5,7 +5,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Loader2, Check } from 'lucide-react';
-import { base44 } from '@/api/base44Client';
+import { entities } from '@/api/entities';
 import { useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { DEALER_PAID_SERVICES } from '@/lib/dealerPricingServices';
@@ -64,7 +64,7 @@ export default function DealerPricingPolicyModal({ dealer, open, onOpenChange })
       // Remove entries with 0 discount and 0 custom price (no override)
       updated = updated.filter(p => p.discount_percent > 0 || (p.custom_price > 0 && p.custom_price !== DEALER_PAID_SERVICES.find(s => s.id === p.service_id)?.basePrice));
 
-      await base44.entities.Dealer.update(dealer.id, { custom_pricing: updated });
+      await entities.Dealer.update(dealer.id, { custom_pricing: updated });
       queryClient.invalidateQueries(['adminDealers']);
       toast.success('Цена сохранена');
     } catch (e) {

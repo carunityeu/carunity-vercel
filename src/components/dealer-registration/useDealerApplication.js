@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
+import { entities } from '@/api/entities';
 
 const initial = { dealer_name:'', country:'', city:'', address:'', website:'', description:'', applicant_name:'', phone:'', contact_email:'', import_requested:false, import_url:'', data_usage_consent:false, gdpr_consent:false, terms_consent:false };
 export default function useDealerApplication() {
@@ -17,7 +18,7 @@ export default function useDealerApplication() {
       const signedIn = await base44.auth.isAuthenticated();
       if (!signedIn) return;
       const me = await base44.auth.me(); setUser(me);
-      const {items} = await base44.entities.DealerApplication.filter({ applicant_email:me.email }, { sort:'-created_date', limit:1 });
+      const {items} = await entities.DealerApplication.filter({ applicant_email:me.email }, { sort:'-created_date', limit:1 });
       const app = items[0] || null; setApplication(app);
       setForm({...initial, applicant_name:me.full_name || '', contact_email:me.email, ...(app ? Object.fromEntries(Object.keys(initial).map(key => [key, app[key] ?? initial[key]])) : {}), gdpr_consent:false, terms_consent:false, data_usage_consent:false});
     } catch (e) { if (e.status !== 401 && e.response?.status !== 401) setLoadError(true); }
@@ -26,7 +27,7 @@ export default function useDealerApplication() {
   useEffect(() => { load(); }, []);
   useEffect(() => {
     if (!user) return;
-    return base44.entities.DealerApplication.subscribe(event => {
+    return entities.DealerApplication.subscribe(event => {
       if (event.id === application?.id && event.type === 'update') { setApplication(event.data); setEditing(false); }
     });
   }, [user,application?.id]);

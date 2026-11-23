@@ -1,4 +1,4 @@
-import { base44 } from '@/api/base44Client';
+import { entities } from '@/api/entities';
 
 /**
  * Ensures a car has a short_id (9-digit number).
@@ -11,15 +11,15 @@ export async function ensureShortId(car) {
   for (let i = 0; i < 5; i++) {
     const candidate = Math.floor(Math.random() * 900000000) + 100000000; // 100000000–999999999
     try {
-      const existing = await base44.entities.Car.filter({ short_id: candidate });
+      const existing = await entities.Car.filter({ short_id: candidate });
       if (!existing || existing.length === 0) {
-        await base44.entities.Car.update(car.id, { short_id: candidate });
+        await entities.Car.update(car.id, { short_id: candidate });
         return candidate;
       }
     } catch {
       // If filter fails (e.g. field not yet populated), try to set the short_id directly
       try {
-        await base44.entities.Car.update(car.id, { short_id: candidate });
+        await entities.Car.update(car.id, { short_id: candidate });
         return candidate;
       } catch {
         continue;

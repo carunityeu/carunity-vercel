@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useSearchParams } from 'react-router-dom';
-import { base44 } from '@/api/base44Client';
+import { entities } from '@/api/entities';
 import { useQuery } from '@tanstack/react-query';
 import { Search, ChevronLeft, ChevronDown, Bike, Loader2, Gauge, Zap, Calendar, Cog } from 'lucide-react';
 import { Input } from '@/components/ui/input';
@@ -26,17 +26,17 @@ export default function MotorcycleModels() {
     queryKey,
     queryFn: async () => {
       if (brandFilter) {
-        return base44.entities.MotorcycleModelInfo.filter({ brand: brandFilter }, 'model', 100000);
+        return entities.MotorcycleModelInfo.filter({ brand: brandFilter }, 'model', 100000);
       } else if (brandsFilter) {
         const brandList = brandsFilter.split(',');
         const results = await Promise.all(
-          brandList.map(b => base44.entities.MotorcycleModelInfo.filter({ brand: b }, 'model', 100000))
+          brandList.map(b => entities.MotorcycleModelInfo.filter({ brand: b }, 'model', 100000))
         );
         return results.flat();
       }
       const [ascending, descending] = await Promise.all([
-        base44.entities.MotorcycleModelInfo.filter({}, 'brand', 100000),
-        base44.entities.MotorcycleModelInfo.filter({}, '-brand', 100000),
+        entities.MotorcycleModelInfo.filter({}, 'brand', 100000),
+        entities.MotorcycleModelInfo.filter({}, '-brand', 100000),
       ]);
       return [...ascending, ...descending];
     },

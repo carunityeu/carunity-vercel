@@ -1,6 +1,7 @@
 import { useState, useRef } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
+import { entities } from '@/api/entities';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Pencil, Trash2, Plus, Eye, EyeOff, Upload, Loader2, Type } from 'lucide-react';
@@ -48,24 +49,24 @@ export default function LuxuryAdmin() {
   // Queries
   const { data: brands = [], isLoading: brandsLoading } = useQuery({
     queryKey: ['luxuryBrandsAdmin'],
-    queryFn: () => base44.entities.LuxuryBrand.list('sort_order')
+    queryFn: () => entities.LuxuryBrand.list('sort_order')
   });
 
   const { data: cars = [], isLoading: carsLoading } = useQuery({
     queryKey: ['luxuryCars'],
-    queryFn: () => base44.entities.LuxuryCar.list('-created_date')
+    queryFn: () => entities.LuxuryCar.list('-created_date')
   });
 
   // Brand mutations
   const saveBrand = useMutation({
     mutationFn: (data) => editBrandId
-      ? base44.entities.LuxuryBrand.update(editBrandId, data)
-      : base44.entities.LuxuryBrand.create(data),
+      ? entities.LuxuryBrand.update(editBrandId, data)
+      : entities.LuxuryBrand.create(data),
     onSuccess: () => { qc.invalidateQueries(['luxuryBrandsAdmin']); qc.invalidateQueries(['luxuryBrandsPublished']); setBrandForm(emptyBrandForm); setEditBrandId(null); setShowBrandForm(false); }
   });
 
   const removeBrand = useMutation({
-    mutationFn: (id) => base44.entities.LuxuryBrand.delete(id),
+    mutationFn: (id) => entities.LuxuryBrand.delete(id),
     onSuccess: () => { qc.invalidateQueries(['luxuryBrandsAdmin']); qc.invalidateQueries(['luxuryBrandsPublished']); }
   });
 
@@ -73,7 +74,7 @@ export default function LuxuryAdmin() {
     mutationFn: ({ id, val, show_name }) => {
       const update = { is_published: val };
       if (show_name !== undefined) update.show_name = show_name;
-      return base44.entities.LuxuryBrand.update(id, update);
+      return entities.LuxuryBrand.update(id, update);
     },
     onSuccess: () => { qc.invalidateQueries(['luxuryBrandsAdmin']); qc.invalidateQueries(['luxuryBrandsPublished']); }
   });
@@ -81,18 +82,18 @@ export default function LuxuryAdmin() {
   // Car mutations
   const saveCar = useMutation({
     mutationFn: (data) => editCarId
-      ? base44.entities.LuxuryCar.update(editCarId, data)
-      : base44.entities.LuxuryCar.create(data),
+      ? entities.LuxuryCar.update(editCarId, data)
+      : entities.LuxuryCar.create(data),
     onSuccess: () => { qc.invalidateQueries(['luxuryCars']); setCarForm(emptyCarForm); setEditCarId(null); setShowCarForm(false); }
   });
 
   const removeCar = useMutation({
-    mutationFn: (id) => base44.entities.LuxuryCar.delete(id),
+    mutationFn: (id) => entities.LuxuryCar.delete(id),
     onSuccess: () => qc.invalidateQueries(['luxuryCars'])
   });
 
   const toggleCar = useMutation({
-    mutationFn: ({ id, val }) => base44.entities.LuxuryCar.update(id, { is_published: val }),
+    mutationFn: ({ id, val }) => entities.LuxuryCar.update(id, { is_published: val }),
     onSuccess: () => qc.invalidateQueries(['luxuryCars'])
   });
 

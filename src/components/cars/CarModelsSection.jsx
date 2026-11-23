@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { useQuery } from '@tanstack/react-query';
-import { base44 } from '@/api/base44Client';
+import { entities } from '@/api/entities';
 import { Car, Star } from 'lucide-react';
 import CarModelGridSkeleton from '@/components/cars/CarModelGridSkeleton';
 
@@ -20,7 +20,7 @@ export default function CarModelsSection() {
   const { t } = useTranslation();
   const { data: models = [], isLoading } = useQuery({
     queryKey: ['publishedCarModels'],
-    queryFn: () => base44.entities.CarModelInfo.filter({ is_published: true }, '-created_date', 6)
+    queryFn: () => entities.CarModelInfo.filter({ is_published: true }, '-created_date', 6)
   });
 
   if (!isLoading && models.length === 0) return null;

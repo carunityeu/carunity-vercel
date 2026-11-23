@@ -3,7 +3,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import { entities, db } from '@/api/entities';
+import { entities, countView } from '@/api/entities';
 import { useAuth } from '@/lib/AuthContext';
 import { redirectToAccount } from '@/components/auth/requireAccount';
 import { Button } from '@/components/ui/button';
@@ -160,13 +160,13 @@ export default function CarDetails() {
     viewIncremented.current = true;
     const prev = JSON.parse(localStorage.getItem('recentlyViewed') || '[]');
     localStorage.setItem('recentlyViewed', JSON.stringify([carId, ...prev.filter((id) => id !== carId)].slice(0, 10)));
-    db.supabase.rpc('increment_listing_views', { p_table: 'cars', p_id: carId }).then(() => {}, () => {});
+    countView('Car', carId);
   }, [carId, car]);
 
   // Add to view history — runs once when user is available
   useEffect(() => {
     if (!carId || !user) return;
-    base44.entities.ViewHistory.create({ user_email: user.email, car_id: carId, viewed_at: new Date().toISOString() })
+    entities.ViewHistory.create({ user_email: user.email, car_id: carId, viewed_at: new Date().toISOString() })
       .then(() => {
         queryClient.invalidateQueries({ queryKey: ['recentViews'] });
         queryClient.invalidateQueries({ queryKey: ['recentViewCars'] });
@@ -209,7 +209,7 @@ export default function CarDetails() {
     if (!sellerEmail) { toast.error(t('car.seller_not_found')); return; }
     if (sellerEmail === user.email) { toast.error(t('car.cant_message_self')); return; }
 
-    await base44.entities.Message.create({
+    await entities.Message.create({
       chat_id: [user.email, sellerEmail, carId].join('-').replace(/[^a-zA-Z0-9]/g, '_'),
       sender_email: user.email,
       receiver_email: sellerEmail,

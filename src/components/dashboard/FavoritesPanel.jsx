@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
+import { entities } from '@/api/entities';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import { Heart, Loader2 } from 'lucide-react';
@@ -23,7 +24,7 @@ export default function FavoritesPanel({ user, cars = [], isLoading = false, pag
   const queryClient = useQueryClient();
   const { favoriteIds, toggleFavorite } = useFavorites();
 
-  useEffect(() => base44.entities.Car.subscribe(event => {
+  useEffect(() => entities.Car.subscribe(event => {
     const existing = cars.find(car => car.id === event.id);
     if (!existing || (event.type !== 'delete' && (!event.data?.status || event.data.status === existing.status))) return;
     queryClient.invalidateQueries({ queryKey: ['favoriteCars'] });
@@ -59,8 +60,8 @@ export default function FavoritesPanel({ user, cars = [], isLoading = false, pag
       await toggleFavorite(carId);
     } else {
       // Fallback: read from the server so a stale cached list can never leave favourites behind
-      const matches = await base44.entities.Favorite.filter({ user_email: user.email, car_id: carId });
-      await Promise.all(matches.map((favorite) => base44.entities.Favorite.delete(favorite.id)));
+      const matches = await entities.Favorite.filter({ user_email: user.email, car_id: carId });
+      await Promise.all(matches.map((favorite) => entities.Favorite.delete(favorite.id)));
     }
     queryClient.invalidateQueries({ queryKey: ['favorites'] });
     queryClient.invalidateQueries({ queryKey: ['favoriteCars'] });

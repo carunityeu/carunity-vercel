@@ -1,4 +1,4 @@
-import { base44 } from '@/api/base44Client';
+import { entities } from '@/api/entities';
 
 // Admin "view as" mode: the admin previews the site as a dealer or as a private
 // account. The choice lives in localStorage so every screen can read it.
@@ -51,8 +51,8 @@ export async function resolveViewAsUser(user) {
 
   if (viewAs.type === 'dealer') {
     const dealer = viewAs.id
-      ? await base44.entities.Dealer.get(viewAs.id).catch(() => null)
-      : asItems(await base44.entities.Dealer.filter({ owner_email: viewAs.email }, { limit: 1 }))[0];
+      ? await entities.Dealer.get(viewAs.id).catch(() => null)
+      : asItems(await entities.Dealer.filter({ owner_email: viewAs.email }, { limit: 1 }))[0];
     if (!dealer) return { user, viewAs: null };
     return {
       viewAs: { type: 'dealer', email: dealer.owner_email || viewAs.email, id: dealer.id, name: dealer.name },
@@ -70,7 +70,7 @@ export async function resolveViewAsUser(user) {
   // other users here (that read is reserved to the app owner).
   const account = viewAs.id
     ? { id: viewAs.id, email: viewAs.email, full_name: viewAs.name }
-    : asItems(await base44.entities.User.filter({ email: viewAs.email }))[0];
+    : asItems(await entities.User.filter({ email: viewAs.email }))[0];
   if (!account) return { user, viewAs: null };
   return {
     viewAs: { type: 'private', email: account.email, id: account.id, name: account.full_name || account.email },

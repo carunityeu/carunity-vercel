@@ -1,14 +1,14 @@
 import React from 'react';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
-import { base44 } from '@/api/base44Client';
+import { entities } from '@/api/entities';
 import { Button } from '@/components/ui/button';
 import { Loader2 } from 'lucide-react';
 
 export default function DealerApplicationsPanel({ onOpen, onApprove, busy }) {
   const {t:translate} = useTranslation();
   const t=key=>translate('dealerApply.'+key);
-  const query=useInfiniteQuery({queryKey:['dealerApplicationPages'], initialPageParam:null, queryFn:({pageParam})=>base44.entities.DealerApplication.filter({}, {sort:'-created_date',limit:50,...(pageParam ? {cursor:pageParam} : {})}),getNextPageParam:page=>page.has_more ? page.next_cursor : undefined});
+  const query=useInfiniteQuery({queryKey:['dealerApplicationPages'], initialPageParam:null, queryFn:({pageParam})=>entities.DealerApplication.filter({}, {sort:'-created_date',limit:50,...(pageParam ? {cursor:pageParam} : {})}),getNextPageParam:page=>page.has_more ? page.next_cursor : undefined});
   const applications=query.data?.pages.flatMap(page=>page.items) || [];
   return <section className="overflow-hidden rounded-2xl border border-border bg-card">
     <h2 className="border-b border-border p-4 text-lg font-semibold">{t('applications')}</h2>

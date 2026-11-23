@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useQuery } from '@tanstack/react-query';
-import { base44 } from '@/api/base44Client';
+import { entities } from '@/api/entities';
 import { useTranslation } from 'react-i18next';
 import { KNOWN_MOTO_BRANDS, formatMotoBrand } from '@/utils/motoBrands';
 
@@ -19,8 +19,8 @@ export default function MotorcycleBrands() {
     queryKey: ['motorcycleBrands'],
     queryFn: async () => {
       const [ascending, descending] = await Promise.all([
-        base44.entities.MotorcycleModelInfo.filter({}, 'brand', 100000),
-        base44.entities.MotorcycleModelInfo.filter({}, '-brand', 100000),
+        entities.MotorcycleModelInfo.filter({}, 'brand', 100000),
+        entities.MotorcycleModelInfo.filter({}, '-brand', 100000),
       ]);
       const allRecords = [...ascending, ...descending];
       const allBrands = [...new Set(allRecords.map(r => r.brand).filter(Boolean))];

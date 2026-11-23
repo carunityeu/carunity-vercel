@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
+import { entities, countView } from '@/api/entities';
 import { redirectToAccount } from '@/components/auth/requireAccount';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -65,9 +66,9 @@ export default function VehicleDetails() {
   const { data: item, isLoading } = useQuery({
     queryKey: [entityName, itemId],
     queryFn: async () => {
-      const items = await base44.entities[entityName].filter({ id: itemId });
+      const items = await entities[entityName].filter({ id: itemId });
       if (items[0]) {
-        await base44.entities[entityName].update(itemId, { views_count: (items[0].views_count || 0) + 1 });
+        countView(entityName, itemId);
       }
       return items[0] || null;
     },
@@ -78,7 +79,7 @@ export default function VehicleDetails() {
     queryKey: ['dealer', item?.dealer_id],
     queryFn: async () => {
       if (!item?.dealer_id) return null;
-      const dealers = await base44.entities.Dealer.filter({ id: item.dealer_id });
+      const dealers = await entities.Dealer.filter({ id: item.dealer_id });
       return dealers[0] || null;
     },
     enabled: !!item?.dealer_id,
@@ -98,7 +99,7 @@ export default function VehicleDetails() {
       toast.error(t('car.cant_message_self')); return;
     }
     const chatId = [user.email, sellerEmail, itemId].join('-').replace(/[^a-zA-Z0-9]/g, '_');
-    await base44.entities.Message.create({
+    await entities.Message.create({
       chat_id: chatId,
       sender_email: user.email,
       receiver_email: sellerEmail,
@@ -113,7 +114,7 @@ export default function VehicleDetails() {
 
   const handleReport = async () => {
     if (!user) { redirectToAccount(); return; }
-    await base44.entities.Report.create({
+    await entities.Report.create({
       reporter_email: user.email,
       target_type: vehicleType,
       target_id: itemId,

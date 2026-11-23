@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
+import { entities } from '@/api/entities';
 import { useQuery } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import { Bike, ChevronRight, ChevronLeft, Loader2, Gauge, Zap, Calendar, Cog, Wrench, Fuel, Thermometer, Bike as BikeIcon } from 'lucide-react';
@@ -22,7 +23,7 @@ export default function MotorcycleModelDetails() {
 
   const { data: model, isLoading } = useQuery({
     queryKey: ['motorcycleModel', modelId],
-    queryFn: () => base44.entities.MotorcycleModelInfo.filter({ id: modelId }),
+    queryFn: () => entities.MotorcycleModelInfo.filter({ id: modelId }),
     select: (data) => data[0],
     enabled: !!modelId,
     staleTime: 5 * 60 * 1000,
@@ -32,7 +33,7 @@ export default function MotorcycleModelDetails() {
 
   const { data: relatedModels = [] } = useQuery({
     queryKey: ['motorcycleRelated', model?.brand],
-    queryFn: () => base44.entities.MotorcycleModelInfo.filter({ brand: model.brand }, 'model', 6),
+    queryFn: () => entities.MotorcycleModelInfo.filter({ brand: model.brand }, 'model', 6),
     enabled: !!model?.brand,
     select: (data) => data.filter(m => m.id !== modelId).slice(0, 4),
     staleTime: 5 * 60 * 1000,
@@ -51,7 +52,7 @@ export default function MotorcycleModelDetails() {
     const currentVotes = model.rating_votes || 0;
     const newVotes = currentVotes + 1;
     const newRating = ((currentRating * currentVotes) + rating) / newVotes;
-    await base44.entities.MotorcycleModelInfo.update(modelId, {
+    await entities.MotorcycleModelInfo.update(modelId, {
       user_rating: Math.round(newRating * 10) / 10,
       rating_votes: newVotes
     });

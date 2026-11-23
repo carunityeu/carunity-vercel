@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { base44 } from '@/api/base44Client';
+import { entities } from '@/api/entities';
 import { useQueryClient } from '@tanstack/react-query';
 import { History, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -15,7 +15,7 @@ export default function ViewHistoryTab({ user }) {
   const { t, i18n } = useTranslation();
   const history = useViewHistory(user);
   const queryClient = useQueryClient();
-  useEffect(() => base44.entities.Car.subscribe(event => {
+  useEffect(() => entities.Car.subscribe(event => {
     if (event.type === 'delete' || (event.type === 'update' && event.data?.status && event.data.status !== 'active')) {
       queryClient.invalidateQueries({ queryKey: ['viewHistory'] });
     }

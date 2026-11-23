@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
+import { entities } from '@/api/entities';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -46,9 +47,9 @@ export default function CarModelEditModal({ model, open, onOpenChange, onSaved }
   const mutation = useMutation({
     mutationFn: async (data) => {
       if (model?.id) {
-        return base44.entities.CarModelInfo.update(model.id, data);
+        return entities.CarModelInfo.update(model.id, data);
       } else {
-        return base44.entities.CarModelInfo.create(data);
+        return entities.CarModelInfo.create(data);
       }
     },
     onSuccess: () => {

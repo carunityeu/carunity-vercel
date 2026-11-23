@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
+import { entities } from '@/api/entities';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -28,16 +29,16 @@ export default function AdminImportRequests() {
 
   const { data: requests = [], isLoading: loadingRequests } = useQuery({
     queryKey: ['importRequests'],
-    queryFn: () => base44.entities.ImportRequest.list('-created_date', 100),
+    queryFn: () => entities.ImportRequest.list('-created_date', 100),
   });
 
   const { data: dealers = [], isLoading: loadingDealers } = useQuery({
     queryKey: ['adminDealers'],
-    queryFn: () => base44.entities.Dealer.list('-created_date', 200),
+    queryFn: () => entities.Dealer.list('-created_date', 200),
   });
 
   const deleteRequest = useMutation({
-    mutationFn: (id) => base44.entities.ImportRequest.delete(id),
+    mutationFn: (id) => entities.ImportRequest.delete(id),
     onSuccess: () => {
       queryClient.invalidateQueries(['importRequests']);
       toast.success(t('admin.import_deleted', 'Заявка удалена'));
@@ -45,7 +46,7 @@ export default function AdminImportRequests() {
   });
 
   const rejectRequest = useMutation({
-    mutationFn: ({ id, notes }) => base44.entities.ImportRequest.update(id, { status: 'rejected', admin_notes: notes || 'Отклонено администратором' }),
+    mutationFn: ({ id, notes }) => entities.ImportRequest.update(id, { status: 'rejected', admin_notes: notes || 'Отклонено администратором' }),
     onSuccess: () => {
       queryClient.invalidateQueries(['importRequests']);
       toast.success(t('admin.import_rejected', 'Заявка отклонена'));
@@ -62,7 +63,7 @@ export default function AdminImportRequests() {
       const data = res?.data || res;
       if (data?.success && data?.car) {
         if (requestId) {
-          await base44.entities.ImportRequest.update(requestId, {
+          await entities.ImportRequest.update(requestId, {
             status: 'imported',
             car_id: data.car.id,
             car_title: data.car.title,
@@ -74,7 +75,7 @@ export default function AdminImportRequests() {
       } else {
         const errMsg = data?.error || t('admin.import_error', 'Ошибка импорта');
         if (requestId) {
-          await base44.entities.ImportRequest.update(requestId, {
+          await entities.ImportRequest.update(requestId, {
             status: 'rejected',
             error_message: errMsg,
           });
@@ -86,7 +87,7 @@ export default function AdminImportRequests() {
       const errMsg = e?.response?.data?.error || e?.message || t('admin.import_error', 'Ошибка импорта');
       if (requestId) {
         try {
-          await base44.entities.ImportRequest.update(requestId, {
+          await entities.ImportRequest.update(requestId, {
             status: 'rejected',
             error_message: errMsg,
           });

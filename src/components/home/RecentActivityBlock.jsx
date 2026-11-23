@@ -4,6 +4,7 @@ import { createPageUrl } from '@/utils';
 import { getCarDetailsPath } from '@/lib/shortIdUtils';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
+import { entities } from '@/api/entities';
 import { useTranslation } from 'react-i18next';
 import { History, Car, ChevronRight } from 'lucide-react';
 import { motion } from 'framer-motion';
@@ -16,7 +17,7 @@ const MAX_CARDS = 6;
 export default function RecentActivityBlock() {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
-  React.useEffect(() => base44.entities.Car.subscribe(event => {
+  React.useEffect(() => entities.Car.subscribe(event => {
     if (event.type === 'delete' || (event.type === 'update' && event.data?.status && event.data.status !== 'active')) {
       queryClient.invalidateQueries({ queryKey: ['recentViewCars'] });
     }
@@ -39,7 +40,7 @@ export default function RecentActivityBlock() {
     queryKey: ['recentViews', user?.email],
     queryFn: async () => {
       if (!user) return [];
-      return base44.entities.ViewHistory.filter({ user_email: user.email }, '-created_date', MAX_CARDS);
+      return entities.ViewHistory.filter({ user_email: user.email }, '-created_date', MAX_CARDS);
     },
     enabled: !!user,
   });
@@ -52,7 +53,7 @@ export default function RecentActivityBlock() {
     queryKey: ['recentViewCars', carIds],
     queryFn: async () => {
       if (carIds.length === 0) return [];
-      const { items } = await base44.entities.Car.filter({ id: { $in: carIds }, status: 'active' }, { limit: MAX_CARDS });
+      const { items } = await entities.Car.filter({ id: { $in: carIds }, status: 'active' }, { limit: MAX_CARDS });
       return items;
     },
     enabled: carIds.length > 0,

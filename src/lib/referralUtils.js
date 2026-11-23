@@ -1,4 +1,5 @@
 import { base44 } from '@/api/base44Client';
+import { entities } from '@/api/entities';
 
 const STORAGE_KEY = 'cu_ref_code';
 const INSTANT_BONUS_DAYS = 7;
@@ -95,7 +96,7 @@ export async function processPendingReferral(user) {
 
   // Check if referral already exists
   try {
-    const existing = await base44.entities.Referral.filter({
+    const existing = await entities.Referral.filter({
       invited_email: user.email,
       referral_code: refCode
     });
@@ -106,7 +107,7 @@ export async function processPendingReferral(user) {
     }
 
     // Find inviter by referral_code — search in User entity
-    const users = await base44.entities.User.filter({ referral_code: refCode });
+    const users = await entities.User.filter({ referral_code: refCode });
     const inviter = users && users[0];
 
     if (!inviter || inviter.email === user.email) {
@@ -115,7 +116,7 @@ export async function processPendingReferral(user) {
     }
 
     // Create referral record
-    const referral = await base44.entities.Referral.create({
+    const referral = await entities.Referral.create({
       inviter_email: inviter.email,
       inviter_code: refCode,
       invited_email: user.email,
@@ -142,16 +143,16 @@ export async function processPendingReferral(user) {
 async function grantInstantBonus(referralId, inviterEmail, invitedName) {
   try {
     // Try to extend dealer subscription
-    const dealers = await base44.entities.Dealer.filter({ owner_email: inviterEmail });
+    const dealers = await entities.Dealer.filter({ owner_email: inviterEmail });
     if (dealers && dealers.length > 0) {
       const dealer = dealers[0];
       const newDate = extendSubscription(dealer.subscription_until, INSTANT_BONUS_DAYS);
-      await base44.entities.Dealer.update(dealer.id, { subscription_until: newDate });
+      await entities.Dealer.update(dealer.id, { subscription_until: newDate });
     }
 
     // Create notification
     const ctx = { invitedName, bonusDays: INSTANT_BONUS_DAYS, kind: 'referral_instant' };
-    await base44.entities.Notification.create({
+    await entities.Notification.create({
       user_email: inviterEmail,
       type: 'offer_received',
       title: `Friend registered!`,
@@ -161,7 +162,7 @@ async function grantInstantBonus(referralId, inviterEmail, invitedName) {
     });
 
     // Mark instant bonus granted
-    await base44.entities.Referral.update(referralId, {
+    await entities.Referral.update(referralId, {
       instant_bonus_granted: true,
       instant_bonus_granted_at: new Date().toISOString()
     });
@@ -176,7 +177,7 @@ async function grantInstantBonus(referralId, inviterEmail, invitedName) {
  */
 export async function grantMainBonus(invitedEmail, actionType = 'listing_created') {
   try {
-    const referrals = await base44.entities.Referral.filter({
+    const referrals = await entities.Referral.filter({
       invited_email: invitedEmail,
       main_bonus_granted: false
     });
@@ -186,16 +187,16 @@ export async function grantMainBonus(invitedEmail, actionType = 'listing_created
     const referral = referrals[0];
 
     // Extend inviter's dealer subscription
-    const dealers = await base44.entities.Dealer.filter({ owner_email: referral.inviter_email });
+    const dealers = await entities.Dealer.filter({ owner_email: referral.inviter_email });
     if (dealers && dealers.length > 0) {
       const dealer = dealers[0];
       const newDate = extendSubscription(dealer.subscription_until, MAIN_BONUS_DAYS);
-      await base44.entities.Dealer.update(dealer.id, { subscription_until: newDate });
+      await entities.Dealer.update(dealer.id, { subscription_until: newDate });
     }
 
     // Create notification
     const ctx = { invitedName: referral.invited_name, actionType, bonusDays: MAIN_BONUS_DAYS, kind: 'referral_main' };
-    await base44.entities.Notification.create({
+    await entities.Notification.create({
       user_email: referral.inviter_email,
       type: 'offer_received',
       title: `Friend completed an action!`,
@@ -205,7 +206,7 @@ export async function grantMainBonus(invitedEmail, actionType = 'listing_created
     });
 
     // Mark main bonus granted
-    await base44.entities.Referral.update(referral.id, {
+    await entities.Referral.update(referral.id, {
       main_bonus_granted: true,
       main_bonus_granted_at: new Date().toISOString(),
       status: 'action_completed',
@@ -232,7 +233,7 @@ function extendSubscription(currentUntil, days) {
  */
 export async function getReferralStats(inviterEmail) {
   try {
-    const referrals = await base44.entities.Referral.filter({ inviter_email: inviterEmail });
+    const referrals = await entities.Referral.filter({ inviter_email: inviterEmail });
     if (!referrals) return { total: 0, registered: 0, completed: 0, bonusDays: 0 };
 
     const total = referrals.length;
@@ -251,7 +252,7 @@ export async function getReferralStats(inviterEmail) {
  */
 export async function getReferredUsers(inviterEmail) {
   try {
-    const referrals = await base44.entities.Referral.filter(
+    const referrals = await entities.Referral.filter(
       { inviter_email: inviterEmail },
       '-created_date',
       50

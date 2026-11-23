@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { base44 } from '@/api/base44Client';
+import { entities } from '@/api/entities';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
@@ -42,14 +42,14 @@ export default function DealerGetOffers({ dealer }) {
 
   const { data: allCars = [], isLoading } = useQuery({
     queryKey: ['getOffersCarsDealer'],
-    queryFn: () => base44.entities.Car.filter({ status: 'active', seller_type: 'private' }, '-created_date', 200),
+    queryFn: () => entities.Car.filter({ status: 'active', seller_type: 'private' }, '-created_date', 200),
   });
 
   const cars = allCars.filter(c => c.features?.includes('get_offers'));
 
   const { data: myOffers = [] } = useQuery({
     queryKey: ['dealerSentOffers', dealer?.id],
-    queryFn: () => base44.entities.TradeInOffer.filter({ dealer_id: dealer.id }, '-created_date'),
+    queryFn: () => entities.TradeInOffer.filter({ dealer_id: dealer.id }, '-created_date'),
     enabled: !!dealer?.id,
   });
 
@@ -80,7 +80,7 @@ export default function DealerGetOffers({ dealer }) {
   const submitOffer = async () => {
     if (!selectedCar || !dealer) return;
     setSubmitting(true);
-    await base44.entities.TradeInOffer.create({
+    await entities.TradeInOffer.create({
       car_id: selectedCar.id,
       car_title: selectedCar.title,
       dealer_id: dealer.id,

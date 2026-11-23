@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { base44 } from '@/api/base44Client';
+import { entities } from '@/api/entities';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -34,7 +34,7 @@ export default function FastSaleCars({ dealer }) {
     queryKey: ['dealerCriteria', dealer?.id],
     queryFn: async () => {
       if (!dealer?.id) return null;
-      const existing = await base44.entities.DealerPurchaseCriteria.filter({ dealer_id: dealer.id });
+      const existing = await entities.DealerPurchaseCriteria.filter({ dealer_id: dealer.id });
       return existing?.[0] || null;
     },
     enabled: !!dealer?.id
@@ -43,14 +43,14 @@ export default function FastSaleCars({ dealer }) {
   // Fetch all fast-sale offers for this dealer
   const { data: myOffers = [], isLoading: loadingOffers } = useQuery({
     queryKey: ['fastSaleOffers', dealer?.id],
-    queryFn: () => base44.entities.TradeInOffer.filter({ dealer_id: dealer.id, fast_sale: true }, '-created_date', 200),
+    queryFn: () => entities.TradeInOffer.filter({ dealer_id: dealer.id, fast_sale: true }, '-created_date', 200),
     enabled: !!dealer?.id
   });
 
   // Fetch active private seller cars
   const { data: allCars = [], isLoading: loadingCars } = useQuery({
     queryKey: ['fastSaleCars'],
-    queryFn: () => base44.entities.Car.filter({ status: 'active', seller_type: 'private' }, '-created_date', 100),
+    queryFn: () => entities.Car.filter({ status: 'active', seller_type: 'private' }, '-created_date', 100),
     enabled: !!dealer?.id
   });
 
@@ -90,7 +90,7 @@ export default function FastSaleCars({ dealer }) {
     setSubmitting(true);
     try {
       const expiresAt = new Date(Date.now() + 48 * 60 * 60 * 1000).toISOString();
-      await base44.entities.TradeInOffer.create({
+      await entities.TradeInOffer.create({
         car_id: selectedCar.id,
         car_title: `${selectedCar.brand} ${selectedCar.model} ${selectedCar.year || ''}`.trim(),
         car_brand: selectedCar.brand, car_model: selectedCar.model, car_year: selectedCar.year,
@@ -110,7 +110,7 @@ export default function FastSaleCars({ dealer }) {
 
   const markNotInterested = async (car) => {
     try {
-      await base44.entities.TradeInOffer.create({
+      await entities.TradeInOffer.create({
         car_id: car.id, car_title: `${car.brand} ${car.model} ${car.year || ''}`.trim(),
         car_brand: car.brand, car_model: car.model, car_year: car.year, car_price: car.price,
         car_image: car.images?.[0] || '', car_country: car.country, car_mileage: car.mileage,

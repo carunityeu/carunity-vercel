@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { base44 } from '@/api/base44Client';
+import { entities } from '@/api/entities';
 import requireAccount from '@/components/auth/requireAccount';
 
 export default function useSearchSaveToggle(signature) {
@@ -19,12 +20,12 @@ export default function useSearchSaveToggle(signature) {
       if (!await requireAccount()) return;
       const id = saved[signature];
       if (id) {
-        await base44.entities.SavedSearch.delete(id);
+        await entities.SavedSearch.delete(id);
         setSaved(previous => { const next = { ...previous }; delete next[signature]; return next; });
         toast.success(t('searchRef.searchRemoved'));
       } else {
         const user = await base44.auth.me();
-        const record = await base44.entities.SavedSearch.create({ ...data, user_email: user.email });
+        const record = await entities.SavedSearch.create({ ...data, user_email: user.email });
         setSaved(previous => ({ ...previous, [signature]: record.id }));
         toast.success(t('catalog.search_saved'));
       }

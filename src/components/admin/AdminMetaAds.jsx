@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { base44 } from '@/api/base44Client';
+import { entities } from '@/api/entities';
 import { Loader2, Megaphone, Search, ExternalLink, Clock, CheckCircle, XCircle, AlertCircle } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -36,11 +36,11 @@ export default function AdminMetaAds() {
 
   const { data: orders = [], isLoading } = useQuery({
     queryKey: ['adminMetaAdsOrders'],
-    queryFn: () => base44.entities.MetaAdsOrder.list('-created_date', 200),
+    queryFn: () => entities.MetaAdsOrder.list('-created_date', 200),
   });
 
   const updateOrder = useMutation({
-    mutationFn: ({ id, data }) => base44.entities.MetaAdsOrder.update(id, data),
+    mutationFn: ({ id, data }) => entities.MetaAdsOrder.update(id, data),
     onSuccess: () => {
       queryClient.invalidateQueries(['adminMetaAdsOrders']);
       toast.success('Заказ обновлён');

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { useQuery } from '@tanstack/react-query';
-import { base44 } from '@/api/base44Client';
+import { entities } from '@/api/entities';
 import { Button } from '@/components/ui/button';
 import ListPagination from '@/components/ui/ListPagination';
 import { Badge } from '@/components/ui/badge';
@@ -52,7 +52,7 @@ export default function RentalCatalog() {
 
   const { data: rentalCars = [], isLoading } = useQuery({
     queryKey: ['rentalCars'],
-    queryFn: () => base44.entities.RentalCar.filter({ is_available: true }, '-created_date', 50)
+    queryFn: () => entities.RentalCar.filter({ is_available: true }, '-created_date', 50)
   });
 
   const filteredCars = rentalCars.filter(car => {

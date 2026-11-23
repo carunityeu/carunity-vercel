@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
+import { entities } from '@/api/entities';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -112,7 +113,7 @@ export default function EditListing() {
   const { data: car, isLoading } = useQuery({
     queryKey: ['car', carId],
     queryFn: async () => {
-      const cars = await base44.entities.Car.filter({ id: carId });
+      const cars = await entities.Car.filter({ id: carId });
       return cars[0] || null;
     },
     enabled: !!carId
@@ -196,7 +197,7 @@ export default function EditListing() {
 
     setIsSubmitting(true);
 
-    await base44.entities.Car.update(carId, {
+    await entities.Car.update(carId, {
       title: `${form.brand} ${form.model} ${form.year}`,
       brand: form.brand,
       model: form.model,

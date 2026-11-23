@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useQuery } from '@tanstack/react-query';
-import { base44 } from '@/api/base44Client';
+import { entities } from '@/api/entities';
 import { Zap } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
@@ -46,7 +46,7 @@ export default function DealerAnalyticsPremium({ dealerCars, dealerMessages, pri
   const { data: viewHistory = [] } = useQuery({
     queryKey: ['dealerViewHistory', dealer?.id],
     queryFn: async () => {
-      const { items } = await base44.entities.ViewHistory.list({ sort: '-viewed_at', limit: 500 });
+      const { items } = await entities.ViewHistory.list({ sort: '-viewed_at', limit: 500 });
       return items.filter(v => carIds.includes(v.car_id));
     },
     enabled: carIds.length > 0
@@ -55,7 +55,7 @@ export default function DealerAnalyticsPremium({ dealerCars, dealerMessages, pri
   const { data: marketCars = [] } = useQuery({
     queryKey: ['marketCars', selectedCar?.brand, selectedCar?.model],
     queryFn: async () => {
-      const { items } = await base44.entities.Car.filter({ brand: selectedCar.brand, model: selectedCar.model, status: 'active' }, { sort: '-created_date', limit: 50 });
+      const { items } = await entities.Car.filter({ brand: selectedCar.brand, model: selectedCar.model, status: 'active' }, { sort: '-created_date', limit: 50 });
       return items;
     },
     enabled: !!selectedCar?.brand

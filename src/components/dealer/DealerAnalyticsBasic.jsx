@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { base44 } from '@/api/base44Client';
+import { entities } from '@/api/entities';
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
 import { Eye, MessageSquare, Heart, TrendingUp, CheckCircle, AlertCircle, Lightbulb, Car, ChevronDown, ChevronUp } from 'lucide-react';
 import { format, subDays, isAfter, parseISO } from 'date-fns';
@@ -53,7 +53,7 @@ export default function DealerAnalyticsBasic({ dealerCars, dealerMessages, price
   const { data: viewHistory = [] } = useQuery({
     queryKey: ['dealerViewHistory', dealer?.id],
     queryFn: async () => {
-      const all = await base44.entities.ViewHistory.list('-viewed_at', 500);
+      const all = await entities.ViewHistory.list('-viewed_at', 500);
       return all.filter(v => carIds.includes(v.car_id));
     },
     enabled: carIds.length > 0
@@ -63,7 +63,7 @@ export default function DealerAnalyticsBasic({ dealerCars, dealerMessages, price
   const { data: favorites = [] } = useQuery({
     queryKey: ['dealerFavorites', dealer?.id],
     queryFn: async () => {
-      const all = await base44.entities.Favorite.list('-created_date', 500);
+      const all = await entities.Favorite.list('-created_date', 500);
       return all.filter(f => carIds.includes(f.car_id));
     },
     enabled: carIds.length > 0
@@ -72,7 +72,7 @@ export default function DealerAnalyticsBasic({ dealerCars, dealerMessages, price
   // Fetch similar cars for market comparison
   const { data: marketCars = [] } = useQuery({
     queryKey: ['marketCars', selectedCar?.brand, selectedCar?.model],
-    queryFn: () => base44.entities.Car.filter({ brand: selectedCar.brand, model: selectedCar.model, status: 'active' }, '-created_date', 50),
+    queryFn: () => entities.Car.filter({ brand: selectedCar.brand, model: selectedCar.model, status: 'active' }, '-created_date', 50),
     enabled: !!selectedCar?.brand
   });
 
