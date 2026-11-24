@@ -21,7 +21,7 @@ import CarGridSkeleton from '@/components/cars/CarGridSkeleton';
 import DiscountTag from '@/components/cars/DiscountTag';
 import PriceRatingBadge from '@/components/cars/PriceRatingBadge';
 import TransmissionOrEnergy from '@/components/cars/TransmissionOrEnergy';
-import { Panel, Chip } from '@/components/ds';
+import { Chip } from '@/components/ds';
 
 const TOP_COUNT = 5;
 const hasPhoto = (c) => typeof c.images?.[0] === 'string' && c.images[0].trim().startsWith('http');
@@ -51,13 +51,14 @@ function MainCard({ car, rating }) {
     on ? 'border-brand bg-brand/15 text-brand-text' : 'border-transparent bg-raised text-ink-2 hover:text-ink');
 
   return (
-    <Link to={getCarDetailsPath(car)} className="group flex flex-col overflow-hidden rounded-xl border border-line bg-page transition-colors hover:border-brand/60 sm:flex-row">
-      <PromoPhotoFrame promotion={null} exclusive={!!car.exclusive_listing} radiusClass="rounded-lg" notchClass="bg-page"
-        className="m-2 min-h-44 bg-raised sm:w-[40%] sm:flex-shrink-0 lg:min-h-52">
+    <Link to={getCarDetailsPath(car)} className="tile-card group flex flex-col overflow-hidden rounded-2xl border border-line bg-surface transition-colors hover:border-brand/50 sm:flex-row lg:flex-col">
+      {/* Photos are landscape everywhere: 4:3 on phones and tablets, 16:9 on desktop */}
+      <PromoPhotoFrame promotion={null} exclusive={!!car.exclusive_listing} radiusClass="rounded-none"
+        className="aspect-[4/3] w-full flex-shrink-0 bg-raised sm:w-[45%] lg:aspect-video lg:w-full">
         <FeaturedCardImage car={car} />
       </PromoPhotoFrame>
 
-      <div className="flex min-w-0 flex-1 flex-col justify-between gap-4 p-3 sm:pl-2">
+      <div className="flex min-w-0 flex-1 flex-col justify-between gap-4 p-4">
         <div>
           <h3 className="text-lg font-bold leading-tight text-ink">
             {car.brand} {car.model} {car.year && <span className="font-semibold text-ink-3">{car.year}</span>}
@@ -112,8 +113,9 @@ function SmallCard({ car, rating }) {
   const discount = car.original_price > car.price ? car.original_price - car.price : 0;
   const pill = 'inline-flex items-center gap-1 rounded-lg bg-raised px-2 py-1 text-sm font-semibold text-ink-2';
   return (
-    <Link to={getCarDetailsPath(car)} className="tile-card group flex min-h-[132px] overflow-hidden rounded-xl border border-line bg-page transition-colors hover:border-brand/60">
-      <PromoPhotoFrame promotion={null} exclusive={!!car.exclusive_listing} radiusClass="rounded-none" className="w-[40%] flex-shrink-0 bg-raised">
+    <Link to={getCarDetailsPath(car)} className="tile-card group flex overflow-hidden rounded-2xl border border-line bg-surface transition-colors hover:border-brand/50 sm:flex-col lg:flex-1 lg:flex-row">
+      {/* Landscape photo everywhere: phones — left 40%, tablets — on top, desktop — left, stretching with the row */}
+      <PromoPhotoFrame promotion={null} exclusive={!!car.exclusive_listing} radiusClass="rounded-none" className="aspect-[4/3] w-[40%] flex-shrink-0 bg-raised sm:w-full lg:aspect-auto lg:w-[36%]">
         {car.images?.[0]
           ? <img src={car.images[0]} alt={car.title} className="h-full w-full object-cover" />
           : <div className="flex h-full w-full items-center justify-center"><Car className="h-6 w-6 text-ink-3" /></div>}
@@ -128,8 +130,8 @@ function SmallCard({ car, rating }) {
           {discount > 0 && <DiscountTag label={`-${formatPrice(discount)}`} />}
           <PriceRatingBadge score={rating?.score} showLabel={false} />
         </div>
-        {car.mileage != null && <span className={cn(pill, 'self-start')}>{icon(carIcons.mileage)}{formatNumber(car.mileage)} {t('car.km')}</span>}
         <div className="flex flex-wrap items-center gap-1">
+          {car.mileage != null && <span className={pill}>{icon(carIcons.mileage)}{formatNumber(car.mileage)} {t('car.km')}</span>}
           {fuel && <span style={fuel.style} className={pill}><img src={fuel.icon} alt="" className={cn('h-3.5 w-3.5 flex-shrink-0', fuel.iconClass)} />{t('fuel_types.' + car.fuel_type)}</span>}
           <TransmissionOrEnergy car={car} size="md" radius="rounded-lg">
             {car.transmission && <span className={pill}>{icon(carIcons.transmission)}{t('transmission_types.' + car.transmission)}</span>}
@@ -148,23 +150,27 @@ export default function TopListings({ className }) {
   const [main, ...rest] = cars;
 
   return (
-    <div className={cn('flex flex-col gap-2', className)}>
-      {/* Desktop: big card on the left, the four small ones in a 2×2 grid on the right */}
-      <Panel title={t('home.top_listings', 'Топ объявления')} className="flex-1" bodyClassName="grid gap-3 p-2 sm:p-3 md:p-3 lg:grid-cols-2">
-        {isLoading ? <CarGridSkeleton count={4} className="grid grid-cols-2 gap-3 sm:grid-cols-4 lg:col-span-2" /> : (
-          <>
-            <MainCard car={main} rating={ratings[main.id]} />
-            {rest.length > 0 && (
-              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:auto-rows-fr">
-                {rest.map((car) => <SmallCard key={car.id} car={car} rating={ratings[car.id]} />)}
-              </div>
-            )}
-          </>
-        )}
-      </Panel>
-      <Link to={createPageUrl('Catalog')} className="flex h-10 items-center justify-center gap-1.5 rounded-xl text-sm font-medium text-brand-text transition-colors hover:bg-surface">
-        {t('home.see_all_listings')} <ChevronRight className="h-4 w-4" />
-      </Link>
-    </div>
+    // Two layers only: the page and the cards (no panel around them, design code §1)
+    <section className={className} aria-labelledby="top-listings-title">
+      <div className="mb-3 flex items-baseline justify-between gap-3 sm:mb-4">
+        <h2 id="top-listings-title" className="text-xl font-bold text-ink sm:text-2xl">{t('home.top_listings', 'Топ объявления')}</h2>
+        <Link to={createPageUrl('Catalog')} className="flex flex-shrink-0 items-center gap-0.5 text-sm font-medium text-brand-text hover:underline">
+          <span className="sm:hidden">{t('home.see_all', 'Все')}</span>
+          <span className="hidden sm:inline">{t('home.see_all_listings')}</span>
+          <ChevronRight className="h-4 w-4" />
+        </Link>
+      </div>
+      {isLoading ? <CarGridSkeleton count={4} className="grid grid-cols-2 gap-3 sm:grid-cols-4" /> : (
+        // Desktop: big card left, four small cards stacked on the right with the same total height
+        <div className="grid gap-3 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)] lg:gap-4">
+          <MainCard car={main} rating={ratings[main.id]} />
+          {rest.length > 0 && (
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-4 lg:flex lg:flex-col">
+              {rest.map((car) => <SmallCard key={car.id} car={car} rating={ratings[car.id]} />)}
+            </div>
+          )}
+        </div>
+      )}
+    </section>
   );
 }
