@@ -8,27 +8,14 @@ export const ADS_ENABLED = true;
 
 // URL рекламных изображений (fallback)
 export const AD_IMAGES = {
-  vwPolo: 'https://media.base44.com/images/public/6973f00466c3a37f3d8e7e53/4dd7e8127_970x250-starbucks-nitro.webp',
   hondaCity: 'https://media.base44.com/images/public/6973f00466c3a37f3d8e7e53/1053963ad_a055f22c6403f18744c45843415e625a.jpg',
   citroen: 'https://media.base44.com/images/public/6973f00466c3a37f3d8e7e53/4fd0a0a4c_4707e7e3922f0dc53f4735f40d789e04.jpg',
   bmwM: 'https://media.base44.com/images/public/6973f00466c3a37f3d8e7e53/0dec8d59c_55d4e744e0bc25040b905c7311ffb1a7.jpg',
 };
 
-// Fallback static ads (used when no AdConfiguration exists for a slot)
-const POLO_AD = {
-  image: AD_IMAGES.vwPolo,
-  imageAlt: 'Starbucks Nitro Cold Brew Coffee — On Tap at Starbucks',
-  url: '#ad-starbucks-nitro',
-};
-
+// Fallback static ads, used when no AdConfiguration exists for a slot.
+// Banner slots have none: without a booked ad they render nothing (no placeholder banner).
 const ADS = {
-  'catalog-top': [POLO_AD],
-  'catalog-mid': [POLO_AD],
-  'home-top': [POLO_AD],
-  'home-before-news': [POLO_AD],
-  'article-top': [POLO_AD],
-  'article-bottom': [POLO_AD],
-  'news-list-top': [POLO_AD],
   'catalog-sidebar': [
     {
       gradient: 'linear-gradient(160deg, #101014 0%, #1e3a5f 50%, #0c4a6e 100%)',
@@ -61,7 +48,6 @@ const ADS = {
   ],
 };
 
-const DEFAULT_AD = POLO_AD;
 
 // Ссылки баннеров: внешние — в новой вкладке (как в hero-баннере),
 // без сохранённой ссылки — баннер просто не кликается
@@ -83,9 +69,9 @@ function HorizontalAd({ ad, lang, aspectRatio }) {
   if (ad.image) {
     return (
       <a href={ad.url}       {...linkProps(ad.url)}
-        className="block relative w-full overflow-hidden rounded-xl transition-opacity hover:opacity-95"
+        className="block relative w-full max-w-[970px] mx-auto overflow-hidden rounded-xl transition-opacity hover:opacity-95"
       >
-        <span className="absolute top-1.5 right-2 z-10 text-[9px] uppercase tracking-widest text-white/70 bg-black/30 px-1.5 py-0.5 rounded">
+        <span className="absolute top-1.5 right-2 z-10 text-[10px] uppercase tracking-widest text-white/70 bg-black/30 px-1.5 py-0.5 rounded">
           {labelText}
         </span>
         <img
@@ -105,7 +91,7 @@ function HorizontalAd({ ad, lang, aspectRatio }) {
     >
       <div className="absolute -left-10 top-1/2 -translate-y-1/2 w-24 h-24 rounded-full pointer-events-none opacity-20"
         style={{ background: `radial-gradient(circle, ${ad.accent}, transparent 70%)` }} />
-      <span className="absolute top-1 right-2 text-[8px] uppercase tracking-widest text-white/30">
+      <span className="absolute top-1 right-2 text-[10px] uppercase tracking-widest text-white/30">
         {labelText}
       </span>
       <div className="flex-shrink-0 w-7 h-7 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center"
@@ -136,7 +122,7 @@ function VerticalAd({ ad, lang, size }) {
       <a href={ad.url}       {...linkProps(ad.url)}
         className="block relative w-full overflow-hidden rounded-xl transition-opacity hover:opacity-95"
       >
-        <span className="absolute top-1.5 left-2 z-10 text-[9px] uppercase tracking-widest text-white/70 bg-black/30 px-1.5 py-0.5 rounded">
+        <span className="absolute top-1.5 left-2 z-10 text-[10px] uppercase tracking-widest text-white/70 bg-black/30 px-1.5 py-0.5 rounded">
           {labelText}
         </span>
         <img
@@ -156,7 +142,7 @@ function VerticalAd({ ad, lang, size }) {
     >
       <div className="absolute -top-12 left-1/2 -translate-x-1/2 w-48 h-48 rounded-full pointer-events-none opacity-20"
         style={{ background: `radial-gradient(circle, ${ad.accent}, transparent 70%)` }} />
-      <span className="absolute top-2 left-3 text-[9px] uppercase tracking-widest text-white/30">
+      <span className="absolute top-2 left-3 text-[10px] uppercase tracking-widest text-white/30">
         {labelText}
       </span>
       {ad.icon ? (
@@ -188,8 +174,8 @@ export default function AdBanner({ size = 'leaderboard', slot, className = '', l
   const configuredAd = useAdImage(slot);
 
   // Use configured ad if available, otherwise fall back to static
-  const slotAds = configuredAd ? [{ ...configuredAd, url: configuredAd.link }] : (ADS[slot] || [DEFAULT_AD]);
-  const ad = slotAds[adIndex % slotAds.length];
+  const slotAds = configuredAd ? [{ ...configuredAd, url: configuredAd.link }] : (ADS[slot] || []);
+  const ad = slotAds.length ? slotAds[adIndex % slotAds.length] : null;
 
   // Ротация если несколько объявлений (fallback static only)
   useEffect(() => {
@@ -199,7 +185,7 @@ export default function AdBanner({ size = 'leaderboard', slot, className = '', l
     return () => clearInterval(t);
   }, [slotAds.length, configuredAd]);
 
-  if (!ADS_ENABLED) return null;
+  if (!ADS_ENABLED || !ad) return null;
 
   const detectedLang = lang || (typeof window !== 'undefined' ? localStorage.getItem('i18nextLng')?.slice(0, 2) : null) || 'ru';
   const isHorizontal = HORIZONTAL_SIZES.includes(size);

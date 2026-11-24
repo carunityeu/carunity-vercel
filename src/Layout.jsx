@@ -4,7 +4,7 @@ import Header from '@/components/ui/Header';
 import Footer from '@/components/ui/Footer';
 import QuickNavBar from '@/components/ui/QuickNavBar';
 import { Button } from '@/components/ui/button';
-import { X, Cookie } from 'lucide-react';
+import { Cookie } from 'lucide-react';
 import { CompareProvider } from '@/components/compare/CompareContext';
 import CompareBar from '@/components/compare/CompareBar';
 import { FavoritesProvider } from '@/components/favorites/FavoritesContext';
@@ -20,14 +20,36 @@ export default function Layout({ children, currentPageName }) {
   const openValuation = async () => {
     if (await requireAccount()) setShowValuation(true);
   };
+  // The fixed header's real height (it differs per breakpoint and with the phone search row):
+  // pages offset their content by --header-h so nothing hides under it.
   useEffect(() => {
-    if (currentPageName !== 'Caro' || !headerRef.current) return;
-    const update = () => document.documentElement.style.setProperty('--caro-header-height', `${headerRef.current.getBoundingClientRect().height}px`);
+    if (!headerRef.current) return;
+    const root = document.documentElement.style;
+    const update = () => {
+      const h = `${headerRef.current.getBoundingClientRect().height}px`;
+      root.setProperty('--header-h', h);
+      root.setProperty('--caro-header-height', h);
+    };
     update();
     const observer = new ResizeObserver(update);
     observer.observe(headerRef.current);
-    return () => { observer.disconnect(); document.documentElement.style.removeProperty('--caro-header-height'); };
-  }, [currentPageName]);
+    return () => observer.disconnect();
+  }, []);
+
+  // Phones/tablets: the header slides away while scrolling down and comes back on scroll up
+  const [headerHidden, setHeaderHidden] = useState(false);
+  useEffect(() => {
+    let lastY = window.scrollY;
+    const onScroll = () => {
+      const y = window.scrollY;
+      if (window.innerWidth >= 1024 || y < 160) setHeaderHidden(false);
+      else if (y > lastY + 6) setHeaderHidden(true);
+      else if (y < lastY - 6) setHeaderHidden(false);
+      lastY = y;
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
 
   useEffect(() => {
     const cookieConsent = localStorage.getItem('cookie_consent');
@@ -74,14 +96,17 @@ export default function Layout({ children, currentPageName }) {
           .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
           .dark { color-scheme: dark; }
           .dark body { background-color: #101014; color: #f1f5f9; }
+          :root { --header-h: 113px; }
+          @media (min-width: 640px) { :root { --header-h: 104px; } }
+          @media (min-width: 768px) { :root { --header-h: 120px; } }
         `}</style>
 
-        <div ref={headerRef} className="fixed top-0 left-0 right-0 z-50 shadow-md">
+        <div ref={headerRef} className={`fixed top-0 left-0 right-0 z-50 shadow-md transition-transform duration-200 ${headerHidden ? '-translate-y-full' : ''}`}>
           <Header />
           <QuickNavBar onValuationClick={openValuation} />
         </div>
 
-        <main style={currentPageName === 'Caro' ? { paddingTop: 'var(--caro-header-height, 120px)' } : undefined} className={hasTransparentHeader ? '' : 'pt-[64px] sm:pt-[104px] md:pt-[120px]'}>
+        <main style={hasTransparentHeader ? undefined : { paddingTop: 'var(--header-h)' }}>
           {children}
         </main>
 

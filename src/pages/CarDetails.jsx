@@ -7,7 +7,8 @@ import { entities, countView } from '@/api/entities';
 import { useAuth } from '@/lib/AuthContext';
 import { redirectToAccount } from '@/components/auth/requireAccount';
 import { Button } from '@/components/ui/button';
-import { AlertTriangle, ChevronLeft } from 'lucide-react';
+import { AlertTriangle, ChevronLeft, MessageSquare, Phone } from 'lucide-react';
+import { formatPrice } from '@/utils/format';
 import { ensureShortId, getShareUrl } from '@/lib/shortIdUtils';
 import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
@@ -120,6 +121,19 @@ export default function CarDetails() {
       navigate(`/cardetails/${car.short_id}${query ? '?' + query : ''}`, { replace: true });
     }
   }, [car, shortId, navigate]);
+
+  // One address per listing for search engines: /cardetails/<short_id>
+  // index.html carries the home page's canonical tag; point it at this listing while it is open
+  useEffect(() => {
+    if (!car?.short_id) return;
+    let link = document.querySelector('link[rel="canonical"]');
+    const created = !link;
+    if (created) { link = document.createElement('link'); link.rel = 'canonical'; document.head.appendChild(link); }
+    const previous = link.href;
+    const origin = previous ? new URL(previous).origin : window.location.origin;
+    link.href = `${origin}/cardetails/${car.short_id}`;
+    return () => { if (created) link.remove(); else link.href = previous; };
+  }, [car?.short_id]);
 
   const { data: dealer } = useQuery({
     queryKey: ['dealer', car?.dealer_id],
@@ -253,15 +267,15 @@ export default function CarDetails() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950">
-      <div className="mx-auto max-w-7xl px-5 pb-1 pt-6 sm:px-8 sm:pt-8 md:px-10 lg:px-14">
+    <div className={`min-h-screen bg-slate-950 ${!isClosed && !isOwner ? 'pb-24 lg:pb-0' : ''}`}>
+      <div className="mx-auto max-w-7xl px-4 pb-1 pt-4 sm:px-8 sm:pt-8 md:px-10 lg:px-14">
         <button onClick={() => navigate(-1)} className="flex items-center gap-1.5 text-sm text-slate-400 transition-colors hover:text-emerald-400">
           <ChevronLeft className="h-4 w-4" />
           {t('common.back', 'Назад')}
         </button>
       </div>
 
-      <div className="mx-auto max-w-7xl px-5 py-6 sm:px-8 sm:py-8 md:px-10 md:py-10 lg:px-14">
+      <div className="mx-auto max-w-7xl px-4 py-4 sm:px-8 sm:py-8 md:px-10 md:py-10 lg:px-14">
         {isClosed && (
           <div className="mb-4 flex items-start gap-3 rounded-xl border border-border bg-muted px-4 py-3" role="status">
             <AlertTriangle className="mt-0.5 h-4 w-4 flex-shrink-0 text-muted-foreground" />
@@ -298,6 +312,8 @@ export default function CarDetails() {
           </div>
 
           {!isClosed && <div className="space-y-4 md:space-y-6 lg:col-start-1 lg:row-start-2">
+            <DescriptionSection text={car[`description_${lang}`] || car.description} />
+
             <CollapsibleCard title={t('car.specs')}>
               <CarSpecsGrouped car={car} plateRevealed={plateRevealed} onRevealPlate={() => setPlateRevealed(true)} />
             </CollapsibleCard>
@@ -311,8 +327,6 @@ export default function CarDetails() {
             )}
 
             <CarTaxBlock />
-
-            <DescriptionSection text={car[`description_${lang}`] || car.description} />
 
             {car.seller_type === 'dealer' && dealer && <SellerSection car={car} dealer={dealer} />}
 
@@ -332,6 +346,28 @@ export default function CarDetails() {
           </div>
         )}
       </div>
+
+      {/* Phones: price and contact stay at hand while scrolling the long page */}
+      {!isClosed && !isOwner && (
+        <div className="fixed inset-x-0 bottom-0 z-40 border-t border-slate-800 bg-slate-950/95 px-4 pt-2.5 backdrop-blur lg:hidden" style={{ paddingBottom: 'calc(0.625rem + env(safe-area-inset-bottom))' }}>
+          <div className="mx-auto flex max-w-xl items-center gap-2">
+            <div className="min-w-0 flex-1">
+              <div className="truncate text-xs text-slate-400">{car.brand} {car.model}</div>
+              <div className="text-lg font-bold leading-tight text-white">{formatPrice(car.price)}</div>
+            </div>
+            {car.seller_phone && (
+              <a href={`tel:${String(car.seller_phone).replace(/[^\d+]/g, '')}`} aria-label={t('car.call', 'Позвонить')}
+                className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-xl bg-slate-800 text-slate-100">
+                <Phone className="h-5 w-5" />
+              </a>
+            )}
+            <Button className="h-11 flex-shrink-0 gap-2 rounded-xl bg-emerald-500 px-4 text-sm font-semibold text-white hover:bg-emerald-600"
+              onClick={() => { if (!blockIfClosed() && !requireLogin()) setShowContactForm(true); }}>
+              <MessageSquare className="h-4 w-4" />{t('car.write_seller')}
+            </Button>
+          </div>
+        </div>
+      )}
 
       <ContactSellerDialog open={!isClosed && showContactForm} onOpenChange={setShowContactForm} message={message} onMessageChange={setMessage} onSend={handleSendMessage} />
       <MakeOfferModal open={!isClosed && showOfferForm} onOpenChange={setShowOfferForm} car={car} user={user} dealer={dealer} />

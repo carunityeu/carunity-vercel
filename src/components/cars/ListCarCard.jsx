@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { getCarDetailsPath } from '@/lib/shortIdUtils';
 import requireAccount from '@/components/auth/requireAccount';
-import { formatPrice } from '@/utils/format';
+import { formatPrice, formatNumber } from '@/utils/format';
 import { Car, ChevronLeft, ChevronRight, GitCompareArrows, Heart, MessageSquare } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useCompare } from '@/components/compare/CompareContext';
@@ -54,7 +54,7 @@ export default function ListCarCard({ car, showLocation = false, rating = null, 
   const total = images ? images.length : 0;
 
   const formatMileage = (m) =>
-    new Intl.NumberFormat('de-DE', { maximumFractionDigits: 0 }).format(m);
+    formatNumber(m);
 
   const fuel = car.fuel_type ? fuelChip(car.fuel_type, carIcons.fuel) : null;
 

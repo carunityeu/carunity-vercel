@@ -33,17 +33,17 @@ export default function QuickAccessPanel() {
     <section className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 py-4 sm:py-6">
       <div className="flex flex-col lg:flex-row lg:items-start gap-3 sm:gap-4">
         {/* 5 square buttons: on desktop the square side equals the banner height */}
-        <div className="flex gap-1.5 sm:gap-3 w-full justify-between sm:justify-start lg:w-auto lg:flex-shrink-0">
+        <div className="flex gap-1.5 sm:gap-3 w-full justify-between lg:justify-start lg:w-auto lg:flex-shrink-0">
           {buttons.map((btn, i) => (
             <button
               key={i}
               onClick={btn.onClick}
-              className="group flex flex-col items-center gap-1.5 sm:gap-2 flex-1 min-w-0 max-w-[96px] sm:max-w-none sm:flex-none sm:w-24 lg:w-24 xl:w-28"
+              className="group flex flex-col items-center gap-1.5 sm:gap-2 flex-1 min-w-0 max-w-[96px] sm:max-w-[140px] lg:max-w-none lg:flex-none lg:w-24 xl:w-28"
             >
               <div className="w-full aspect-square bg-slate-100 dark:bg-slate-800 rounded-2xl overflow-hidden group-hover:scale-[1.03] transition-transform">
                 <img src={btn.icon} alt={btn.label} className="w-full h-full object-cover" />
               </div>
-              <span className="whitespace-nowrap text-[10px] sm:text-xs lg:text-sm font-medium text-slate-700 dark:text-slate-300 text-center leading-tight">
+              <span className="whitespace-nowrap text-xs lg:text-sm font-medium text-slate-700 dark:text-slate-300 text-center leading-tight">
                 {btn.label}
               </span>
             </button>

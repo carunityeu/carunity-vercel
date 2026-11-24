@@ -1,12 +1,12 @@
 import React, { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
+import { formatNumber } from '@/utils/format';
 import { getCarDetailsPath } from '@/lib/shortIdUtils';
 import { entities } from '@/api/entities';
 import { useQuery } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
 import {
   Select,
   SelectContent,
@@ -21,27 +21,17 @@ import {
   Users,
   TrendingUp,
   ArrowRight,
-  Sparkles,
   Building2,
   ChevronRight,
   Star,
   CheckCircle,
-  Fuel,
-  Calendar,
-  Clock,
-  Gauge,
-  Cog,
-  MapPin,
   X,
   Heart,
-  MessageCircle,
   GitCompare, SlidersHorizontal } from
 'lucide-react';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
-import CarCard from '@/components/cars/CarCard';
 import FeaturedCardImage from '@/components/cars/FeaturedCardImage';
-import ListingCard from '@/components/cars/ListingCard';
 import CompactCarCard from '@/components/cars/CompactCarCard';
 import CarGridSkeleton from '@/components/cars/CarGridSkeleton';
 import TransmissionOrEnergy from '@/components/cars/TransmissionOrEnergy';
@@ -52,7 +42,6 @@ import DiscountTag from '@/components/cars/DiscountTag';
 import PromoPhotoFrame from '@/components/cars/PromoPhotoFrame';
 import { fuelChip } from '@/lib/fuelBadge';
 import useCardExtras from '@/hooks/useCardExtras';
-import RecentlyViewedCard from '@/components/cars/RecentlyViewedCard';
 import LuxurySection from '@/components/cars/LuxurySection';
 import NewsSection from '@/components/cars/NewsSection';
 import CarModelsSection from '@/components/cars/CarModelsSection';
@@ -62,12 +51,9 @@ import { useFavorites } from '@/components/favorites/FavoritesContext';
 import { getModelsForBrand } from '@/utils/carData';
 import { translateCountry, translateCity, CITIES_BY_COUNTRY } from '@/utils/locationUtils';
 import MiniSearchSelect from '@/components/search/MiniSearchSelect';
-import ContextSearchBar from '@/components/search/ContextSearchBar';
 import HeroSection from '@/components/home/HeroSection';
 import AdBanner from '@/components/ads/AdBanner';
 import { ChevronDown as ChevronDownIcon } from 'lucide-react';
-import FeaturesFilter from '@/components/search/FeaturesFilter';
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Slider } from '@/components/ui/slider';
 import VehicleTypeFilters from '@/components/search/VehicleTypeFilters';
 import RecentActivityBlock from '@/components/home/RecentActivityBlock';
@@ -163,6 +149,9 @@ export default function Home() {
   const [searchFeatures, setSearchFeatures] = useState([]);
   const [searchNoVat, setSearchNoVat] = useState(false);
   const [vehicleFilters, setVehicleFilters] = useState({});
+  // Phones show only the main filters; the rest open with "All filters" (always shown from lg up)
+  const [showAllFilters, setShowAllFilters] = useState(false);
+  const moreCls = showAllFilters ? '' : 'max-lg:hidden';
 
   const availableModels = searchBrands.length > 0 ?
   (() => {
@@ -219,15 +208,13 @@ export default function Home() {
     return candidates.slice(0, 5);
   }, [activeCars, landingTopCar]);
 
-  const latestCars = useMemo(() =>
-  [...(activeCars || []).filter(hasPhoto)].slice(0, 16),
-  [activeCars]
-  );
-
-  const latestCarsMore = useMemo(() =>
-  [...(activeCars || []).filter(hasPhoto)].slice(16, 32),
-  [activeCars]
-  );
+  // "New listings" skips the cars already shown in the Top block above
+  const latestPool = useMemo(() => {
+    const top = new Set(promotedCars.map((c) => c.id));
+    return (activeCars || []).filter((c) => hasPhoto(c) && !top.has(c.id));
+  }, [activeCars, promotedCars]);
+  const latestCars = useMemo(() => latestPool.slice(0, 16), [latestPool]);
+  const latestCarsMore = useMemo(() => latestPool.slice(16, 32), [latestPool]);
 
   // Price rating + active promotion for the tiles shown below
   const tileCars = useMemo(() => [...latestCars, ...latestCarsMore], [latestCars, latestCarsMore]);
@@ -318,7 +305,7 @@ export default function Home() {
   return (
     <div className="min-h-screen dark:bg-slate-950">
       {/* Hero Section */}
-      <section className="bg-transparent mt-16 sm:mt-[104px] md:mt-[120px]">
+      <section className="bg-transparent" style={{ marginTop: 'var(--header-h)' }}>
         <HeroSection />
 
         {/* Search + Featured two-column layout */}
@@ -326,7 +313,7 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-2 lg:px-2">
           <div className="flex flex-col lg:flex-row gap-3 sm:gap-4 lg:items-stretch">
             {/* Left: Search Card - narrow */}
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.2 }} className="w-full lg:w-[26%] flex-shrink-0 flex flex-col">
+            <motion.div initial={false} className="w-full lg:w-[26%] flex-shrink-0 flex flex-col">
               <div className="bg-slate-50 dark:bg-slate-800 rounded-xl md:rounded-2xl p-3 sm:p-4 border border-slate-200 dark:border-slate-700 shadow-sm flex-1">
                  {/* Vehicle type selector */}
                  {(() => {
@@ -447,6 +434,7 @@ export default function Home() {
                       anyLabel={t('common.any_model')} />
                     
 
+                    <div className={`flex flex-col gap-2 ${moreCls}`}>
                     <Select value={searchFuelType} onValueChange={setSearchFuelType}>
                       <SelectTrigger className="h-11 bg-slate-100 dark:bg-slate-900 border-transparent text-slate-900 dark:text-white rounded-xl text-xs py-2">
                         <SelectValue placeholder={t('home.search_fuel')} />
@@ -466,10 +454,11 @@ export default function Home() {
                         {bodyTypes.map((type) => <SelectItem key={type.value} value={type.value}>{t('body_types.' + type.value)}</SelectItem>)}
                       </SelectContent>
                     </Select>
+                    </div>
                     </div>}
 
                 {/* Year + Generation unified block - car only */}
-                {(!selectedVehicleType || selectedVehicleType === 'car') && <div className="mb-2">
+                {(!selectedVehicleType || selectedVehicleType === 'car') && <div className={`mb-2 ${moreCls}`}>
                   {availableGenerations.length > 0 ?
                     <div className="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-600 rounded-xl p-2">
                       <div className="flex items-center justify-between mb-2">
@@ -553,7 +542,7 @@ export default function Home() {
                 </div>
 
                 {/* Power range slider or inputs */}
-                <div className="bg-slate-100 dark:bg-slate-900 rounded-xl px-3 pt-2.5 pb-3 mb-2">
+                <div className={`bg-slate-100 dark:bg-slate-900 rounded-xl px-3 pt-2.5 pb-3 mb-2 ${moreCls}`}>
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-xs font-medium text-slate-500 dark:text-slate-400">{t('home.power_label', 'Мощность')}</span>
                     <button type="button" onClick={() => setUsePowerSlider(!usePowerSlider)} className="text-xs text-emerald-600 hover:text-emerald-700 underline">
@@ -595,7 +584,7 @@ export default function Home() {
                    </Select>
                  </div>}
 
-                 <div className="grid grid-cols-2 gap-2 mb-2">
+                 <div className={`grid grid-cols-2 gap-2 mb-2 ${moreCls}`}>
                    <Select value={searchCountry} onValueChange={(v) => {setSearchCountry(v);setSearchCity('');}}>
                      <SelectTrigger className="h-9 bg-slate-100 dark:bg-slate-900 border-transparent text-slate-900 dark:text-white rounded-xl text-xs">
                        <SelectValue placeholder={t('home.search_country')} />
@@ -617,7 +606,7 @@ export default function Home() {
                  </div>
 
                  {/* Color */}
-                 <div className="mb-2">
+                 <div className={`mb-2 ${moreCls}`}>
                    <Select value={searchColor} onValueChange={setSearchColor}>
                      <SelectTrigger className="h-9 w-full bg-slate-100 dark:bg-slate-900 border-transparent text-slate-900 dark:text-white rounded-xl text-xs font-sans">
                        <SelectValue placeholder={t('home.color')} />
@@ -632,7 +621,7 @@ export default function Home() {
                  </div>
 
                  {/* Drive type (under color, car only) */}
-                 {selectedVehicleType !== 'moto' && <div className="mb-2">
+                 {selectedVehicleType !== 'moto' && <div className={`mb-2 ${moreCls}`}>
                    <Select value={searchDriveType} onValueChange={setSearchDriveType}>
                      <SelectTrigger className="h-9 w-full bg-slate-100 dark:bg-slate-900 border-transparent text-slate-900 dark:text-white rounded-xl text-xs">
                        <SelectValue placeholder={t('home.drive')} />
@@ -650,7 +639,7 @@ export default function Home() {
 
                  {/* Transmission filter - car + moto */}
                  {(!selectedVehicleType || selectedVehicleType === 'car' || selectedVehicleType === 'moto') &&
-                  <div className="mb-2">
+                  <div className={`mb-2 ${moreCls}`}>
                       <Select value={searchTransmission} onValueChange={setSearchTransmission}>
                        <SelectTrigger className="h-9 bg-slate-100 dark:bg-slate-900 border-transparent text-slate-900 dark:text-white rounded-xl text-xs">
                          <SelectValue placeholder={t('home.transmission', 'Коробка передач')} />
@@ -664,7 +653,18 @@ export default function Home() {
                    </div>
                   }
 
-                <div className="flex gap-3 mt-4">
+                {(!selectedVehicleType || selectedVehicleType === 'car' || selectedVehicleType === 'moto') &&
+                  <button
+                    type="button"
+                    onClick={() => setShowAllFilters((v) => !v)}
+                    aria-expanded={showAllFilters}
+                    className="lg:hidden w-full flex items-center justify-center gap-1.5 h-10 rounded-xl text-sm font-medium text-emerald-600 dark:text-emerald-400 bg-slate-100 dark:bg-slate-900">
+                    <SlidersHorizontal className="w-4 h-4" />
+                    {showAllFilters ? t('home.fewer_filters', 'Меньше фильтров') : t('home.all_filters', 'Все фильтры')}
+                    <ChevronDownIcon className={`w-4 h-4 transition-transform ${showAllFilters ? 'rotate-180' : ''}`} />
+                  </button>
+                }
+                <div className="flex gap-3 mt-3 lg:mt-4">
                   <Button onClick={handleSearch} className="flex-1 h-10 bg-emerald-500 hover:bg-emerald-600 text-white gap-2 rounded-xl text-sm font-semibold">
                     <Search className="w-4 h-4" />
                     {t('home.search_button')}
@@ -712,7 +712,7 @@ export default function Home() {
             </motion.div>
 
             {/* Right: Featured listings with title */}
-             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.35 }} className="w-full lg:flex-1 flex flex-col">
+             <motion.div initial={false} className={`w-full lg:flex-1 flex flex-col ${!loadingPromoted && !promotedCars.length ? 'hidden' : ''}`}>
                <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-700 overflow-hidden shadow-sm flex flex-col flex-1">
                  {/* Header with title */}
                  <div className="px-4 py-3 border-b border-slate-100 dark:border-slate-800">
@@ -758,7 +758,7 @@ export default function Home() {
                       const mainElectric = isElectricAccent(mainCar);
 
                       return (
-                        <div className="flex flex-col flex-1 p-3 gap-2 bg-slate-100 dark:bg-slate-800">
+                        <div className="flex flex-col flex-1 p-2 sm:p-3 gap-2 bg-slate-100 dark:bg-slate-800">
 
                     {/* Main TOP PICK card — two column layout (image left, info right) */}
                      <Link to={getCarDetailsPath(mainCar)} className={`block bg-white dark:bg-slate-900 rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700 transition-colors group/main ${mainElectric ? 'hover:border-[#465A90] dark:hover:border-[#465A90]' : 'hover:border-emerald-400 dark:hover:border-emerald-500'}`}>
@@ -804,7 +804,7 @@ export default function Home() {
                             <div className="flex flex-wrap items-center gap-2 mt-3">
                               {mainCar.mileage &&
                                     <span className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-xs sm:text-sm font-semibold text-slate-700 dark:text-slate-200">
-                                  <img src={carIcons.mileage} alt="mileage" className="w-3.5 h-3.5 flex-shrink-0 dark:invert" />{new Intl.NumberFormat().format(mainCar.mileage)} {t('car.km')}
+                                  <img src={carIcons.mileage} alt="mileage" className="w-3.5 h-3.5 flex-shrink-0 dark:invert" />{formatNumber(mainCar.mileage)} {t('car.km')}
                                 </span>
                                     }
                               {mainCar.engine_power &&
@@ -872,7 +872,7 @@ export default function Home() {
                                 <span className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white leading-none">{formatPrice(mainCar.price)}</span>
                                 {mainCar.original_price && mainCar.original_price > mainCar.price &&
                                     <>
-                                      <span className="text-[11px] sm:text-xs text-slate-400 line-through whitespace-nowrap">{formatPrice(mainCar.original_price)}</span>
+                                      <span className="text-xs text-slate-400 line-through whitespace-nowrap">{formatPrice(mainCar.original_price)}</span>
                                       <DiscountTag label={`-${formatPrice(mainCar.original_price - mainCar.price)}`} electric={mainElectric} />
                                     </>
                                     }
@@ -907,13 +907,18 @@ export default function Home() {
                     </Link>
 
                     {/* 4 small cards in 2×2 grid with gap — stretches to fill remaining height */}
+                     {/* Phones: the same tiles as "New listings" instead of a tall list */}
                      {smallCars.length > 0 &&
-                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 flex-1 grid-rows-4 sm:grid-rows-2 min-h-0">
+                          <div className="grid grid-cols-2 gap-3 sm:hidden">
+                            {smallCars.map((car) => <CompactCarCard key={car.id} car={car} rating={heroRatings[car.id]} promotion={heroPromotions[car.id]} />)}
+                          </div>}
+                     {smallCars.length > 0 &&
+                          <div className="hidden sm:grid grid-cols-2 gap-3 flex-1 grid-rows-2 min-h-0">
                          {smallCars.map((car) => {
                            const cardFuel = car.fuel_type ? fuelChip(car.fuel_type, carIcons.fuel) : null;
                            const cardElectric = isElectricAccent(car);
                            return (
-                           <Link key={car.id} to={createPageUrl('CarDetails') + `?id=${car.id}`}
+                           <Link key={car.id} to={getCarDetailsPath(car)}
                            className="flex tile-card bg-white dark:bg-slate-900 rounded-xl overflow-hidden hover:shadow-md hover:border-slate-300 dark:hover:border-slate-500 transition-all group border border-slate-200 dark:border-slate-700 h-full min-h-0">
 
                              {/* Image */}
@@ -941,7 +946,7 @@ export default function Home() {
                                  <span className="text-base font-bold text-slate-900 dark:text-white leading-tight">{formatPrice(car.price)}</span>
                                  {car.original_price && car.original_price > car.price &&
                                   <>
-                                    <span className="text-[11px] text-slate-400 line-through leading-tight whitespace-nowrap">{formatPrice(car.original_price)}</span>
+                                    <span className="text-xs text-slate-400 line-through leading-tight whitespace-nowrap">{formatPrice(car.original_price)}</span>
                                     <DiscountTag label={`-${formatPrice(car.original_price - car.price)}`} electric={cardElectric} />
                                   </>
                                  }
@@ -950,7 +955,7 @@ export default function Home() {
                                {/* Mileage chip */}
                                {car.mileage != null &&
                                 <span className="inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 text-sm font-semibold text-slate-700 dark:text-slate-200 self-start">
-                                   <img src={carIcons.mileage} alt="" className="w-4 h-4 flex-shrink-0 dark:invert" />{new Intl.NumberFormat().format(car.mileage)} {t('car.km')}
+                                   <img src={carIcons.mileage} alt="" className="w-4 h-4 flex-shrink-0 dark:invert" />{formatNumber(car.mileage)} {t('car.km')}
                                  </span>
                                 }
                                {/* Fuel + Transmission */}
@@ -1036,9 +1041,7 @@ export default function Home() {
       <CaroBanner />
 
       {/* AD — между Hero и новыми объявлениями */}
-      <div className="max-w-7xl mx-auto sm:px-4 md:px-6 pr-3 pl-3 pt-12 pb-20">
-        <AdBanner size="billboard" slot="home-top" aspectRatio="10/3" />
-      </div>
+      <AdBanner size="billboard" slot="home-top" aspectRatio="10/3" className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 py-6 sm:py-10" />
 
       {/* Latest Cars */}
       <section className="bg-white dark:bg-slate-900 py-6 sm:py-8">
@@ -1055,14 +1058,6 @@ export default function Home() {
               )}
             </div>
           )}
-          <div className="mt-4 sm:mt-6 flex justify-center">
-            <Link
-              to={createPageUrl('Catalog')}
-              className="flex items-center gap-2 border border-slate-600 text-slate-600 dark:text-slate-300 hover:border-emerald-500 hover:text-emerald-500 dark:hover:border-emerald-400 dark:hover:text-emerald-400 text-sm font-medium px-5 py-2.5 rounded-xl transition-colors">
-              
-              {t('home.see_all_ads', 'Смотреть все объявления')} <ArrowRight className="w-4 h-4" />
-            </Link>
-          </div>
         </div>
       </section>
 
@@ -1131,9 +1126,7 @@ export default function Home() {
       </section>}
 
       {/* AD — перед новостями */}
-      <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 py-2">
-        <AdBanner size="billboard" slot="home-before-news" aspectRatio="10/3" />
-      </div>
+      <AdBanner size="billboard" slot="home-before-news" aspectRatio="10/3" className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 py-2" />
 
       <NewsSection />
 

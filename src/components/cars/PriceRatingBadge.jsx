@@ -24,7 +24,7 @@ export default function PriceRatingBadge({ score, showLabel = true, className = 
         ))}
       </div>
       {showLabel && (
-        <span className="text-[10px] sm:text-[11px] leading-none font-medium text-[#D1D5DB] whitespace-nowrap">
+        <span className="text-[11px] sm:text-xs leading-none font-medium text-[#D1D5DB] whitespace-nowrap">
           {t(LABEL_KEYS[score])}
         </span>
       )}

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { getCarDetailsPath } from '@/lib/shortIdUtils';
-import { formatPrice } from '@/utils/format';
+import { formatPrice, formatNumber } from '@/utils/format';
 import { useTranslation } from 'react-i18next';
 import { translateLocation } from '@/utils/locationUtils';
 import { fuelChip } from '@/lib/fuelBadge';
@@ -20,7 +20,7 @@ export default function CompactCarCard({ car, showLocation = false, vehicleType 
   const { t } = useTranslation();
 
   const formatMileage = (m) =>
-    new Intl.NumberFormat('de-DE', { maximumFractionDigits: 0 }).format(m);
+    formatNumber(m);
 
   const dateStr = car.month_of_manufacture && car.year
     ? `${String(car.month_of_manufacture).padStart(2, '0')}/${car.year}`
@@ -38,20 +38,21 @@ export default function CompactCarCard({ car, showLocation = false, vehicleType 
 
       {/* Info below image */}
       <div className="px-0.5">
-        {/* Brand + Model + Price */}
-         <div className="flex items-start justify-between gap-1">
-           <span className="text-[13px] font-bold text-slate-900 dark:text-white uppercase tracking-wide leading-tight truncate">
-             {car.brand} {car.model} {car.year && <span className="text-slate-400 dark:text-slate-400 text-[12px] font-semibold ml-0.5">({car.year})</span>}
-           </span>
-           <span className="text-[13px] font-bold text-slate-900 dark:text-white whitespace-nowrap flex-shrink-0">
-             {formatPrice(car.price)}
-           </span>
-         </div>
+        {/* Brand + Model (own line, so a narrow tile never cuts the name), then price + year */}
+        <div className="text-sm sm:text-[15px] font-bold text-slate-900 dark:text-white leading-tight truncate" title={`${car.brand} ${car.model}`}>
+          {car.brand} {car.model}
+        </div>
+        <div className="flex items-baseline justify-between gap-2 mt-0.5">
+          <span className="text-base font-bold text-slate-900 dark:text-white whitespace-nowrap">
+            {formatPrice(car.price)}
+          </span>
+          {car.year && <span className="text-xs font-medium text-slate-500 dark:text-slate-400">{car.year}</span>}
+        </div>
 
         {/* Trim level (left) + price rating (right) on one line */}
         {(car.trim_level || rating?.score) && (
           <div className="flex items-center justify-between gap-2 mt-0.5 min-h-[15px]">
-            <div className="min-w-0 text-[11px] text-slate-500 dark:text-slate-400 leading-snug truncate">
+            <div className="min-w-0 text-xs text-slate-500 dark:text-slate-400 leading-snug truncate">
               {car.trim_level}
             </div>
             {rating?.score ? (
@@ -65,36 +66,36 @@ export default function CompactCarCard({ car, showLocation = false, vehicleType 
         {/* Specs chips */}
           <div className="mt-1.5 flex flex-wrap gap-1">
             {car.engine_power && (
-              <span className="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-slate-100 dark:bg-slate-800 text-sm font-semibold text-slate-700 dark:text-slate-200">
-                <img src={carIcons.speed} alt="power" className="w-4 h-4 flex-shrink-0 dark:invert" />
+              <span className="inline-flex items-center gap-1 px-1.5 sm:px-2 py-1 rounded-md bg-slate-100 dark:bg-slate-800 text-xs sm:text-sm font-semibold text-slate-700 dark:text-slate-200">
+                <img src={carIcons.speed} alt="power" className="w-3.5 h-3.5 sm:w-4 sm:h-4 flex-shrink-0 dark:invert" />
                 {Math.round(car.engine_power * 0.735)} {t('car.kw')}
               </span>
             )}
             {car.mileage != null && (
-              <span className="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-slate-100 dark:bg-slate-800 text-sm font-semibold text-slate-700 dark:text-slate-200">
-                <img src={carIcons.mileage} alt="mileage" className="w-4 h-4 flex-shrink-0 dark:invert" />
+              <span className="inline-flex items-center gap-1 px-1.5 sm:px-2 py-1 rounded-md bg-slate-100 dark:bg-slate-800 text-xs sm:text-sm font-semibold text-slate-700 dark:text-slate-200">
+                <img src={carIcons.mileage} alt="mileage" className="w-3.5 h-3.5 sm:w-4 sm:h-4 flex-shrink-0 dark:invert" />
                 {formatMileage(car.mileage)} {t('car.km')}
               </span>
             )}
             {fuel && (
               <span
                 style={fuel.style}
-                className="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-slate-100 dark:bg-slate-800 text-sm font-semibold text-slate-700 dark:text-slate-200">
-                <img src={fuel.icon} alt="fuel" className={`w-4 h-4 flex-shrink-0 ${fuel.iconClass}`} />
+                className="inline-flex items-center gap-1 px-1.5 sm:px-2 py-1 rounded-md bg-slate-100 dark:bg-slate-800 text-xs sm:text-sm font-semibold text-slate-700 dark:text-slate-200">
+                <img src={fuel.icon} alt="fuel" className={`w-3.5 h-3.5 sm:w-4 sm:h-4 flex-shrink-0 ${fuel.iconClass}`} />
                 {t('fuel_types.' + car.fuel_type, car.fuel_type)}
               </span>
             )}
             <TransmissionOrEnergy car={car} size="md">
               {car.transmission && (
-                <span className="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-slate-100 dark:bg-slate-800 text-sm font-semibold text-slate-700 dark:text-slate-200">
-                  <img src={carIcons.transmission} alt="transmission" className="w-4 h-4 flex-shrink-0 dark:invert" />
+                <span className="inline-flex items-center gap-1 px-1.5 sm:px-2 py-1 rounded-md bg-slate-100 dark:bg-slate-800 text-xs sm:text-sm font-semibold text-slate-700 dark:text-slate-200">
+                  <img src={carIcons.transmission} alt="transmission" className="w-3.5 h-3.5 sm:w-4 sm:h-4 flex-shrink-0 dark:invert" />
                   {t('transmission_types.' + car.transmission, car.transmission)}
                 </span>
               )}
             </TransmissionOrEnergy>
             {showLocation && (car.location || car.country) && (
-              <span className="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-slate-100 dark:bg-slate-800 text-sm font-semibold text-slate-700 dark:text-slate-200 max-w-full">
-                <img src="https://media.base44.com/images/public/6973f00466c3a37f3d8e7e53/042a078cf_pin.png" alt="location" className="w-4 h-4 flex-shrink-0 invert" />
+              <span className="inline-flex items-center gap-1 px-1.5 sm:px-2 py-1 rounded-md bg-slate-100 dark:bg-slate-800 text-xs sm:text-sm font-semibold text-slate-700 dark:text-slate-200 max-w-full">
+                <img src="https://media.base44.com/images/public/6973f00466c3a37f3d8e7e53/042a078cf_pin.png" alt="location" className="w-3.5 h-3.5 sm:w-4 sm:h-4 flex-shrink-0 invert" />
                 <span className="truncate">{translateLocation(t, car.location, car.country)}</span>
               </span>
             )}

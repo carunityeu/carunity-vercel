@@ -38,16 +38,16 @@ export default function Footer() {
   return (
     <footer className="bg-slate-900 text-slate-300">
       <ContactSupportModal open={showContact} onOpenChange={setShowContact} />
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-16">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-10 md:py-16">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-8 md:gap-12">
           {/* Brand */}
-          <div>
-            <Link to={createPageUrl('Home')} className="flex items-center gap-2 mb-6">
+          <div className="col-span-2 lg:col-span-1">
+            <Link to={createPageUrl('Home')} className="flex items-center gap-2 mb-4 md:mb-6">
               <span className="text-xl font-bold text-white">
                 Car<span className="text-emerald-400">Unity</span>
               </span>
             </Link>
-            <p className="text-sm text-slate-400 mb-6 leading-relaxed">{t('footer.about')}</p>
+            <p className="text-sm text-slate-400 mb-4 md:mb-6 leading-relaxed">{t('footer.about')}</p>
             <div className="flex flex-wrap gap-3">
               <a href="https://www.instagram.com/carunity_eu" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-lg bg-slate-800 hover:bg-emerald-600 flex items-center justify-center transition-colors">
                 <InstagramIcon />
@@ -69,8 +69,8 @@ export default function Footer() {
 
           {/* Quick Links */}
           <div>
-            <h3 className="text-white font-semibold mb-6">{t('footer.quick_links')}</h3>
-            <ul className="space-y-3">
+            <h3 className="text-white font-semibold mb-3 md:mb-6">{t('footer.quick_links')}</h3>
+            <ul className="space-y-2.5 md:space-y-3">
               <li>
                 <Link to={createPageUrl('Catalog')} className="text-sm hover:text-emerald-300 transition-colors">
                   {t('footer.catalog')}
@@ -96,8 +96,8 @@ export default function Footer() {
 
           {/* For Dealers */}
           <div>
-            <h3 className="text-white font-semibold mb-6">{t('footer.for_dealers')}</h3>
-            <ul className="space-y-3">
+            <h3 className="text-white font-semibold mb-3 md:mb-6">{t('footer.for_dealers')}</h3>
+            <ul className="space-y-2.5 md:space-y-3">
               <li>
                 <Link to={createPageUrl('DealerRegister')} className="text-sm hover:text-emerald-300 transition-colors">
                   {t('footer.dealer_register')}
@@ -117,9 +117,9 @@ export default function Footer() {
           </div>
 
           {/* Contact */}
-          <div>
-            <h3 className="text-white font-semibold mb-6">{t('footer.contacts')}</h3>
-            <ul className="space-y-4">
+          <div className="col-span-2 md:col-span-1">
+            <h3 className="text-white font-semibold mb-3 md:mb-6">{t('footer.contacts')}</h3>
+            <ul className="space-y-3 md:space-y-4">
               <li className="flex items-start gap-3">
                 <MapPin className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />
                 <span className="text-sm">Väike-käspre tee 7</span>
@@ -139,10 +139,10 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="border-t border-slate-800 mt-12 pt-8">
+        <div className="border-t border-slate-800 mt-8 pt-6 md:mt-12 md:pt-8">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <p className="text-sm text-slate-500">{t('footer.copyright', '© 2026 CarUnity OÜ. All rights reserved.')}</p>
-            <div className="flex flex-wrap justify-center gap-6">
+            <div className="flex flex-wrap justify-center gap-x-6 gap-y-3">
               <Link to={createPageUrl('PrivacyPolicy')} className="text-sm text-slate-500 hover:text-emerald-300 transition-colors">
                 {t('footer.privacy')}
               </Link>

@@ -217,11 +217,11 @@ export default function FeaturesDisplay({ features = [] }) {
         <h4 className="text-sm font-bold text-white mb-2">
           {t(cat.titleKey)}
         </h4>
-        <ul className="space-y-2">
+        <ul className="flex flex-wrap gap-1.5 sm:flex-col sm:flex-nowrap sm:gap-2">
           {visibleItems.map(item => {
             const label = t('feature_items.' + item.key, item.key);
             return (
-              <li key={item.key} className="rounded-lg bg-slate-800 px-3.5 py-2.5">
+              <li key={item.key} className="rounded-lg bg-slate-800 px-3 py-1.5 sm:px-3.5 sm:py-2.5">
                 <span className={cn(
                   'text-sm leading-5 flex flex-wrap items-center gap-x-2 gap-y-1',
                   item.parentPresent ? 'text-white' : 'text-slate-400'

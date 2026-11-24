@@ -8,3 +8,8 @@ export function formatPrice(price) {
     maximumFractionDigits: 0,
   }).format(Number(price));
 }
+// Mileage / any integer with the same space separator as prices: "34 750".
+export function formatNumber(n) {
+  if (n == null || n === '' || isNaN(Number(n))) return '—';
+  return new Intl.NumberFormat('ru-RU', { maximumFractionDigits: 0 }).format(Number(n));
+}

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { translateColor } from '@/utils/colorUtils';
 import { translateCountry } from '@/utils/locationUtils';
@@ -41,8 +41,18 @@ function SpecGroup({ title, rows }) {
   );
 }
 
+// Import feeds put internal codes into some fields ("AT1", "Electric"); they repeat
+// other rows or mean nothing to a buyer, so they are not shown.
+const meaningfulTransmissionType = (v) => (!v || /^(AT|MT|A|M)\d*$/i.test(String(v).trim()) ? null : v);
+const meaningfulEngineCode = (car) => {
+  const v = String(car.engine_code || '').trim();
+  if (!v || /^(electric|electro|ev|petrol|diesel|hybrid|gas)$/i.test(v)) return null;
+  return v;
+};
+
 export default function CarSpecsGrouped({ car, plateRevealed, onRevealPlate }) {
   const { t, i18n } = useTranslation();
+  const [expanded, setExpanded] = useState(false);
 
   const fuelLabels = {
     petrol: t('fuel_types.petrol', 'Бензин'), diesel: t('fuel_types.diesel', 'Дизель'),
@@ -75,7 +85,8 @@ export default function CarSpecsGrouped({ car, plateRevealed, onRevealPlate }) {
 
   return (
     <div>
-      {/* Grouped specs */}
+      {/* Grouped specs: on phones folded to the first rows until "show all" */}
+      <div className={`relative ${expanded ? '' : 'max-md:max-h-[340px] max-md:overflow-hidden'}`}>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-x-10">
         <div>
           <SpecGroup title={t('car.specs_general', 'Общая информация')} rows={[
@@ -100,7 +111,7 @@ export default function CarSpecsGrouped({ car, plateRevealed, onRevealPlate }) {
             { label: t('car.spec_engine_volume_cc', 'Объём (см³)'), value: car.engine_volume_cc ? `${car.engine_volume_cc} ${t('car.cc')}` : null },
             { label: t('car.spec_power', 'Мощность'), value: car.engine_power ? `${car.engine_power} ${t('car.hp','л.с.')} / ${Math.round(car.engine_power * 0.7355)} ${t('car.kw')}` : null },
             { label: t('car.spec_cylinders', 'Цилиндров'), value: car.cylinders },
-            { label: t('car.spec_engine_code', 'Код двигателя'), value: car.engine_code },
+            { label: t('car.spec_engine_code', 'Код двигателя'), value: meaningfulEngineCode(car) },
             { label: t('car.spec_fuel_system', 'Система питания'), value: car.fuel_system },
             { label: t('car.spec_turbo', 'Тип наддува'), value: car.turbo_type },
             { label: t('car.spec_engine_layout', 'Расположение'), value: car.engine_layout },
@@ -110,7 +121,7 @@ export default function CarSpecsGrouped({ car, plateRevealed, onRevealPlate }) {
 
           <SpecGroup title={t('car.specs_transmission', 'Трансмиссия и привод')} rows={[
             { label: t('car.spec_gearbox', 'Коробка передач'), value: transmissionLabels[car.transmission] || car.transmission },
-            { label: t('car.spec_transmission_type', 'Тип КПП'), value: car.transmission_type },
+            { label: t('car.spec_transmission_type', 'Тип КПП'), value: meaningfulTransmissionType(car.transmission_type) },
             { label: t('car.spec_drive', 'Привод'), value: driveLabels[car.drive_type] || car.drive_type },
           ]} />
         </div>
@@ -165,6 +176,14 @@ export default function CarSpecsGrouped({ car, plateRevealed, onRevealPlate }) {
           )}
         </div>
       </div>
+      {!expanded && <div className="md:hidden pointer-events-none absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-slate-900 to-transparent" />}
+      </div>
+      <button
+        type="button"
+        onClick={() => setExpanded((v) => !v)}
+        className="md:hidden mt-2 w-full rounded-xl bg-slate-800 py-2.5 text-sm font-semibold text-emerald-400">
+        {expanded ? t('common.show_less', 'Свернуть') : t('car.show_all_specs', 'Показать все характеристики')}
+      </button>
     </div>
   );
 }
