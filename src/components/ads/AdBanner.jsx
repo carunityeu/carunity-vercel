@@ -6,13 +6,6 @@ import { useAdImage } from '@/lib/useAdConfig';
 // ============================================================
 export const ADS_ENABLED = true;
 
-// URL рекламных изображений (fallback)
-export const AD_IMAGES = {
-  hondaCity: 'https://media.base44.com/images/public/6973f00466c3a37f3d8e7e53/1053963ad_a055f22c6403f18744c45843415e625a.jpg',
-  citroen: 'https://media.base44.com/images/public/6973f00466c3a37f3d8e7e53/4fd0a0a4c_4707e7e3922f0dc53f4735f40d789e04.jpg',
-  bmwM: 'https://media.base44.com/images/public/6973f00466c3a37f3d8e7e53/0dec8d59c_55d4e744e0bc25040b905c7311ffb1a7.jpg',
-};
-
 // Fallback static ads, used when no AdConfiguration exists for a slot.
 // Banner slots have none: without a booked ad they render nothing (no placeholder banner).
 const ADS = {

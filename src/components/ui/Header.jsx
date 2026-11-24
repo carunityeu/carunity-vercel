@@ -1,426 +1,199 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Link, useNavigate } from 'react-router-dom';
-import { createPageUrl } from '@/utils';
+import { Link, useLocation } from 'react-router-dom';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { Plus, User, Heart, MessageSquare, LogOut, Menu, X, Building2, Bell } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { entities } from '@/api/entities';
-import { Button } from '@/components/ui/button';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
-
-import {
-  Car,
-  Plus,
-  User,
-  Heart,
-  MessageSquare,
-  Settings,
-  LogOut,
-  Menu,
-  X,
-  Building2,
-  ChevronDown,
-  KeyRound,
-  Sun,
-  Moon,
-  Globe,
-  Shield,
-  Bell,
-  Check,
-  Gift } from
-'lucide-react';
+import { createPageUrl } from '@/utils';
 import { cn } from '@/lib/utils';
+import { resolveViewAsUser } from '@/lib/adminViewAs';
+import { Button } from '@/components/ui/button';
+import { Container, navLinkClass } from '@/components/ds';
 import ContextSearchBar from '@/components/search/ContextSearchBar';
 import AccountMenu from '@/components/account/AccountMenu';
-import { resolveViewAsUser } from '@/lib/adminViewAs';
-import LanguagePills from '@/components/ui/LanguageSwitcherMenu';
+import LanguagePills, { LanguageSwitcherDropdown } from '@/components/ui/LanguageSwitcherMenu';
 
+const LOGO_URL = 'https://media.base44.com/images/public/6973f00466c3a37f3d8e7e53/fc09a8e55_culogo.png';
 
-function LanguageSwitcherDropdown({ currentLang, languages, onSelect }) {
-  const [open, setOpen] = React.useState(false);
-  const current = languages.find((l) => l.code === currentLang);
-  return (
-    <div className="relative">
-      <button
-        onClick={() => setOpen(!open)}
-        className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
-        <span className="uppercase tracking-wide text-sm font-semibold">{current?.code}</span>
-        <ChevronDown className={cn("w-3 h-3 text-slate-400 transition-transform", open && "rotate-180")} />
-      </button>
-      {open &&
-      <>
-          <div className="fixed inset-0 z-[9998]" onClick={() => setOpen(false)} />
-          <div className="absolute right-0 top-full mt-1.5 z-[9999] bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-xl overflow-hidden min-w-[150px] py-1">
-            {languages.map((lang) =>
-          <button
-            key={lang.code}
-            onClick={() => {onSelect(lang.code);setOpen(false);}}
-            className={cn(
-              "w-full flex items-center justify-between gap-2 px-3.5 py-2 text-sm transition-colors hover:bg-slate-50 dark:hover:bg-slate-700/60",
-              currentLang === lang.code
-                ? 'text-emerald-600 dark:text-emerald-400 font-semibold'
-                : 'text-slate-700 dark:text-slate-300'
-            )}>
-              <span>{lang.label}</span>
-              {currentLang === lang.code && <Check className="w-3.5 h-3.5 text-emerald-500" />}
-            </button>
-          )}
-          </div>
-        </>
-      }
-    </div>);
+// Main sections: shown in the header bar on desktop and at the top of the phone menu.
+const NAV = [
+  { labelKey: 'nav.catalog', to: createPageUrl('Catalog') },
+  { labelKey: 'nav.partners', to: createPageUrl('Dealers') },
+  { labelKey: 'nav.news', to: createPageUrl('AutoNews') },
+];
+const MENU_EXTRA = [{ labelKey: 'nav.help', to: createPageUrl('Help') }];
 
+// Account links of the phone menu (desktop has them in the account dropdown).
+const accountLinks = (isDealer) => [
+  isDealer
+    ? { labelKey: 'nav.dealer_panel', to: createPageUrl('DealerDashboard'), icon: Building2 }
+    : { labelKey: 'nav.dashboard', to: createPageUrl('Dashboard'), icon: User },
+  { labelKey: 'nav.messages', to: createPageUrl('Messages'), icon: MessageSquare, unread: true },
+  { labelKey: 'nav.notifications', to: '/Notifications', icon: Bell },
+  !isDealer && { labelKey: 'nav.favorites', to: createPageUrl('Dashboard') + '?tab=favorites', icon: Heart },
+].filter(Boolean);
+
+const login = () => base44.auth.redirectToLogin();
+
+function useHeaderUser() {
+  const [user, setUser] = useState(null);
+  useEffect(() => {
+    base44.auth.isAuthenticated()
+      .then((isAuth) => (isAuth ? base44.auth.me().then(resolveViewAsUser).then(({ user: u }) => setUser(u)) : null))
+      .catch(() => {});
+  }, []);
+  return user;
 }
 
-const languages = [
-{ code: 'ru', label: 'RU — Русский' },
-{ code: 'en', label: 'EN — English' },
-{ code: 'et', label: 'ET — Eesti' },
-{ code: 'lv', label: 'LV — Latviešu' },
-{ code: 'lt', label: 'LT — Lietuvių' }];
+// Unread messages and recent notifications, refreshed by realtime events instead of polling.
+function useInbox(email) {
+  const queryClient = useQueryClient();
+  const { data: unreadMessages = [] } = useQuery({
+    queryKey: ['unreadMessages', email],
+    queryFn: () => entities.Message.filter({ receiver_email: email, is_read: false }),
+    enabled: !!email,
+    staleTime: 60000,
+  });
+  const { data: notifications = [] } = useQuery({
+    queryKey: ['headerNotifications', email],
+    queryFn: () => entities.Notification.filter({ user_email: email }, '-created_date', 8),
+    enabled: !!email,
+    staleTime: 60000,
+  });
+  useEffect(() => {
+    if (!email) return;
+    const offMessages = entities.Message.subscribe(() => queryClient.invalidateQueries({ queryKey: ['unreadMessages', email] }));
+    const offNotifications = entities.Notification.subscribe(() => queryClient.invalidateQueries({ queryKey: ['headerNotifications', email] }));
+    return () => { offMessages(); offNotifications(); };
+  }, [email, queryClient]);
 
+  const unreadNotifications = notifications.filter((n) => !n.is_read);
+  const markNotificationsRead = async () => {
+    if (!unreadNotifications.length) return;
+    await entities.Notification.updateMany({ id: { $in: unreadNotifications.map((n) => n.id) } }, { $set: { is_read: true } });
+    queryClient.invalidateQueries({ queryKey: ['headerNotifications', email] });
+  };
+  return { unreadMessages, notifications, unreadNotifications, markNotificationsRead };
+}
 
+/** "Post an ad": icon square on phones, labelled button from lg. Guests go to sign-in first. */
+function PostAdButton({ user, className, full = false, onNavigate }) {
+  const { t } = useTranslation();
+  return (
+    <Button asChild size={full ? 'lg' : 'default'} className={cn(!full && 'w-10 px-0 lg:w-auto lg:px-4', className)}>
+      <Link
+        to={user ? createPageUrl('CreateListing') : '#'}
+        aria-label={t('nav.post_ad')}
+        onClick={(e) => { onNavigate?.(); if (!user) { e.preventDefault(); login(); } }}>
+        <Plus />
+        <span className={cn(!full && 'hidden lg:inline')}>{t(full ? 'nav.post_listing' : 'nav.post_ad')}</span>
+      </Link>
+    </Button>
+  );
+}
 
 export default function Header() {
   const { t } = useTranslation();
-  // Referral / invite-friends feature — disabled (not deleted). Set true to re-enable.
-  const REFERRAL_ENABLED = false;
-  const [user, setUser] = useState(null);
-  const [isScrolled, setIsScrolled] = useState(false);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [isDarkMode, setIsDarkMode] = useState(false);
-  const { i18n } = useTranslation();
-  const currentLang = i18n.language?.slice(0, 2) || 'ru';
-  const navigate = useNavigate();
-  const queryClient = useQueryClient();
-
-  useEffect(() => {
-    const loadUser = async () => {
-      try {
-        const isAuth = await base44.auth.isAuthenticated();
-        if (isAuth) {
-          const userData = await base44.auth.me();
-          const { user: effectiveUser } = await resolveViewAsUser(userData);
-          setUser(effectiveUser);
-        }
-      } catch (e) {}
-    };
-    loadUser();
-
-    const savedTheme = localStorage.getItem('theme');
-    if (savedTheme === 'dark') {
-      setIsDarkMode(true);
-      document.documentElement.classList.add('dark');
-    }
-
-    const handleScroll = () => setIsScrolled(window.scrollY > 20);
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  const { data: unreadMessages = [] } = useQuery({
-    queryKey: ['unreadMessages', user?.email],
-    queryFn: () => entities.Message.filter({ receiver_email: user.email, is_read: false }),
-    enabled: !!user,
-    staleTime: 60000
-  });
-
-  const { data: recentNotifications = [] } = useQuery({
-    queryKey: ['headerNotifications', user?.email],
-    queryFn: () => entities.Notification.filter({ user_email: user.email }, '-created_date', 8),
-    enabled: !!user,
-    staleTime: 60000
-  });
-
-  // Counters refresh on realtime events instead of frequent polling
-  useEffect(() => {
-    if (!user?.email) return;
-    const unsubscribeMessages = entities.Message.subscribe(() => {
-      queryClient.invalidateQueries({ queryKey: ['unreadMessages', user.email] });
-    });
-    const unsubscribeNotifications = entities.Notification.subscribe(() => {
-      queryClient.invalidateQueries({ queryKey: ['headerNotifications', user.email] });
-    });
-    return () => {
-      unsubscribeMessages();
-      unsubscribeNotifications();
-    };
-  }, [user?.email, queryClient]);
-
+  const { pathname } = useLocation();
+  const user = useHeaderUser();
+  const { unreadMessages, notifications, unreadNotifications, markNotificationsRead } = useInbox(user?.email);
+  const [menuOpen, setMenuOpen] = useState(false);
   const isDealer = user?.user_type === 'dealer' || !!user?.dealer_id;
-  const unreadNotifications = recentNotifications.filter((n) => !n.is_read);
   const hasUnread = unreadMessages.length > 0 || unreadNotifications.length > 0;
+  const closeMenu = () => setMenuOpen(false);
 
-  const markNotificationsRead = async () => {
-    for (const n of unreadNotifications) {
-      await entities.Notification.update(n.id, { is_read: true });
-    }
-  };
-
-  const toggleTheme = () => {
-    const newMode = !isDarkMode;
-    setIsDarkMode(newMode);
-    if (newMode) {
-      document.documentElement.classList.add('dark');
-      localStorage.setItem('theme', 'dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-      localStorage.setItem('theme', 'light');
-    }
-  };
-
-  const changeLanguage = (langCode) => {
-    i18n.changeLanguage(langCode);
-  };
-
-  const handleLogout = () => base44.auth.logout();
+  // A route change always closes the phone menu
+  useEffect(closeMenu, [pathname]);
 
   return (
-    <header className="w-full bg-white dark:bg-slate-900 shadow-sm">
-      <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6">
-         <div className="flex items-center justify-between h-14 sm:h-16 md:h-20 gap-2 sm:gap-3">
-           {/* Logo */}
-           <Link to="/" onClick={() => setMobileMenuOpen(false)} className="flex items-center group flex-shrink-0">
-             <img src="https://media.base44.com/images/public/6973f00466c3a37f3d8e7e53/fc09a8e55_culogo.png"
-                           alt="CarUnity" className="h-7 sm:h-8 md:h-9 w-auto" />
+    <header className="relative w-full border-b border-line bg-surface">
+      <Container className="flex items-center gap-2 sm:gap-3" style={{ height: 'var(--cu-header-row)' }}>
+        <Link to="/" className="flex-shrink-0" aria-label="CarUnity">
+          <img src={LOGO_URL} alt="CarUnity" className="h-7 w-auto sm:h-8" />
+        </Link>
 
-            
-          </Link>
-
-          {/* Context Search Bar - center */}
-          <div className="hidden sm:flex flex-1 max-w-xs md:max-w-sm lg:max-w-md xl:max-w-lg">
-            <ContextSearchBar className="w-full" />
-          </div>
-
-          {/* Desktop Navigation */}
-          <nav className="hidden lg:flex items-center gap-1 flex-shrink-0">
-            <Link
-              to={createPageUrl('Catalog')}
-              className="px-4 py-2 rounded-lg text-base font-medium transition-colors text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800">
-
-              {t('nav.catalog')}
-            </Link>
-            
-            <Link
-              to={createPageUrl('Dealers')}
-              className="px-4 py-2 rounded-lg text-base font-medium transition-colors text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800">
-              {t('nav.partners')}
-            </Link>
-
-            <Link
-              to={createPageUrl('AutoNews')}
-              className="px-4 py-2 rounded-lg text-base font-medium transition-colors text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800">
-              {t('nav.news')}
-            </Link>
-
-          </nav>
-
-          {/* Actions */}
-          <div className="flex items-center gap-2 sm:gap-3 md:gap-4 flex-shrink-0">
-            {/* Language switcher - visible on tablet and desktop */}
-            <div className="hidden md:block relative">
-              <LanguageSwitcherDropdown currentLang={currentLang} languages={languages} onSelect={changeLanguage} />
-            </div>
-
-            {user ?
-            <>
-                <Link to={createPageUrl('CreateListing')} className="hidden md:block">
-                  <Button size="sm" className="bg-emerald-600 text-white px-3 text-sm md:text-base font-medium rounded-lg md:rounded-xl h-8 md:h-10 gap-2 hover:bg-emerald-700 whitespace-nowrap">
-                    <Plus className="w-4 h-4" />
-                    <span className="hidden lg:inline">{t('nav.post_ad')}</span>
-                  </Button>
-                </Link>
-
-                <AccountMenu user={user} hasUnread={hasUnread} unreadMessages={unreadMessages.length} notifications={recentNotifications} unreadNotifications={unreadNotifications.length} onRead={markNotificationsRead} onLogout={handleLogout} referralEnabled={REFERRAL_ENABLED} className="hidden md:inline-flex" />
-              </> :
-
-            <>
-                <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => base44.auth.redirectToLogin()}
-                className="hidden md:flex text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 text-sm md:text-base h-8 md:h-10">
-
-                  {t('nav.login')}
-                </Button>
-                <Button
-                size="sm"
-                className="hidden md:flex gap-2 bg-emerald-600 hover:bg-emerald-700 text-white text-sm md:text-base h-8 md:h-10 px-3"
-                onClick={() => base44.auth.redirectToLogin()}>
-
-                  <Plus className="w-4 h-4" />
-                  <span className="hidden lg:inline">{t('nav.post_ad')}</span>
-                </Button>
-              </>
-            }
-
-            {/* Mobile: Add listing button */}
-            <Link
-              to={user ? createPageUrl('CreateListing') : '#'}
-              onClick={(e) => { if (!user) { e.preventDefault(); base44.auth.redirectToLogin(); } }}
-              className="md:hidden flex items-center justify-center w-9 h-9 rounded-lg bg-emerald-600 text-white active:scale-95 transition-transform"
-              aria-label={t('nav.post_ad')}>
-              <Plus className="w-5 h-5" />
-            </Link>
-
-            {/* Mobile: Account button */}
-            {user ? (
-              <AccountMenu user={user} hasUnread={hasUnread} unreadMessages={unreadMessages.length} notifications={recentNotifications} unreadNotifications={unreadNotifications.length} onRead={markNotificationsRead} onLogout={handleLogout} referralEnabled={REFERRAL_ENABLED} className="inline-flex md:hidden" />
-            ) : (
-              <button
-                onClick={() => base44.auth.redirectToLogin()}
-                className="md:hidden flex items-center justify-center w-9 h-9 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 active:scale-95 transition-transform"
-                aria-label={t('nav.login')}>
-                <User className="w-5 h-5" />
-              </button>
-            )}
-
-            {/* Mobile menu button */}
-            <Button
-              variant="ghost"
-              size="icon"
-              className="md:hidden text-slate-600 dark:text-slate-300"
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
-
-              {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-            </Button>
-          </div>
-        </div>
-
-        {/* Mobile Search Bar - below header row, always visible on mobile */}
-        <div className="sm:hidden px-3 pb-2.5 border-b border-slate-200 dark:border-slate-800">
+        <div className="hidden min-w-0 flex-1 sm:flex lg:max-w-md xl:max-w-lg">
           <ContextSearchBar className="w-full" />
         </div>
 
-        {/* Mobile Menu */}
-        {mobileMenuOpen && (
+        <nav className="hidden items-center gap-1 lg:flex">
+          {NAV.map((item) => (
+            <Link key={item.to} to={item.to} className={navLinkClass}>{t(item.labelKey)}</Link>
+          ))}
+        </nav>
+
+        <div className="ml-auto flex flex-shrink-0 items-center gap-1.5 sm:gap-2">
+          <div className="hidden md:block">
+            <LanguageSwitcherDropdown placement="bottom" />
+          </div>
+          <PostAdButton user={user} />
+          {user ? (
+            <AccountMenu
+              user={user}
+              hasUnread={hasUnread}
+              unreadMessages={unreadMessages.length}
+              notifications={notifications}
+              unreadNotifications={unreadNotifications.length}
+              onRead={markNotificationsRead}
+              onLogout={() => base44.auth.logout()}
+              referralEnabled={false}
+              className="inline-flex" />
+          ) : (
+            <Button variant="ghost" onClick={login} aria-label={t('nav.login')} className="w-10 px-0 md:w-auto md:px-3">
+              <User className="md:hidden" />
+              <span className="hidden md:inline">{t('nav.login')}</span>
+            </Button>
+          )}
+          <Button variant="ghost" size="icon" className="lg:hidden" aria-expanded={menuOpen} aria-label="Menu" onClick={() => setMenuOpen((v) => !v)}>
+            {menuOpen ? <X /> : <Menu />}
+          </Button>
+        </div>
+      </Container>
+
+      {/* Phones: search gets its own row */}
+      <Container className="pb-2.5 sm:hidden">
+        <ContextSearchBar className="w-full" />
+      </Container>
+
+      {menuOpen && (
         <>
-          <div className="fixed inset-0 bg-black/30 z-40 md:hidden" onClick={() => setMobileMenuOpen(false)} />
-          <div className="md:hidden absolute top-full left-0 right-0 bg-white dark:bg-slate-900 shadow-lg border-t dark:border-slate-800 max-h-[80vh] overflow-y-auto z-50">
-            <nav className="flex flex-col p-4 gap-1">
-              {/* Mobile Search */}
-              <div className="mb-2">
-                <ContextSearchBar className="w-full" />
-              </div>
-              <Link
-              to={createPageUrl('Catalog')}
-              className="px-3 py-2 rounded-lg text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 font-medium text-sm"
-              onClick={() => setMobileMenuOpen(false)}>
-                {t('nav.catalog')}
-              </Link>
-              <Link
-              to={createPageUrl('Dealers')}
-              className="px-3 py-2 rounded-lg text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 font-medium text-sm"
-              onClick={() => setMobileMenuOpen(false)}>
-              {t('nav.partners')}
-              </Link>
-              <Link
-              to={createPageUrl('AutoNews')}
-              className="px-3 py-2 rounded-lg text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 font-medium text-sm"
-              onClick={() => setMobileMenuOpen(false)}>
-                {t('nav.news')}
-              </Link>
-              <Link
-              to={createPageUrl('Help')}
-              className="px-3 py-2 rounded-lg text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 font-medium text-sm"
-              onClick={() => setMobileMenuOpen(false)}>
-                {t('nav.help')}
-              </Link>
+          <div className="fixed inset-0 z-40 bg-black/40 lg:hidden" onClick={closeMenu} />
+          <nav className="absolute inset-x-0 top-full z-50 max-h-[80vh] overflow-y-auto border-t border-line bg-surface shadow-xl lg:hidden">
+            <Container className="flex flex-col gap-1 py-4">
+              {[...NAV, ...MENU_EXTRA].map((item) => (
+                <Link key={item.to} to={item.to} onClick={closeMenu} className={navLinkClass}>{t(item.labelKey)}</Link>
+              ))}
 
-              <div className="border-t border-slate-200 dark:border-slate-700 my-2" />
+              <div className="my-2 border-t border-line" />
+              <p className="px-3 pb-1 text-xs text-ink-3">{t('nav.language', 'Язык')}</p>
+              <LanguagePills className="px-3 pb-2" />
+              <div className="my-2 border-t border-line" />
 
-              {/* Language switcher - mobile */}
-              <div className="px-1 pb-1">
-                <p className="text-xs text-slate-400 mb-2 px-2">{t('nav.language', 'Язык')}</p>
-                <LanguagePills />
-              </div>
-
-              {user ?
-            <>
-                  {isDealer ?
-                  <Link
-                to={createPageUrl('DealerDashboard')}
-                className="px-3 py-2 rounded-lg text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 font-medium text-sm flex items-center gap-2.5"
-                onClick={() => setMobileMenuOpen(false)}>
-                    <Building2 className="w-4 h-4" />
-                    {t('nav.dealer_panel')}
-                  </Link> :
-                  <Link
-                to={createPageUrl('Dashboard')}
-                className="px-3 py-2 rounded-lg text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 font-medium text-sm flex items-center gap-2.5"
-                onClick={() => setMobileMenuOpen(false)}>
-                    <User className="w-4 h-4" />
-                    {t('nav.dashboard')}
-                  </Link>}
-                  <Link
-                to={createPageUrl('Messages')}
-                className="px-3 py-2 rounded-lg text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 font-medium text-sm flex items-center gap-2.5"
-                onClick={() => setMobileMenuOpen(false)}>
-                    <MessageSquare className="w-4 h-4" />
-                    {t('nav.messages')}
-                    {hasUnread && <span className="w-2 h-2 bg-emerald-600 rounded-full" />}
-                  </Link>
-                  {REFERRAL_ENABLED && !isDealer &&
-                  <Link
-                to={createPageUrl('Referral')}
-                className="px-3 py-2 rounded-lg text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 font-medium text-sm flex items-center gap-2.5"
-                onClick={() => setMobileMenuOpen(false)}>
-                    <Gift className="w-4 h-4 text-emerald-500" />
-                    {t('nav.referral')}
-                    <span className="ml-auto text-[10px] font-bold px-1.5 py-0.5 bg-emerald-500/20 text-emerald-400 rounded">+7d</span>
-                  </Link>
-                  }
-                  <Link
-                to="/Notifications"
-                className="px-3 py-2 rounded-lg text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 font-medium text-sm flex items-center gap-2.5"
-                onClick={() => setMobileMenuOpen(false)}>
-                    <Bell className="w-4 h-4" />
-                    {t('nav.notifications')}
-                  </Link>
-                  {!isDealer &&
-                  <Link
-                to={createPageUrl('Dashboard') + '?tab=favorites'}
-                className="px-3 py-2 rounded-lg text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 font-medium text-sm flex items-center gap-2.5"
-                onClick={() => setMobileMenuOpen(false)}>
-                    <Heart className="w-4 h-4" />
-                    {t('nav.favorites')}
-                  </Link>}
-                </> :
-
-            <button
-              onClick={() => {setMobileMenuOpen(false);base44.auth.redirectToLogin();}}
-              className="px-3 py-2 rounded-lg text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 font-medium text-sm flex items-center gap-2.5 text-left">
-                   <User className="w-4 h-4" />
-                   {t('nav.login')}
-                </button>
-            }
-
-              <div className="mt-3">
-                <Link
-                to={user ? createPageUrl('CreateListing') : '#'}
-                onClick={(e) => {
-                  setMobileMenuOpen(false);
-                  if (!user) {e.preventDefault();base44.auth.redirectToLogin();}
-                }}>
-                  <Button className="w-full gap-2 bg-emerald-600 hover:bg-emerald-700 h-10 text-sm">
-                    <Plus className="w-4 h-4" />
-                     {t('nav.post_listing')}
-                  </Button>
+              {user ? accountLinks(isDealer).map(({ labelKey, to, icon: Icon, unread }) => (
+                <Link key={to} to={to} onClick={closeMenu} className={cn(navLinkClass, 'flex items-center gap-2.5')}>
+                  <Icon className="h-4 w-4" />
+                  {t(labelKey)}
+                  {unread && hasUnread && <span className="h-2 w-2 rounded-full bg-brand" />}
                 </Link>
-              </div>
+              )) : (
+                <button type="button" onClick={() => { closeMenu(); login(); }} className={cn(navLinkClass, 'flex items-center gap-2.5 text-left')}>
+                  <User className="h-4 w-4" />{t('nav.login')}
+                </button>
+              )}
 
-              {user &&
-            <button
-              onClick={() => {setMobileMenuOpen(false);handleLogout();}}
-              className="mt-1 px-3 py-2 rounded-lg text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 font-medium text-sm flex items-center gap-2.5">
-                  <LogOut className="w-4 h-4" />
-                  {t('nav.logout')}
-                  </button>
-            }
-            </nav>
-            </div>
-            </>
-            )}
-      </div>
-    </header>);
+              <PostAdButton user={user} full className="mt-3 w-full" onNavigate={closeMenu} />
 
+              {user && (
+                <button type="button" onClick={() => { closeMenu(); base44.auth.logout(); }}
+                  className="mt-1 flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm font-medium text-red-400 hover:bg-red-500/10">
+                  <LogOut className="h-4 w-4" />{t('nav.logout')}
+                </button>
+              )}
+            </Container>
+          </nav>
+        </>
+      )}
+    </header>
+  );
 }

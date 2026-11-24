@@ -11,6 +11,22 @@ module.exports = {
         sm: 'calc(var(--radius) - 4px)'
       },
       colors: {
+        /* Design code tokens (docs/DESIGN_CODE.md). New and reworked sections use only these. */
+        page: 'rgb(var(--cu-page) / <alpha-value>)',
+        surface: 'rgb(var(--cu-surface) / <alpha-value>)',
+        raised: 'rgb(var(--cu-raised) / <alpha-value>)',
+        line: 'rgb(var(--cu-line) / <alpha-value>)',
+        ink: {
+          DEFAULT: 'rgb(var(--cu-ink) / <alpha-value>)',
+          2: 'rgb(var(--cu-ink-2) / <alpha-value>)',
+          3: 'rgb(var(--cu-ink-3) / <alpha-value>)'
+        },
+        brand: {
+          DEFAULT: 'rgb(var(--cu-brand) / <alpha-value>)',
+          hover: 'rgb(var(--cu-brand-hover) / <alpha-value>)',
+          text: 'rgb(var(--cu-brand-text) / <alpha-value>)'
+        },
+        electric: 'rgb(var(--cu-electric) / <alpha-value>)',
         /* Brand palette — charcoal surfaces with the emerald green accent */
         emerald: {
           50: '#ecfdf5', 100: '#d1fae5', 200: '#a7f3d0', 300: '#6ee7b7',

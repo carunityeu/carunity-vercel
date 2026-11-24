@@ -133,14 +133,11 @@ export default function ContextSearchBar({ className }) {
   return (
     <div className={cn("relative", className)}>
       <div className={cn(
-        "flex items-center gap-2 px-3 py-2 rounded-xl border transition-all duration-200",
-        focused
-          ? "border-emerald-500 bg-white dark:bg-slate-800 shadow-lg shadow-emerald-500/10 ring-2 ring-emerald-500/20"
-          : "border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 hover:border-slate-300 dark:hover:border-slate-600"
+        "flex h-10 items-center gap-2 pl-3 pr-1 rounded-xl border bg-raised transition-colors",
+        focused ? "border-brand ring-2 ring-brand/20" : "border-transparent hover:border-line"
       )}>
-        <Search className={cn("w-4 h-4 flex-shrink-0 transition-colors", focused ? "text-emerald-500" : "text-slate-400")} />
-        <div className="flex items-center flex-1 min-w-0 gap-1">
-          <span className="text-sm font-medium text-slate-600 dark:text-slate-300 whitespace-nowrap flex-shrink-0">{t('search.find_btn')}</span>
+        <Search className={cn("w-4 h-4 flex-shrink-0 transition-colors", focused ? "text-brand-text" : "text-ink-3")} />
+        <div className="flex items-center flex-1 min-w-0">
           <div className="relative flex-1 min-w-0">
             <input
               ref={inputRef}
@@ -151,7 +148,7 @@ export default function ContextSearchBar({ className }) {
               onBlur={() => setTimeout(() => setFocused(false), 150)}
               onKeyDown={handleKeyDown}
               aria-label={t('search.find_btn')}
-              className="w-full bg-transparent text-sm text-slate-900 dark:text-white outline-none min-w-0"
+              className="w-full bg-transparent text-sm text-ink outline-none min-w-0"
             />
             {!query && !focused && (
               <div aria-hidden="true" className="pointer-events-none absolute inset-0 flex items-center overflow-hidden">
@@ -161,7 +158,7 @@ export default function ContextSearchBar({ className }) {
                     style={{ transform: `translateY(-${carouselIndex * CAROUSEL_LINE}px)` }}
                   >
                     {SEARCH_EXAMPLES.map((ex) => (
-                      <div key={ex} className="whitespace-nowrap truncate text-sm text-slate-400 dark:text-slate-500" style={{ height: CAROUSEL_LINE, lineHeight: `${CAROUSEL_LINE}px` }}>
+                      <div key={ex} className="whitespace-nowrap truncate text-sm text-ink-3" style={{ height: CAROUSEL_LINE, lineHeight: `${CAROUSEL_LINE}px` }}>
                         {ex}
                       </div>
                     ))}
@@ -172,15 +169,16 @@ export default function ContextSearchBar({ className }) {
           </div>
         </div>
         {query && !loading && (
-          <button onClick={() => setQuery('')} className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+          <button type="button" aria-label="Clear" onClick={() => setQuery('')} className="text-ink-3 hover:text-ink">
             <X className="w-4 h-4" />
           </button>
         )}
-        {loading && <Loader2 className="w-4 h-4 text-emerald-500 animate-spin flex-shrink-0" />}
+        {loading && <Loader2 className="mr-2 w-4 h-4 text-brand-text animate-spin flex-shrink-0" />}
         {!loading && (
           <button
+            type="button"
             onClick={() => handleSearch()}
-            className="flex items-center gap-1 bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-medium px-2 sm:px-2.5 py-1.5 rounded-lg transition-colors flex-shrink-0"
+            className="h-8 flex-shrink-0 rounded-lg bg-brand px-3 text-xs font-semibold text-white transition-colors hover:bg-brand-hover"
           >
             {t('search.find_btn')}
           </button>
@@ -188,8 +186,8 @@ export default function ContextSearchBar({ className }) {
       </div>
 
       {focused && !query && (
-        <div className="absolute top-full left-0 right-0 mt-1.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-xl z-50 overflow-hidden">
-          <p className="px-3 py-2 text-xs text-slate-400 dark:text-slate-500 uppercase tracking-wide font-medium">{t('search.try')}</p>
+        <div className="absolute top-full left-0 right-0 mt-1.5 bg-surface border border-line rounded-xl shadow-xl z-50 overflow-hidden">
+          <p className="px-3 py-2 text-xs text-ink-3 uppercase tracking-wide font-medium">{t('search.try')}</p>
           {smartSuggestions.map((s) => (
             <button
               key={s}
@@ -197,9 +195,9 @@ export default function ContextSearchBar({ className }) {
                 setQuery(s);
                 handleSearch(s);
               }}
-              className="w-full text-left px-3 py-2.5 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700/50 flex items-center gap-2 transition-colors"
+              className="w-full text-left px-3 py-2.5 text-sm text-ink-2 hover:bg-raised flex items-center gap-2 transition-colors"
             >
-              <Search className="w-3.5 h-3.5 text-slate-400" />
+              <Search className="w-3.5 h-3.5 text-ink-3" />
               {s}
             </button>
           ))}

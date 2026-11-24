@@ -96,14 +96,14 @@ export default function Layout({ children, currentPageName }) {
           .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
           .dark { color-scheme: dark; }
           .dark body { background-color: #101014; color: #f1f5f9; }
-          :root { --header-h: 113px; }
+          :root { --header-h: 105px; }
           @media (min-width: 640px) { :root { --header-h: 104px; } }
-          @media (min-width: 768px) { :root { --header-h: 120px; } }
+          @media (min-width: 768px) { :root { --header-h: 112px; } }
         `}</style>
 
         <div ref={headerRef} className={`fixed top-0 left-0 right-0 z-50 shadow-md transition-transform duration-200 ${headerHidden ? '-translate-y-full' : ''}`}>
           <Header />
-          <QuickNavBar onValuationClick={openValuation} />
+          <QuickNavBar />
         </div>
 
         <main style={hasTransparentHeader ? undefined : { paddingTop: 'var(--header-h)' }}>

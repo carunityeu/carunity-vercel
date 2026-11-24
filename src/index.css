@@ -4,6 +4,25 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Design code tokens — the single source of the site's colours (see docs/DESIGN_CODE.md).
+   Channels only, so Tailwind opacity modifiers work: bg-surface/80. The site is dark-only. */
+:root {
+  --cu-page: 16 16 20;          /* #101014 page background */
+  --cu-surface: 27 27 34;       /* #1b1b22 cards, panels, header */
+  --cu-raised: 42 43 51;        /* #2a2b33 fields, chips, secondary buttons */
+  --cu-line: 41 42 50;          /* #292a32 borders and dividers */
+  --cu-ink: 250 250 250;        /* main text */
+  --cu-ink-2: 199 199 207;      /* secondary text */
+  --cu-ink-3: 154 154 165;      /* hints, captions (lowest allowed for text) */
+  --cu-brand: 16 185 129;       /* #10b981 primary buttons, active states */
+  --cu-brand-hover: 5 150 105;  /* #059669 */
+  --cu-brand-text: 52 211 153;  /* #34d399 green text and icons on dark */
+  --cu-electric: 70 90 144;     /* #465a90 accent of electric-car listings */
+  --cu-header-row: 56px;
+}
+@media (min-width: 640px) { :root { --cu-header-row: 64px; } }
+@media (min-width: 768px) { :root { --cu-header-row: 72px; } }
+
 @layer base {
   :root {
     --background: 0 0% 100%;
