@@ -16,7 +16,7 @@ export default function DiscountTag({ label, electric = false, story = false }) 
         <path d={TAG_PATH} fill="currentColor" />
       </svg>
       <span className={story ? 'absolute left-[9%] top-1/2 -translate-y-1/2 w-3 h-3 rounded-full bg-card' : 'absolute left-[9%] top-1/2 -translate-y-1/2 w-1 h-1 rounded-full bg-white dark:bg-slate-900'} />
-      <span data-story-text={story ? '' : undefined} className={story ? 'relative text-[30px] font-bold leading-none text-white whitespace-nowrap' : 'relative text-[11px] sm:text-[11px] font-bold leading-none text-white whitespace-nowrap'}>
+      <span data-story-text={story ? '' : undefined} className={story ? 'relative text-[30px] font-bold leading-none text-white whitespace-nowrap' : 'relative text-[10px] sm:text-[11px] font-bold leading-none text-white whitespace-nowrap'}>
         {label}
       </span>
     </span>

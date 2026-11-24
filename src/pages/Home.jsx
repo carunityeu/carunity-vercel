@@ -10,7 +10,7 @@ import { Container } from '@/components/ds';
 import CompactCarCard from '@/components/cars/CompactCarCard';
 import CarGridSkeleton from '@/components/cars/CarGridSkeleton';
 import LuxurySection from '@/components/cars/LuxurySection';
-import NewsSection from '@/components/cars/NewsSection';
+import MagazineSection from '@/components/home/MagazineSection';
 import HeroSection from '@/components/home/HeroSection';
 import HomeSearchPanel from '@/components/home/HomeSearchPanel';
 import TopListings, { useTopCars } from '@/components/home/TopListings';
@@ -117,7 +117,7 @@ export default function Home() {
       {/* AD — перед новостями */}
       <AdBanner size="billboard" slot="home-before-news" aspectRatio="10/3" className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 py-2" />
 
-      <NewsSection />
+      <MagazineSection />
 
       
 
