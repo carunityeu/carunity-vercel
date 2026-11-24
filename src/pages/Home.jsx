@@ -44,12 +44,12 @@ export default function Home() {
       <section style={{ marginTop: 'var(--header-h)' }}>
         <HeroSection />
 
-        {/* Search panel and Top listings overlap the bottom of the hero banner */}
-        <Container className="relative z-10 -mt-8 pb-2 sm:-mt-10">
-          <div className="flex flex-col gap-3 sm:gap-4 lg:flex-row lg:items-start">
-            <HomeSearchPanel className="lg:w-[300px] lg:flex-shrink-0 xl:w-[320px]" />
-            <TopListings className="min-w-0 lg:flex-1" />
-          </div>
+        {/* Phones: search sits under the banner; desktop: it covers the banner's bottom 96px */}
+        <Container className="relative z-10 mt-3 sm:-mt-10 lg:-mt-24">
+          <HomeSearchPanel />
+        </Container>
+        <Container className="py-6 sm:py-8">
+          <TopListings />
         </Container>
 
         <div className="bg-page">

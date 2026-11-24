@@ -99,16 +99,28 @@ function SelectField({ value, onChange, placeholder, anyLabel, options, disabled
   );
 }
 
-function RangeField({ label, from, to, onFrom, onTo }) {
+/** A labelled cell of the search grid; `action` sits on the right of the label. */
+function Field({ label, action, className, children }) {
+  return (
+    <div className={className}>
+      <div className="mb-1 flex h-5 items-center justify-between gap-2">
+        <span className="text-xs font-medium text-ink-3">{label}</span>
+        {action}
+      </div>
+      {children}
+    </div>
+  );
+}
+
+function RangeField({ label, from, to, onFrom, onTo, className }) {
   const { t } = useTranslation();
   return (
-    <div>
-      <p className="mb-1.5 text-xs font-medium text-ink-3">{label}</p>
+    <Field label={label} className={className}>
       <div className="grid grid-cols-2 gap-2">
         <Input inputMode="numeric" placeholder={t('home.price_from', 'От')} value={from} onChange={(e) => onFrom(digits(e.target.value))} className={fieldClass} />
         <Input inputMode="numeric" placeholder={t('home.price_to', 'До')} value={to} onChange={(e) => onTo(digits(e.target.value))} className={fieldClass} />
       </div>
-    </div>
+    </Field>
   );
 }
 
@@ -154,10 +166,42 @@ export default function HomeSearchPanel({ className }) {
     </button>
   );
 
+  const grid = 'grid grid-cols-1 gap-x-3 gap-y-2.5 sm:grid-cols-2 lg:grid-cols-4';
+  const yearCell = (
+    <Field
+      label={generations.length > 0 && f.useGenerations ? t('home.generation_label') : t('home.year_label', 'Год')}
+      action={generations.length > 0 && (
+        <button type="button" onClick={() => set({ useGenerations: !f.useGenerations, generations: [], yearFrom: '', yearTo: '' })} className="text-xs text-brand-text hover:underline">
+          {f.useGenerations ? t('home.by_year') : t('home.by_generation')}
+        </button>
+      )}
+      className={more}>
+      {f.useGenerations && generations.length > 0 ? (
+        <div className="flex flex-wrap gap-1.5">
+          {generations.map((g) => {
+            const on = f.generations.includes(g.code);
+            return (
+              <button key={g.code} type="button" aria-pressed={on}
+                onClick={() => set({ generations: on ? f.generations.filter((c) => c !== g.code) : [...f.generations, g.code] })}
+                className={cn('h-8 rounded-lg px-2.5 text-xs font-medium transition-colors', on ? 'bg-brand text-white' : 'bg-raised text-ink-2 hover:text-ink')}>
+                {g.code} <span className="opacity-60">({g.years})</span>
+              </button>
+            );
+          })}
+        </div>
+      ) : (
+        <div className="grid grid-cols-2 gap-2">
+          <SelectField value={f.yearFrom} onChange={(v) => set({ yearFrom: v })} placeholder={t('home.price_from', 'От')} anyLabel={t('home.any_year')} options={YEARS.map((y) => ({ value: y, label: y }))} />
+          <SelectField value={f.yearTo} onChange={(v) => set({ yearTo: v })} placeholder={t('home.price_to', 'До')} anyLabel={t('home.any_year')} options={YEARS.map((y) => ({ value: y, label: y }))} />
+        </div>
+      )}
+    </Field>
+  );
+
   return (
-    <Panel as="div" className={cn('shadow-sm', className)} bodyClassName="flex flex-col gap-2 p-3 sm:p-4 md:p-4">
+    <Panel as="div" className={cn('shadow-xl shadow-black/30', className)} bodyClassName="flex flex-col gap-3 p-3 sm:p-4 lg:p-5">
       {/* Vehicle type */}
-      <div className="rounded-xl bg-raised p-1">
+      <div className="rounded-xl bg-raised p-1 lg:max-w-md">
         <div className="flex gap-1">
           {VEHICLE_TYPES.slice(0, 4).map(vehicleButton)}
           <button type="button" aria-label={t('home.more_types', 'Ещё')} aria-expanded={moreTypes} onClick={() => setMoreTypes((v) => !v)}
@@ -172,114 +216,107 @@ export default function HomeSearchPanel({ className }) {
         <VehicleTypeFilters vehicleType={f.vehicleType} filters={f.vehicleFilters} setFilters={(fn) => setForm((prev) => ({ ...prev, vehicleFilters: typeof fn === 'function' ? fn(prev.vehicleFilters) : fn }))} />
       )}
 
-      {isCar && (
-        <>
-          <MiniSearchSelect
-            value=""
-            onChange={(b) => b && b !== 'any' && set({ brands: f.brands.includes(b) ? f.brands : [...f.brands, b], model: '', generations: [] })}
-            options={BRANDS}
-            placeholder={t('home.brand_any_label')}
-            anyLabel={t('common.any_brand')} />
-          {f.brands.length > 0 && (
-            <div className="flex flex-wrap items-center gap-1">
-              {f.brands.map((b) => (
-                <span key={b} className="inline-flex h-7 items-center gap-1 rounded-lg bg-brand/15 px-2 text-xs font-medium text-brand-text">
-                  {b}
-                  <button type="button" aria-label={`× ${b}`} onClick={() => set({ brands: f.brands.filter((x) => x !== b), model: '', generations: [] })}><X className="h-3 w-3" /></button>
-                </span>
-              ))}
-              {f.brands.length > 1 && (
-                <button type="button" onClick={() => set({ brands: [], model: '', generations: [] })} className="px-1 text-xs text-ink-3 hover:text-ink">
-                  {t('catalog.reset_all', 'Сбросить')}
-                </button>
-              )}
-            </div>
+      {isCar && f.brands.length > 0 && (
+        <div className="flex flex-wrap items-center gap-1">
+          {f.brands.map((b) => (
+            <span key={b} className="inline-flex h-7 items-center gap-1 rounded-lg bg-brand/15 px-2 text-xs font-medium text-brand-text">
+              {b}
+              <button type="button" aria-label={`× ${b}`} onClick={() => set({ brands: f.brands.filter((x) => x !== b), model: '', generations: [] })}><X className="h-3 w-3" /></button>
+            </span>
+          ))}
+          {f.brands.length > 1 && (
+            <button type="button" onClick={() => set({ brands: [], model: '', generations: [] })} className="px-1 text-xs text-ink-3 hover:text-ink">
+              {t('catalog.reset_all', 'Сбросить')}
+            </button>
           )}
-          <MiniSearchSelect
-            value={f.model}
-            onChange={(m) => set({ model: m, generations: [], useGenerations: false })}
-            options={models.map((m) => ({ value: m, label: modelCounts[m] ? `${m} (${modelCounts[m]})` : m }))}
-            placeholder={t('home.model_any_label')}
-            anyLabel={t('common.any_model')} />
-
-          <div className={cn('flex flex-col gap-2', more)}>
-            <SelectField value={f.fuelType} onChange={(v) => set({ fuelType: v })} placeholder={t('home.search_fuel')} anyLabel={t('home.any_fuel')}
-              options={FUEL_TYPES.map((v) => ({ value: v, label: t('fuel_types.' + v) }))} />
-            <SelectField value={f.bodyType} onChange={(v) => set({ bodyType: v })} placeholder={t('home.search_body')} anyLabel={t('home.any_body')}
-              options={BODY_TYPES.map((v) => ({ value: v, label: t('body_types.' + v) }))} />
-
-            {generations.length > 0 && (
-              <div className="flex items-center justify-between">
-                <p className="text-xs font-medium text-ink-3">{f.useGenerations ? t('home.generation_label') : t('home.year_label')}</p>
-                <button type="button" onClick={() => set({ useGenerations: !f.useGenerations, generations: [], yearFrom: '', yearTo: '' })} className="text-xs text-brand-text hover:underline">
-                  {f.useGenerations ? t('home.by_year') : t('home.by_generation')}
-                </button>
-              </div>
-            )}
-            {f.useGenerations && generations.length > 0 ? (
-              <div className="flex flex-wrap gap-1.5">
-                {generations.map((g) => {
-                  const on = f.generations.includes(g.code);
-                  return (
-                    <button key={g.code} type="button" aria-pressed={on}
-                      onClick={() => set({ generations: on ? f.generations.filter((c) => c !== g.code) : [...f.generations, g.code] })}
-                      className={cn('h-8 rounded-lg px-2.5 text-xs font-medium transition-colors', on ? 'bg-brand text-white' : 'bg-raised text-ink-2 hover:text-ink')}>
-                      {g.code} <span className="opacity-60">({g.years})</span>
-                    </button>
-                  );
-                })}
-              </div>
-            ) : (
-              <div className="grid grid-cols-2 gap-2">
-                <SelectField value={f.yearFrom} onChange={(v) => set({ yearFrom: v })} placeholder={t('home.year_from')} anyLabel={t('home.any_year')} options={YEARS.map((y) => ({ value: y, label: y }))} />
-                <SelectField value={f.yearTo} onChange={(v) => set({ yearTo: v })} placeholder={t('home.year_to')} anyLabel={t('home.any_year')} options={YEARS.map((y) => ({ value: y, label: y }))} />
-              </div>
-            )}
-          </div>
-        </>
+        </div>
       )}
 
       {hasBasics && (
-        <>
+        <div className={grid}>
+          {isCar && (
+            <>
+              <Field label={t('home.search_brand', 'Марка')}>
+                <MiniSearchSelect
+                  value=""
+                  onChange={(b) => b && b !== 'any' && set({ brands: f.brands.includes(b) ? f.brands : [...f.brands, b], model: '', generations: [] })}
+                  options={BRANDS}
+                  placeholder={f.brands.length ? t('home.add_brand', '+ ещё марка') : t('home.brand_any_label')}
+                  anyLabel={t('common.any_brand')} />
+              </Field>
+              <Field label={t('home.search_model', 'Модель')}>
+                <MiniSearchSelect
+                  value={f.model}
+                  onChange={(m) => set({ model: m, generations: [], useGenerations: false })}
+                  options={models.map((m) => ({ value: m, label: modelCounts[m] ? `${m} (${modelCounts[m]})` : m }))}
+                  placeholder={t('home.model_any_label')}
+                  anyLabel={t('common.any_model')} />
+              </Field>
+              {yearCell}
+            </>
+          )}
           <RangeField label={`${t('home.price_label', 'Цена')}, €`} from={f.priceFrom} to={f.priceTo} onFrom={(v) => set({ priceFrom: v })} onTo={(v) => set({ priceTo: v })} />
-          <div className={cn('flex flex-col gap-2', more)}>
-            <RangeField label={`${t('home.power_label', 'Мощность')}, ${t('car.kw', 'кВт')}`} from={f.powerFrom} to={f.powerTo} onFrom={(v) => set({ powerFrom: v })} onTo={(v) => set({ powerTo: v })} />
+
+          {isCar && (
+            <>
+              <Field label={t('home.search_fuel', 'Топливо')} className={more}>
+                <SelectField value={f.fuelType} onChange={(v) => set({ fuelType: v })} placeholder={t('home.any_fuel')} anyLabel={t('home.any_fuel')}
+                  options={FUEL_TYPES.map((v) => ({ value: v, label: t('fuel_types.' + v) }))} />
+              </Field>
+              <Field label={t('home.search_body', 'Тип кузова')} className={more}>
+                <SelectField value={f.bodyType} onChange={(v) => set({ bodyType: v })} placeholder={t('home.any_body')} anyLabel={t('home.any_body')}
+                  options={BODY_TYPES.map((v) => ({ value: v, label: t('body_types.' + v) }))} />
+              </Field>
+            </>
+          )}
+          <RangeField className={more} label={`${t('home.power_label', 'Мощность')}, ${t('car.kw', 'кВт')}`} from={f.powerFrom} to={f.powerTo} onFrom={(v) => set({ powerFrom: v })} onTo={(v) => set({ powerTo: v })} />
+          <Field label={t('home.search_country', 'Страна')} className={more}>
             <div className="grid grid-cols-2 gap-2">
               <SelectField value={f.country} onChange={(v) => set({ country: v, city: '' })} placeholder={t('home.search_country')} anyLabel={t('home.any_country')}
                 options={Object.keys(CITIES_BY_COUNTRY).map((c) => ({ value: c, label: translateCountry(null, c) }))} />
               <SelectField value={f.city} onChange={(v) => set({ city: v })} placeholder={t('home.search_city')} anyLabel={t('home.any_city')} disabled={!isSet(f.country)}
                 options={(CITIES_BY_COUNTRY[f.country] || []).map((c) => ({ value: c, label: translateCity(null, c) }))} />
             </div>
-            <SelectField value={f.color} onChange={(v) => set({ color: v })} placeholder={t('home.color')} anyLabel={t('home.any_color')}
+          </Field>
+          <Field label={t('home.color', 'Цвет')} className={more}>
+            <SelectField value={f.color} onChange={(v) => set({ color: v })} placeholder={t('home.any_color')} anyLabel={t('home.any_color')}
               options={COLORS.map((c) => ({ value: t('colors.' + c), label: t('colors.' + c) }))} />
-            {f.vehicleType !== 'moto' && (
-              <SelectField value={f.driveType} onChange={(v) => set({ driveType: v })} placeholder={t('home.drive')} anyLabel={t('home.any_drive')}
+          </Field>
+          {f.vehicleType !== 'moto' && (
+            <Field label={t('home.drive', 'Привод')} className={more}>
+              <SelectField value={f.driveType} onChange={(v) => set({ driveType: v })} placeholder={t('home.any_drive')} anyLabel={t('home.any_drive')}
                 options={['fwd', 'rwd', 'awd'].map((v) => ({ value: v, label: t('home.drive_' + v) }))} />
-            )}
-            <SelectField value={f.transmission} onChange={(v) => set({ transmission: v })} placeholder={t('home.transmission', 'Коробка передач')} anyLabel={t('home.any_transmission', 'Любая КПП')}
+            </Field>
+          )}
+          <Field label={t('home.transmission', 'Коробка передач')} className={more}>
+            <SelectField value={f.transmission} onChange={(v) => set({ transmission: v })} placeholder={t('home.any_transmission', 'Любая КПП')} anyLabel={t('home.any_transmission', 'Любая КПП')}
               options={['automatic', 'manual'].map((v) => ({ value: v, label: t('transmission_types.' + v) }))} />
-          </div>
+          </Field>
+        </div>
+      )}
+
+      <div className="flex flex-col gap-2 lg:flex-row lg:items-center lg:justify-end">
+        {hasBasics && (
           <Button type="button" variant="secondary" aria-expanded={allFilters} onClick={() => setAllFilters((v) => !v)} className="text-brand-text lg:hidden">
             <SlidersHorizontal />
             {allFilters ? t('home.fewer_filters', 'Меньше фильтров') : t('home.all_filters', 'Все фильтры')}
             <ChevronDown className={cn('transition-transform', allFilters && 'rotate-180')} />
           </Button>
-        </>
-      )}
-
-      <div className="mt-1 flex gap-2">
-        <Button type="button" size="lg" className="flex-1" onClick={() => navigate(buildSearchUrl(f, generations))}>
-          <Search />{t('home.search_button')}
-        </Button>
-        {isCar && (
-          <Button asChild variant="ghost" size="icon" className="h-11 w-11" title={t('home.extended_search')}>
-            <Link to="/DetailedSearch" aria-label={t('home.extended_search')}><SlidersHorizontal /></Link>
-          </Button>
         )}
-        <Button type="button" variant="ghost" size="icon" className="h-11 w-11 hover:text-red-400" title={t('catalog.reset_all', 'Сбросить')} aria-label={t('catalog.reset_all', 'Сбросить')}
-          onClick={() => setForm(EMPTY)}>
-          <X />
-        </Button>
+        <div className="flex gap-2">
+          {isCar && (
+            <Button asChild variant="ghost" className="h-11 max-lg:w-11 max-lg:px-0" title={t('home.extended_search')}>
+              <Link to="/DetailedSearch" aria-label={t('home.extended_search')}><SlidersHorizontal /><span className="hidden lg:inline">{t('home.extended_search')}</span></Link>
+            </Button>
+          )}
+          <Button type="button" variant="ghost" className="h-11 hover:text-red-400 max-lg:w-11 max-lg:px-0" title={t('catalog.reset_all', 'Сбросить')} aria-label={t('catalog.reset_all', 'Сбросить')}
+            onClick={() => setForm(EMPTY)}>
+            <X /><span className="hidden lg:inline">{t('catalog.reset_all', 'Сбросить')}</span>
+          </Button>
+          <Button type="button" size="lg" className="flex-1 max-lg:order-first lg:min-w-[220px] lg:flex-none" onClick={() => navigate(buildSearchUrl(f, generations))}>
+            <Search />{t('home.search_button')}
+          </Button>
+        </div>
       </div>
     </Panel>
   );

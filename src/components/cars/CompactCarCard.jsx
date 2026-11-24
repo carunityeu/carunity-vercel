@@ -1,105 +1,68 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import { MapPin } from 'lucide-react';
 import { getCarDetailsPath } from '@/lib/shortIdUtils';
 import { formatPrice, formatNumber } from '@/utils/format';
-import { useTranslation } from 'react-i18next';
 import { translateLocation } from '@/utils/locationUtils';
-import { fuelChip } from '@/lib/fuelBadge';
+import { isElectricFuel } from '@/lib/fuelBadge';
+import { cn } from '@/lib/utils';
 import PriceRatingBadge from '@/components/cars/PriceRatingBadge';
+import DiscountTag from '@/components/cars/DiscountTag';
 import TileImageArea from '@/components/cars/TileImageArea';
-import TransmissionOrEnergy from '@/components/cars/TransmissionOrEnergy';
 
-const carIcons = {
-  fuel: 'https://media.base44.com/images/public/6973f00466c3a37f3d8e7e53/6feb2f9c7_gas-station1.png',
-  transmission: 'https://media.base44.com/images/public/6973f00466c3a37f3d8e7e53/5bf7d42bf_gearbox3.png',
-  mileage: 'https://media.base44.com/images/public/6973f00466c3a37f3d8e7e53/f3a09dd47_road-perspective.png',
-  speed: 'https://media.base44.com/images/public/6973f00466c3a37f3d8e7e53/e4b346d84_speedometer1.png'
-};
-
-export default function CompactCarCard({ car, showLocation = false, vehicleType = 'car', rating = null, promotion = null }) {
+/**
+ * The one listing card of the site (design code, section 6): grids, carousels, similar listings.
+ * Photo 4:3 · name · price · one line of key facts · location and seller type.
+ * Key facts are plain text separated by dots instead of chips: easier to scan in a grid.
+ */
+export default function CompactCarCard({ car, vehicleType = 'car', rating = null, promotion = null, className }) {
   const { t } = useTranslation();
+  const href = vehicleType === 'car' ? getCarDetailsPath(car) : `/VehicleDetails?id=${car.id}&type=${vehicleType}`;
+  const discount = car.original_price > car.price ? car.original_price - car.price : 0;
+  const kw = car.engine_power ? Math.round(car.engine_power * 0.7355) : null;
 
-  const formatMileage = (m) =>
-    formatNumber(m);
+  const facts = [
+    car.month_of_manufacture && car.year ? `${String(car.month_of_manufacture).padStart(2, '0')}/${car.year}` : car.year,
+    car.mileage != null && `${formatNumber(car.mileage)} ${t('car.km')}`,
+    car.fuel_type && t('fuel_types.' + car.fuel_type, car.fuel_type),
+    kw && `${kw} ${t('car.kw')}`,
+    !isElectricFuel(car.fuel_type) && car.transmission && t('transmission_types.' + car.transmission, car.transmission),
+  ].filter(Boolean);
 
-  const dateStr = car.month_of_manufacture && car.year
-    ? `${String(car.month_of_manufacture).padStart(2, '0')}/${car.year}`
-    : car.year || null;
-
-  const fuel = car.fuel_type ? fuelChip(car.fuel_type, carIcons.fuel) : null;
-
-  const href = vehicleType === 'car'
-    ? getCarDetailsPath(car)
-    : `/VehicleDetails?id=${car.id}&type=${vehicleType}`;
+  const location = (car.location || car.country) && translateLocation(t, car.location, car.country);
+  const seller = car.seller_type === 'dealer' ? t('car.dealer_label', 'Дилер') : t('car.private_label', 'Частный продавец');
 
   return (
-    <Link to={href} className="block tile-card group">
-      <TileImageArea car={car} promotion={promotion} />
+    <Link
+      to={href}
+      className={cn('tile-card group flex h-full flex-col overflow-hidden rounded-xl border border-line bg-surface transition-colors hover:border-brand/50', className)}>
+      <TileImageArea car={car} promotion={promotion} className="" radiusClass="rounded-none" />
 
-      {/* Info below image */}
-      <div className="px-0.5">
-        {/* Brand + Model (own line, so a narrow tile never cuts the name), then price + year */}
-        <div className="text-sm sm:text-[15px] font-bold text-slate-900 dark:text-white leading-tight truncate" title={`${car.brand} ${car.model}`}>
+      <div className="flex flex-1 flex-col gap-1 p-3">
+        <h3 className="truncate text-sm font-bold text-ink sm:text-base" title={`${car.brand} ${car.model}`}>
           {car.brand} {car.model}
-        </div>
-        <div className="flex items-baseline justify-between gap-2 mt-0.5">
-          <span className="text-base font-bold text-slate-900 dark:text-white whitespace-nowrap">
-            {formatPrice(car.price)}
-          </span>
-          {car.year && <span className="text-xs font-medium text-slate-500 dark:text-slate-400">{car.year}</span>}
+        </h3>
+        {car.trim_level && <p className="-mt-0.5 truncate text-xs text-ink-3">{car.trim_level}</p>}
+
+        <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1">
+          <span className="text-lg font-bold leading-tight text-ink">{formatPrice(car.price)}</span>
+          {discount > 0 && <DiscountTag label={`-${formatPrice(discount)}`} />}
+          {rating?.score ? <PriceRatingBadge score={rating.score} showLabel={false} className="ml-auto" /> : null}
         </div>
 
-        {/* Trim level (left) + price rating (right) on one line */}
-        {(car.trim_level || rating?.score) && (
-          <div className="flex items-center justify-between gap-2 mt-0.5 min-h-[15px]">
-            <div className="min-w-0 text-xs text-slate-500 dark:text-slate-400 leading-snug truncate">
-              {car.trim_level}
-            </div>
-            {rating?.score ? (
-              <div className="ml-auto flex-shrink-0">
-                <PriceRatingBadge score={rating.score} showLabel={false} />
-              </div>
-            ) : null}
-          </div>
+        {facts.length > 0 && (
+          <p className="line-clamp-2 text-xs leading-5 text-ink-2">
+            {facts.map((f, i) => (
+              <React.Fragment key={i}>{i > 0 && <span className="text-ink-3">{' · '}</span>}<span className="whitespace-nowrap">{f}</span></React.Fragment>
+            ))}
+          </p>
         )}
 
-        {/* Specs chips */}
-          <div className="mt-1.5 flex flex-wrap gap-1">
-            {car.engine_power && (
-              <span className="inline-flex items-center gap-1 px-1.5 sm:px-2 py-1 rounded-md bg-slate-100 dark:bg-slate-800 text-xs sm:text-sm font-semibold text-slate-700 dark:text-slate-200">
-                <img src={carIcons.speed} alt="power" className="w-3.5 h-3.5 sm:w-4 sm:h-4 flex-shrink-0 dark:invert" />
-                {Math.round(car.engine_power * 0.735)} {t('car.kw')}
-              </span>
-            )}
-            {car.mileage != null && (
-              <span className="inline-flex items-center gap-1 px-1.5 sm:px-2 py-1 rounded-md bg-slate-100 dark:bg-slate-800 text-xs sm:text-sm font-semibold text-slate-700 dark:text-slate-200">
-                <img src={carIcons.mileage} alt="mileage" className="w-3.5 h-3.5 sm:w-4 sm:h-4 flex-shrink-0 dark:invert" />
-                {formatMileage(car.mileage)} {t('car.km')}
-              </span>
-            )}
-            {fuel && (
-              <span
-                style={fuel.style}
-                className="inline-flex items-center gap-1 px-1.5 sm:px-2 py-1 rounded-md bg-slate-100 dark:bg-slate-800 text-xs sm:text-sm font-semibold text-slate-700 dark:text-slate-200">
-                <img src={fuel.icon} alt="fuel" className={`w-3.5 h-3.5 sm:w-4 sm:h-4 flex-shrink-0 ${fuel.iconClass}`} />
-                {t('fuel_types.' + car.fuel_type, car.fuel_type)}
-              </span>
-            )}
-            <TransmissionOrEnergy car={car} size="md">
-              {car.transmission && (
-                <span className="inline-flex items-center gap-1 px-1.5 sm:px-2 py-1 rounded-md bg-slate-100 dark:bg-slate-800 text-xs sm:text-sm font-semibold text-slate-700 dark:text-slate-200">
-                  <img src={carIcons.transmission} alt="transmission" className="w-3.5 h-3.5 sm:w-4 sm:h-4 flex-shrink-0 dark:invert" />
-                  {t('transmission_types.' + car.transmission, car.transmission)}
-                </span>
-              )}
-            </TransmissionOrEnergy>
-            {showLocation && (car.location || car.country) && (
-              <span className="inline-flex items-center gap-1 px-1.5 sm:px-2 py-1 rounded-md bg-slate-100 dark:bg-slate-800 text-xs sm:text-sm font-semibold text-slate-700 dark:text-slate-200 max-w-full">
-                <img src="https://media.base44.com/images/public/6973f00466c3a37f3d8e7e53/042a078cf_pin.png" alt="location" className="w-3.5 h-3.5 sm:w-4 sm:h-4 flex-shrink-0 invert" />
-                <span className="truncate">{translateLocation(t, car.location, car.country)}</span>
-              </span>
-            )}
-          </div>
+        <div className="mt-auto flex items-center gap-1 border-t border-line pt-2 text-xs text-ink-3">
+          {location && <><MapPin className="h-3.5 w-3.5 flex-shrink-0" /><span className="truncate">{location}</span><span className="mx-0.5">·</span></>}
+          <span className="flex-shrink-0">{seller}</span>
+        </div>
       </div>
     </Link>
   );
