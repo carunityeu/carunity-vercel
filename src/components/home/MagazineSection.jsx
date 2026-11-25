@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useQuery } from '@tanstack/react-query';
 import { ChevronRight, Newspaper } from 'lucide-react';
 import { entities } from '@/api/entities';
-import { Container, Panel } from '@/components/ds';
+import { Container } from '@/components/ds';
 
 // Home news block laid out like a magazine: one lead story (photo half, big title, teaser)
 // and four smaller stories in a 2×2 list (thumbnail + title).
@@ -41,13 +41,13 @@ export default function MagazineSection() {
 
   return (
     <Container as="section" className="py-6 sm:py-8" aria-labelledby="magazine-title">
-      <Panel
-        title={<span id="magazine-title">{t('news.magazine_title', 'Журнал CarUnity')}</span>}
-        action={(
-          <Link to="/AutoNews" className="flex items-center gap-0.5 text-sm font-medium text-brand-text">
-            {t('news.see_all')}<ChevronRight className="h-4 w-4" />
-          </Link>
-        )}>
+      {/* Straight on the page: no panel, no divider */}
+      <div className="mb-4 flex items-baseline justify-between gap-3">
+        <h2 id="magazine-title" className="text-xl font-bold text-ink sm:text-2xl">{t('news.magazine_title', 'Журнал CarUnity')}</h2>
+        <Link to="/AutoNews" className="flex flex-shrink-0 items-center gap-0.5 text-sm font-medium text-brand-text">
+          {t('news.see_all')}<ChevronRight className="h-4 w-4" />
+        </Link>
+      </div>
         {/* Lead story */}
         <Link to={articleUrl(lead)} className="group grid gap-4 md:grid-cols-2 md:gap-6">
           <div className="aspect-video overflow-hidden rounded-xl bg-raised"><Cover article={lead} /></div>
@@ -63,7 +63,7 @@ export default function MagazineSection() {
 
         {/* Four more */}
         {rest.length > 0 && (
-          <div className="mt-6 grid gap-x-6 gap-y-4 border-t border-line pt-5 md:grid-cols-2">
+          <div className="mt-6 grid gap-x-6 gap-y-4 md:grid-cols-2">
             {rest.map((a) => (
               <Link key={a.id} to={articleUrl(a)} className="group flex gap-3">
                 <div className="aspect-video w-32 flex-shrink-0 overflow-hidden rounded-lg bg-raised sm:w-40"><Cover article={a} /></div>
@@ -78,7 +78,6 @@ export default function MagazineSection() {
             ))}
           </div>
         )}
-      </Panel>
     </Container>
   );
 }

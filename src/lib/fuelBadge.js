@@ -38,11 +38,15 @@ export function energyChip() {
 /**
  * Icon, icon class and chip style for a fuel chip.
  * @param {string} fuelType e.g. 'electric', 'diesel'
- * @param {string} defaultIcon fuel-pump icon url, used for every non-electric type
+ * @param {string} defaultIcon fuel-pump icon url (petrol, diesel, gas…); electric gets a bolt, hybrids a plug
  */
+export const isHybridFuel = (fuelType) => fuelType === 'hybrid' || fuelType === 'plugin_hybrid';
+
 export function fuelChip(fuelType, defaultIcon) {
   const electric = isElectricFuel(fuelType);
   const accented = electric && ELECTRIC_ACCENT_ENABLED;
+  // Hybrids get the plug icon (white glyph on a black square: screen-blend drops the square)
+  if (isHybridFuel(fuelType)) return { icon: ENERGY_PLUG_ICON, iconClass: 'mix-blend-screen', style: undefined };
   return {
     icon: electric ? ELECTRIC_BOLT_ICON : defaultIcon,
     // the bolt stays white on the blue chip; other icons invert only in dark mode

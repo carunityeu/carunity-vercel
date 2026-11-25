@@ -3,7 +3,7 @@ import { ChevronDown, X } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 // triggerClassName replaces the default field look (the home search uses the design-code field)
-export default function MiniSearchSelect({ value, onChange, options, placeholder, anyLabel, triggerClassName, caret }) {
+export default function MiniSearchSelect({ value, onChange, options, placeholder, anyLabel, triggerClassName }) {
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState('');
@@ -43,7 +43,7 @@ export default function MiniSearchSelect({ value, onChange, options, placeholder
         onClick={() => setOpen(!open)}
         className={triggerClassName || "w-full flex items-center justify-between h-9 px-3 rounded-xl bg-slate-100 dark:bg-slate-900 border-transparent text-slate-900 dark:text-white text-xs focus:outline-none"}
       >
-        <span className={caret ? `truncate ${value ? 'text-ink' : 'italic text-ink-3'}` : (value ? 'text-slate-900 dark:text-white' : 'text-slate-400')}>
+        <span className={triggerClassName ? `truncate ${value ? 'text-ink' : 'text-ink-3'}` : (value ? 'text-slate-900 dark:text-white' : 'text-slate-400')}>
           {getLabel(value) || placeholder}
         </span>
         <div className="flex items-center gap-0.5">
@@ -52,7 +52,7 @@ export default function MiniSearchSelect({ value, onChange, options, placeholder
               <X className="w-3 h-3" />
             </span>
           )}
-          {caret || <ChevronDown className="w-3.5 h-3.5 text-slate-400" />}
+          <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
         </div>
       </button>
 

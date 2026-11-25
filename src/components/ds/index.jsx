@@ -39,16 +39,3 @@ export const fieldClass = 'h-10 w-full rounded-xl border-transparent bg-raised p
 /** Header / menu link look: one place for hover and active states. */
 export const navLinkClass = 'rounded-lg px-3 py-2 text-sm font-medium text-ink-2 transition-colors hover:bg-raised hover:text-ink';
 
-/* Form fields (mobile.de-like): 36px, thin light outline, selects get a caret compartment on the right. */
-export const boxFieldClass = 'h-9 w-full rounded-lg border border-line-strong bg-surface px-3 text-sm text-ink placeholder:italic placeholder:text-ink-3 focus-visible:border-brand focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-brand';
-export const boxSelectClass = 'relative flex h-9 w-full items-center rounded-lg border border-line-strong bg-raised pl-3 pr-11 text-left text-sm text-ink focus:outline-none focus-visible:border-brand data-[placeholder]:italic data-[placeholder]:text-ink-3 [&>svg]:hidden';
-
-/** The caret compartment of a select: a divider line and a small filled triangle. */
-export function SelectCaret() {
-  return (
-    // div, not span: the select trigger restyles its direct span children
-    <div aria-hidden="true" className="pointer-events-none absolute inset-y-0 right-0 flex w-9 items-center justify-center border-l border-line-strong">
-      <div className="h-0 w-0 border-x-[5px] border-t-[6px] border-x-transparent border-t-ink" />
-    </div>
-  );
-}

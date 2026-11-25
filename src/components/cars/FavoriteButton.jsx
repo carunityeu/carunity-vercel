@@ -17,7 +17,7 @@ export default function FavoriteButton({ carId, className }) {
       title={label}
       aria-pressed={fav}
       onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggleFavorite(carId); }}
-      className={cn('absolute right-2.5 top-2.5 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-page/90 text-brand-text', className)}>
+      className={cn('absolute right-2.5 top-2.5 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-page/90 text-white', className)}>
       <Heart className={cn('h-[18px] w-[18px]', fav && 'fill-current')} strokeWidth={2} />
     </button>
   );

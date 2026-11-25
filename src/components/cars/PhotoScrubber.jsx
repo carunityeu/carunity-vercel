@@ -19,7 +19,8 @@ export const tilePhotos = (car) =>
  * again when the pointer leaves or the listing changes.
  */
 export default function PhotoScrubber({ car, alt, className, children }) {
-  const photos = tilePhotos(car);
+  const [failed, setFailed] = useState([]);     // URLs that did not load (dead links in old listings)
+  const photos = tilePhotos(car).filter((src) => !failed.includes(src));
   const [index, setIndex] = useState(0);
   const [active, setActive] = useState(false);   // pointer over the photo / touched
   const [warm, setWarm] = useState(false);       // other photos may load now
@@ -28,7 +29,7 @@ export default function PhotoScrubber({ car, alt, className, children }) {
   const touch = useRef(null);
   const swiped = useRef(false);
 
-  useEffect(() => { setIndex(0); setWarm(false); setLoaded({}); lastShown.current = 0; }, [car?.id]);
+  useEffect(() => { setIndex(0); setWarm(false); setLoaded({}); setFailed([]); lastShown.current = 0; }, [car?.id]);
 
   // Never flash an empty frame: until the wanted photo has loaded, keep the last loaded one on screen
   if (loaded[index] || index === 0) lastShown.current = index;
@@ -73,6 +74,7 @@ export default function PhotoScrubber({ car, alt, className, children }) {
             decoding="async"
             draggable={false}
             onLoad={() => setLoaded((l) => (l[i] ? l : { ...l, [i]: true }))}
+            onError={() => { setFailed((f) => [...f, src]); setIndex(0); setLoaded({}); lastShown.current = 0; }}
             className={cn('absolute inset-0 h-full w-full select-none object-cover', i === shown ? 'opacity-100' : 'opacity-0')} />
         )
       )) : (
