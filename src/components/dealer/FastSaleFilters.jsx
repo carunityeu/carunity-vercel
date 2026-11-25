@@ -1,7 +1,6 @@
 import { useState, useMemo, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Button } from '@/components/ui/button';
+import { fieldClass, NativeSelect } from '@/components/ds';
 
 export default function FastSaleFilters({ cars, onFiltered }) {
   const { t } = useTranslation();
@@ -50,92 +49,41 @@ export default function FastSaleFilters({ cars, onFiltered }) {
   cbRef.current = onFiltered;
   useEffect(() => { cbRef.current(filtered); }, [filtered]);
 
-  const inputClass = "h-10 bg-slate-800 border-slate-700 border text-white rounded-xl text-sm placeholder:text-slate-500 px-3 w-full focus:outline-none focus:ring-2 focus:ring-emerald-500/30";
+  const selects = [
+    { value: filterBrand, set: (v) => { setFilterBrand(v); setFilterModel(''); }, any: t('dealer.all_brands', 'Все марки'), options: uniqueBrands.map((b) => [b, b]) },
+    { value: filterModel, set: setFilterModel, any: t('dealer.all_models', 'Все модели'), options: uniqueModels.map((m) => [m, m]) },
+    { value: filterBody, set: setFilterBody, any: t('home.any_body', 'Любой кузов'), options: uniqueBodies.map((b) => [b, t('body_types.' + b, b)]) },
+    { value: filterTrans, set: setFilterTrans, any: t('home.any_transmission', 'Любая КПП'), options: uniqueTrans.map((v) => [v, t('transmission_types.' + v, v)]) },
+    { value: filterFuel, set: setFilterFuel, any: t('home.any_fuel', 'Любое топливо'), options: uniqueFuels.map((f) => [f, t('fuel_types.' + f, f)]) },
+    { value: filterDrive, set: setFilterDrive, any: t('home.any_drive', 'Любой привод'), options: uniqueDrives.map((d) => [d, t('home.drive_' + d, d)]) },
+  ];
+  const ranges = [
+    [t('dealer.year_from', 'Год от'), yearFrom, setYearFrom, yearTo, setYearTo],
+    [t('dealer.mileage_from', 'Пробег от'), mileageFrom, setMileageFrom, mileageTo, setMileageTo],
+    [t('dealer.price_from', 'Цена от, €'), priceFrom, setPriceFrom, priceTo, setPriceTo],
+  ];
+  const num = (e) => e.target.value.replace(/[^0-9]/g, '');
 
-  const selectClass = "h-10 bg-slate-800 border-slate-700 text-white rounded-xl text-sm";
-
+  // Filters live in the page (no extra card): the same fields as everywhere on the site
   return (
-    <div className="space-y-2 mb-4">
-      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-        <Select value={filterBrand || 'any'} onValueChange={v => { setFilterBrand(v === 'any' ? '' : v); setFilterModel(''); }}>
-          <SelectTrigger className={selectClass}>
-            <SelectValue placeholder={t('home.search_brand', 'Марка')} />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="any">{t('dealer.all_brands', 'Все марки')}</SelectItem>
-            {uniqueBrands.map(b => <SelectItem key={b} value={b}>{b}</SelectItem>)}
-          </SelectContent>
-        </Select>
-        <Select value={filterModel || 'any'} onValueChange={v => setFilterModel(v === 'any' ? '' : v)}>
-          <SelectTrigger className={selectClass}>
-            <SelectValue placeholder={t('home.search_model', 'Модель')} />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="any">{t('dealer.all_models', 'Все модели')}</SelectItem>
-            {uniqueModels.map(m => <SelectItem key={m} value={m}>{m}</SelectItem>)}
-          </SelectContent>
-        </Select>
-        <Select value={filterBody || 'any'} onValueChange={v => setFilterBody(v === 'any' ? '' : v)}>
-          <SelectTrigger className={selectClass}>
-            <SelectValue placeholder={t('dealer.filter_body', 'Кузов')} />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="any">{t('home.any_body', 'Любой кузов')}</SelectItem>
-            {uniqueBodies.map(b => <SelectItem key={b} value={b}>{t('body_types.' + b, b)}</SelectItem>)}
-          </SelectContent>
-        </Select>
+    <div className="space-y-2">
+      <div className="grid grid-cols-2 gap-2 md:grid-cols-3 2xl:grid-cols-6">
+        {selects.map((f, i) => (
+          <NativeSelect key={i} value={f.value} onChange={(e) => f.set(e.target.value)} aria-label={f.any}>
+            <option value="">{f.any}</option>
+            {f.options.map(([v, label]) => <option key={v} value={v}>{label}</option>)}
+          </NativeSelect>
+        ))}
       </div>
-
-      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-        <Select value={filterTrans || 'any'} onValueChange={v => setFilterTrans(v === 'any' ? '' : v)}>
-          <SelectTrigger className={selectClass}>
-            <SelectValue placeholder={t('dealer.filter_trans', 'Коробка')} />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="any">{t('home.any_transmission', 'Любая КПП')}</SelectItem>
-            {uniqueTrans.map(tr => <SelectItem key={tr} value={tr}>{t('transmission_types.' + tr, tr)}</SelectItem>)}
-          </SelectContent>
-        </Select>
-        <Select value={filterFuel || 'any'} onValueChange={v => setFilterFuel(v === 'any' ? '' : v)}>
-          <SelectTrigger className={selectClass}>
-            <SelectValue placeholder={t('dealer.filter_engine', 'Двигатель')} />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="any">{t('home.any_fuel', 'Любое топливо')}</SelectItem>
-            {uniqueFuels.map(f => <SelectItem key={f} value={f}>{t('fuel_types.' + f, f)}</SelectItem>)}
-          </SelectContent>
-        </Select>
-        <Select value={filterDrive || 'any'} onValueChange={v => setFilterDrive(v === 'any' ? '' : v)}>
-          <SelectTrigger className={selectClass}>
-            <SelectValue placeholder={t('dealer.filter_drive', 'Привод')} />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="any">{t('home.any_drive', 'Любой привод')}</SelectItem>
-            {uniqueDrives.map(d => <SelectItem key={d} value={d}>{t('home.drive_' + d, d)}</SelectItem>)}
-          </SelectContent>
-        </Select>
+      <div className="grid grid-cols-1 gap-2 md:grid-cols-3">
+        {ranges.map(([label, from, setFrom, to, setTo]) => (
+          <div key={label} className="grid grid-cols-2 gap-2">
+            <input className={fieldClass} inputMode="numeric" placeholder={label} value={from} onChange={(e) => setFrom(num(e))} />
+            <input className={fieldClass} inputMode="numeric" placeholder={t('dealer.to', 'до')} value={to} onChange={(e) => setTo(num(e))} />
+          </div>
+        ))}
       </div>
-
-      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-        <div className="grid grid-cols-2 gap-1">
-          <input className={inputClass} placeholder={t('dealer.year_from', 'Год от')} value={yearFrom} onChange={e => setYearFrom(e.target.value)} type="number" />
-          <input className={inputClass} placeholder={t('dealer.to', 'до')} value={yearTo} onChange={e => setYearTo(e.target.value)} type="number" />
-        </div>
-        <div className="grid grid-cols-2 gap-1">
-          <input className={inputClass} placeholder={t('dealer.mileage_from', 'Пробег от')} value={mileageFrom} onChange={e => setMileageFrom(e.target.value)} type="number" />
-          <input className={inputClass} placeholder={t('dealer.to', 'до')} value={mileageTo} onChange={e => setMileageTo(e.target.value)} type="number" />
-        </div>
-        <div className="grid grid-cols-2 gap-1">
-          <input className={inputClass} placeholder={t('dealer.price_from', 'Цена от, €')} value={priceFrom} onChange={e => setPriceFrom(e.target.value)} type="number" />
-          <input className={inputClass} placeholder={t('dealer.to', 'до')} value={priceTo} onChange={e => setPriceTo(e.target.value)} type="number" />
-        </div>
-      </div>
-
-      <div className="flex justify-end">
-        <Button className="h-10 px-6 rounded-xl text-sm font-semibold gap-2 bg-emerald-500 hover:bg-emerald-600 text-white">
-          {t('dealer.show_count', 'Показать')} {filtered.length} {t('dealer.offers', 'предложений')}
-        </Button>
-      </div>
+      <p className="pt-1 text-sm text-ink-3">{t('dp.found', 'Найдено: {{n}}', { n: filtered.length })}</p>
     </div>
   );
 }

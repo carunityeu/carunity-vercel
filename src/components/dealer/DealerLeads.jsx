@@ -7,10 +7,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { formatPrice } from '@/utils/format';
 import { AreaChart, Area, PieChart, Pie, Cell, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
-import { Flame, Thermometer, Car, Eye, Loader2, Target, ChevronDown, Phone, Users, CalendarDays, CheckSquare, Plus, Trash2, CheckCircle2, Mail, Activity, Wallet, TrendingUp } from 'lucide-react';
+import { Flame, Thermometer, Car, Eye, Loader2, Target, Phone, Users, CalendarDays, CheckSquare, Plus, Trash2, CheckCircle2, Mail, Activity, Wallet, TrendingUp } from 'lucide-react';
 import { Input } from '@/components/ui/input';
-import { Link } from 'react-router-dom';
-import { createPageUrl } from '@/utils';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import { useTranslation } from 'react-i18next';

@@ -16,7 +16,7 @@ import {
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import ListPagination from '@/components/ui/ListPagination';
-import { fieldClass } from '@/components/ds';
+import { fieldClass, NativeSelect } from '@/components/ds';
 import { Card, Segmented, StatusBadge, EmptyState } from './ui';
 import { daysOnSale } from './useDealerData';
 
@@ -62,12 +62,12 @@ function Row({ car, stats, employees, onAssign, onPromote, onDelete }) {
         </div>
       </div>
 
-      <select aria-label={t('dealerEmployees.assign_title')} value={car.assigned_employee || ''} onChange={(e) => onAssign(car, e.target.value)}
-        className="hidden h-9 w-40 rounded-lg border-0 bg-raised px-2 text-sm text-ink-2 lg:block">
+      <NativeSelect aria-label={t('dealerEmployees.assign_title')} value={car.assigned_employee || ''} onChange={(e) => onAssign(car, e.target.value)}
+        wrapperClassName="hidden w-44 flex-shrink-0 xl:block" className="h-9 rounded-lg text-ink-2">
         <option value="">{t('dp.no_manager', 'Без менеджера')}</option>
         {car.assigned_employee && !team.includes(car.assigned_employee) && <option value={car.assigned_employee}>{car.assigned_employee}</option>}
         {team.map((name) => <option key={name} value={name}>{name}</option>)}
-      </select>
+      </NativeSelect>
 
       <div className="flex flex-shrink-0 items-center gap-1.5">
         {car.status === 'active' && !promoted && (
@@ -140,19 +140,19 @@ export default function Listings({ dealer, data, initialStatus, onPromote }) {
 
   return (
     <div className="space-y-4">
+      <Segmented value={status} onChange={(v) => { setStatus(v); setPage(1); }}
+        items={STATUSES.map((s) => ({ value: s, label: statusLabel[s], count: counts[s] }))} />
       <div className="flex flex-wrap items-center gap-3">
-        <Segmented value={status} onChange={(v) => { setStatus(v); setPage(1); }}
-          items={STATUSES.map((s) => ({ value: s, label: statusLabel[s], count: counts[s] }))} />
-        <div className="relative ml-auto w-64">
+        <div className="relative min-w-[220px] flex-1">
           <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-3" />
           <Input value={query} onChange={(e) => { setQuery(e.target.value); setPage(1); }} placeholder={t('dp.search_listings', 'Марка, модель, VIN')} className={`${fieldClass} pl-9`} />
         </div>
-        <select value={sort} onChange={(e) => setSort(e.target.value)} aria-label={t('dp.sort', 'Сортировка')} className="h-10 rounded-xl border-0 bg-raised px-3 text-sm text-ink">
+        <NativeSelect value={sort} onChange={(e) => setSort(e.target.value)} aria-label={t('dp.sort', 'Сортировка')} wrapperClassName="w-60">
           <option value="new">{t('dp.sort_new', 'Сначала новые')}</option>
           <option value="age">{t('dp.sort_age', 'Дольше всех в продаже')}</option>
           <option value="views">{t('dp.sort_views', 'По просмотрам')}</option>
           <option value="price">{t('dp.sort_price', 'По цене')}</option>
-        </select>
+        </NativeSelect>
       </div>
 
       <Card bodyClassName="p-0">

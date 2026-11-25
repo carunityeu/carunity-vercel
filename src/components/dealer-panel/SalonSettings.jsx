@@ -10,7 +10,7 @@ import { translateCountry, translateCity, CITIES_BY_COUNTRY } from '@/utils/loca
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { fieldClass } from '@/components/ds';
+import { fieldClass, NativeSelect } from '@/components/ds';
 import SocialLinksEditor, { SOCIAL_PLATFORMS } from '@/components/dealer/SocialLinksEditor';
 import WorkingHoursEditor from '@/components/dealer/WorkingHoursEditor';
 import DealerTeamAssignments from '@/components/dealer/DealerTeamAssignments';
@@ -129,11 +129,11 @@ export default function SalonSettings({ dealer, cars, onSaved }) {
             <Input value={form.email} onChange={set('email')} type="email" className={fieldClass} />
           </Field>
           <Field label={t('dashboard.field_country', 'Страна')}>
-            <select value={country || ''} onChange={(e) => setForm((f) => ({ ...f, country: e.target.value, city: '' }))} className={fieldClass}>
+            <NativeSelect value={country || ''} onChange={(e) => setForm((f) => ({ ...f, country: e.target.value, city: '' }))}>
               <option value="">—</option>
               {!CITIES_BY_COUNTRY[country] && country && <option value={country}>{country}</option>}
               {Object.keys(CITIES_BY_COUNTRY).map((c) => <option key={c} value={c}>{translateCountry(t, c)}</option>)}
-            </select>
+            </NativeSelect>
           </Field>
           <Field label={t('dashboard.field_city', 'Город')}>
             <Input value={form.city} onChange={set('city')} list="salon-cities" className={fieldClass} />

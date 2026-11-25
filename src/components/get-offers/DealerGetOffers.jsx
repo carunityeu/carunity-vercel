@@ -3,19 +3,17 @@ import { useTranslation } from 'react-i18next';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { entities } from '@/api/entities';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { formatPrice } from '@/utils/format';
 import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Link } from 'react-router-dom';
-import { getCarDetailsPath } from '@/lib/shortIdUtils';
-import { Car, Loader2, Gauge, Fuel, Settings2, MapPin,
-  Eye, Send, ChevronDown, Search
-} from 'lucide-react';
+import { formatPrice } from '@/utils/format';
+import { Car, Loader2, Send, Search } from 'lucide-react';
 import { toast } from 'sonner';
+import { fieldClass, NativeSelect } from '@/components/ds';
+import { Card, EmptyState } from '@/components/dealer-panel/ui';
+import { TILE_GRID, DIALOG, LABEL, SourcingTile, Loading, Thumb, OfferStatus, useRatings } from '@/components/dealer-panel/sourcingParts';
 
+/** Commission (Pro and Premium): private sellers who asked dealers for offers. */
 export default function DealerGetOffers({ dealer }) {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
@@ -23,21 +21,9 @@ export default function DealerGetOffers({ dealer }) {
   const [search, setSearch] = useState('');
   const [offerDialog, setOfferDialog] = useState(false);
   const [selectedCar, setSelectedCar] = useState(null);
-  const [offerType, setOfferType] = useState('consignment');
-  const [offeredPrice, setOfferedPrice] = useState('');
   const [commissionPct, setCommissionPct] = useState('');
   const [offerMessage, setOfferMessage] = useState('');
   const [submitting, setSubmitting] = useState(false);
-
-  const FUEL_LABELS = {
-    petrol: t('dealer.fuel_petrol'),
-    diesel: t('dealer.fuel_diesel'),
-    electric: t('dealer.fuel_electric'),
-    hybrid: t('dealer.fuel_hybrid'),
-    plugin_hybrid: t('dealer.fuel_plugin_hybrid'),
-    gas: t('dealer.fuel_gas'),
-  };
-  const TRANS_LABELS = { manual: t('dealer.trans_manual'), automatic: t('dealer.trans_auto') };
 
   const { data: allCars = [], isLoading } = useQuery({
     queryKey: ['getOffersCarsDealer'],
@@ -69,8 +55,6 @@ export default function DealerGetOffers({ dealer }) {
 
   const openOffer = (car) => {
     setSelectedCar(car);
-    setOfferType('consignment');
-    setOfferedPrice('');
     setCommissionPct('');
     setOfferMessage('');
     setOfferDialog(true);
@@ -79,189 +63,93 @@ export default function DealerGetOffers({ dealer }) {
   const submitOffer = async () => {
     if (!selectedCar || !dealer) return;
     setSubmitting(true);
-    await entities.TradeInOffer.create({
-      car_id: selectedCar.id,
-      car_title: selectedCar.title,
-      dealer_id: dealer.id,
-      dealer_name: dealer.name,
-      dealer_email: dealer.email,
-      seller_email: selectedCar.created_by,
-      offer_type: offerType,
-      offered_price: offerType === 'instant_buy' ? parseFloat(offeredPrice) : undefined,
-      commission_percent: offerType === 'consignment' ? parseFloat(commissionPct) : undefined,
-      message: offerMessage,
-      status: 'pending',
-    });
-    queryClient.invalidateQueries(['dealerSentOffers']);
-    toast.success(t('dealer.proposal_sent'));
+    try {
+      await entities.TradeInOffer.create({
+        car_id: selectedCar.id,
+        car_title: selectedCar.title || `${selectedCar.brand} ${selectedCar.model} ${selectedCar.year || ''}`.trim(),
+        dealer_id: dealer.id,
+        dealer_name: dealer.name,
+        dealer_email: dealer.email,
+        seller_email: selectedCar.created_by,
+        offer_type: 'consignment',
+        commission_percent: parseFloat(commissionPct),
+        message: offerMessage,
+        status: 'pending',
+      });
+      queryClient.invalidateQueries({ queryKey: ['dealerSentOffers'] });
+      toast.success(t('dealer.proposal_sent'));
+      setOfferDialog(false);
+    } catch (e) { toast.error(e.message); }
     setSubmitting(false);
-    setOfferDialog(false);
   };
 
+  const ratings = useRatings(filtered);
+  const countBy = (st) => myOffers.filter((o) => o.status === st).length;
+  const offerLabel = (st) => (st === 'accepted' ? t('dealer.offer_accepted') : st === 'rejected' ? t('dealer.offer_rejected') : t('dealer.offer_sent_status'));
+
   return (
-    <div className="space-y-4 md:space-y-6">
-      {/* My sent offers summary */}
+    <div className="space-y-5">
+      <div className="flex flex-wrap items-center gap-3">
+        <div className="relative min-w-[220px] flex-1">
+          <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-3" />
+          <Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder={t('dealer.search_brand_model')} className={`${fieldClass} pl-9`} />
+        </div>
+        <NativeSelect value={sortBy} onChange={(e) => setSortBy(e.target.value)} aria-label={t('dp.sort', 'Сортировка')} wrapperClassName="w-56">
+          <option value="newest">{t('dealer.sort_newest')}</option>
+          <option value="price_asc">{t('dealer.price_asc')}</option>
+          <option value="price_desc">{t('dealer.price_desc')}</option>
+        </NativeSelect>
+      </div>
+
       {myOffers.length > 0 && (
-        <div className="bg-white dark:bg-slate-900 rounded-2xl p-4 border border-slate-100 dark:border-slate-800">
-          <p className="text-sm text-slate-600 dark:text-slate-400">
-            {t('dealer.sent_offers_count')} <strong className="text-slate-900 dark:text-white">{myOffers.length}</strong> {t('dealer.offers_word')}
-            {t('dealer.accepted')}: <strong className="text-emerald-600">{myOffers.filter(o => o.status === 'accepted').length}</strong> •
-            {t('dealer.pending')}: <strong className="text-yellow-600">{myOffers.filter(o => o.status === 'pending').length}</strong> •
-            {t('dealer.rejected')}: <strong className="text-red-600">{myOffers.filter(o => o.status === 'rejected').length}</strong>
-          </p>
+        <div className="flex flex-wrap items-center gap-x-5 gap-y-1 text-sm text-ink-3">
+          <span>{t('dp.offers_sent', 'Отправлено предложений')}: <b className="text-ink">{myOffers.length}</b></span>
+          <span>{t('dealer.accepted')}: <b className="text-brand-text">{countBy('accepted')}</b></span>
+          <span>{t('dealer.pending')}: <b className="text-amber-300">{countBy('pending')}</b></span>
+          <span>{t('dealer.rejected')}: <b className="text-red-300">{countBy('rejected')}</b></span>
         </div>
       )}
 
-      {/* Filters */}
-      <div className="flex flex-col sm:flex-row gap-3">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-          <Input
-            value={search}
-            onChange={e => setSearch(e.target.value)}
-            placeholder={t('dealer.search_brand_model')}
-            className="pl-9"
-          />
-        </div>
-        <div className="relative">
-          <select
-            value={sortBy}
-            onChange={e => setSortBy(e.target.value)}
-            className="appearance-none bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-white text-sm rounded-xl pl-4 pr-8 py-2 outline-none cursor-pointer h-10 w-full sm:w-auto"
-          >
-            <option value="newest">{t('dealer.sort_newest')}</option>
-            <option value="price_asc">{t('dealer.price_asc')}</option>
-            <option value="price_desc">{t('dealer.price_desc')}</option>
-          </select>
-          <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
-        </div>
-      </div>
-
-      {/* Cars list */}
-      {isLoading ? (
-        <div className="flex justify-center py-16"><Loader2 className="w-8 h-8 animate-spin text-emerald-500" /></div>
-      ) : filtered.length === 0 ? (
-        <div className="bg-white dark:bg-slate-900 rounded-2xl p-8 sm:p-12 text-center border border-slate-100 dark:border-slate-800">
-          <Car className="w-12 h-12 text-slate-300 dark:text-slate-600 mx-auto mb-3" />
-          <p className="text-slate-500 dark:text-slate-400">{t('dealer.no_cars_get_offers')}</p>
-        </div>
+      {isLoading ? <Loading /> : filtered.length === 0 ? (
+        <Card><EmptyState icon={Car} title={t('dealer.no_cars_get_offers')} /></Card>
       ) : (
-        <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 divide-y divide-slate-100 dark:divide-slate-800">
-          {filtered.map(car => {
-            const alreadySent = sentCarIds.has(car.id);
-            const myOffer = myOffers.find(o => o.car_id === car.id);
+        <div className={TILE_GRID}>
+          {filtered.map((car) => {
+            const myOffer = myOffers.find((o) => o.car_id === car.id);
             return (
-              <div key={car.id} className="p-3 sm:p-4 flex flex-col sm:flex-row gap-3 sm:gap-4 items-start sm:items-center">
-                <div className="w-full sm:w-32 h-20 rounded-xl overflow-hidden bg-slate-100 dark:bg-slate-800 flex-shrink-0">
-                  {car.images?.[0]
-                    ? <img src={car.images[0]} alt="" className="w-full h-full object-cover" />
-                    : <div className="w-full h-full flex items-center justify-center"><Car className="w-6 h-6 text-slate-400" /></div>
-                  }
-                </div>
-                <div className="flex-1 min-w-0">
-                  <h3 className="font-semibold text-slate-900 dark:text-white text-sm">{car.brand} {car.model} {car.year}</h3>
-                  <p className="text-emerald-600 font-bold">{formatPrice(car.price)}</p>
-                  <div className="flex flex-wrap gap-1.5 mt-1">
-                    {car.mileage && (
-                      <span className="flex items-center gap-1 text-xs text-slate-500 dark:text-slate-400">
-                        <Gauge className="w-3 h-3" />{car.mileage.toLocaleString()} {t('dealer.km')}
-                      </span>
-                    )}
-                    {car.fuel_type && (
-                      <span className="flex items-center gap-1 text-xs text-slate-500 dark:text-slate-400">
-                        <Fuel className="w-3 h-3" />{FUEL_LABELS[car.fuel_type] || car.fuel_type}
-                      </span>
-                    )}
-                    {car.transmission && (
-                      <span className="flex items-center gap-1 text-xs text-slate-500 dark:text-slate-400">
-                        <Settings2 className="w-3 h-3" />{TRANS_LABELS[car.transmission] || car.transmission}
-                      </span>
-                    )}
-                    {car.location && (
-                      <span className="flex items-center gap-1 text-xs text-slate-500 dark:text-slate-400">
-                        <MapPin className="w-3 h-3" />{car.location}
-                      </span>
-                    )}
-                  </div>
-                </div>
-                <div className="flex gap-2 flex-shrink-0">
-                  <Link to={getCarDetailsPath(car)} target="_blank">
-                    <Button variant="outline" size="sm"><Eye className="w-4 h-4" /></Button>
-                  </Link>
-                  {alreadySent ? (
-                    <Badge className={
-                      myOffer?.status === 'accepted' ? 'bg-emerald-100 text-emerald-700' :
-                      myOffer?.status === 'rejected' ? 'bg-red-100 text-red-700' :
-                      'bg-yellow-100 text-yellow-700'
-                    }>
-                      {myOffer?.status === 'accepted' ? t('dealer.offer_accepted') : myOffer?.status === 'rejected' ? t('dealer.offer_rejected') : t('dealer.offer_sent_status')}
-                    </Badge>
-                  ) : (
-                    <Button
-                      size="sm"
-                      className="gap-1.5 bg-emerald-500 hover:bg-emerald-600"
-                      onClick={() => openOffer(car)}
-                    >
-                      <Send className="w-3.5 h-3.5" /> {t('dealer.offer_btn')}
-                    </Button>
-                  )}
-                </div>
-              </div>
+              <SourcingTile key={car.id} car={car} rating={ratings[car.id]}>
+                {sentCarIds.has(car.id)
+                  ? <OfferStatus status={myOffer?.status} label={offerLabel(myOffer?.status)} className="h-10 flex-1 justify-center rounded-xl text-sm" />
+                  : <Button className="flex-1" onClick={() => openOffer(car)}><Send />{t('dealer.offer_btn')}</Button>}
+              </SourcingTile>
             );
           })}
         </div>
       )}
 
-      {/* Offer Dialog */}
       <Dialog open={offerDialog} onOpenChange={setOfferDialog}>
-        <DialogContent className="w-[calc(100%-2rem)] max-w-md max-h-[90dvh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>{t('dealer.send_proposal')}</DialogTitle>
-          </DialogHeader>
+        <DialogContent className={DIALOG}>
+          <DialogHeader><DialogTitle className="text-ink">{t('dealer.send_proposal')}</DialogTitle></DialogHeader>
           {selectedCar && (
-            <div className="space-y-4 pt-2">
-              <div className="bg-slate-50 dark:bg-slate-800 rounded-xl p-3 text-sm">
-                <p className="font-medium text-slate-900 dark:text-white">{selectedCar.brand} {selectedCar.model} {selectedCar.year}</p>
-                <p className="text-slate-500 dark:text-slate-400">{t('dealer.seller_price')}: {formatPrice(selectedCar.price)}</p>
-              </div>
-
-              <div>
-                <Label className="mb-2 block">{t('dealer.proposal_type')}</Label>
-                <div className="p-3 rounded-xl border-2 border-emerald-500 bg-emerald-50 dark:bg-emerald-900/20 text-sm font-medium text-emerald-700 dark:text-emerald-400">
-                  🤝 {t('dealer.commission_label')}
+            <div className="space-y-4 pt-1">
+              <div className="flex items-center gap-3 rounded-xl bg-raised p-3">
+                <Thumb src={selectedCar.images?.[0]} />
+                <div className="min-w-0">
+                  <p className="truncate text-sm font-semibold text-ink">{selectedCar.brand} {selectedCar.model} {selectedCar.year}</p>
+                  <p className="text-sm text-ink-2">{t('dealer.seller_price')}: {formatPrice(selectedCar.price)}</p>
                 </div>
               </div>
-
-              <div>
-                <Label>{t('dealer.commission_pct_label')}</Label>
-                <Input
-                  type="number"
-                  inputMode="decimal"
-                  value={commissionPct}
-                  onChange={e => setCommissionPct(e.target.value)}
-                  placeholder="5"
-                />
-              </div>
-
-              <div>
-                <Label>{t('dealer.msg_seller_optional')}</Label>
-                <Textarea
-                  value={offerMessage}
-                  onChange={e => setOfferMessage(e.target.value)}
-                  placeholder={t('dealer.msg_seller_placeholder')}
-                  rows={3}
-                />
-              </div>
-
+              <p className="text-sm text-ink-2">{t('dealer.proposal_type')}: <b className="text-ink">{t('dealer.commission_label')}</b></p>
+              <label className="block"><span className={LABEL}>{t('dealer.commission_pct_label')}</span>
+                <Input type="number" inputMode="decimal" value={commissionPct} onChange={(e) => setCommissionPct(e.target.value)} placeholder="5" className={fieldClass} />
+              </label>
+              <label className="block"><span className={LABEL}>{t('dealer.msg_seller_optional')}</span>
+                <Textarea value={offerMessage} onChange={(e) => setOfferMessage(e.target.value)} placeholder={t('dealer.msg_seller_placeholder')} rows={3} className="rounded-xl border-0 bg-raised text-ink" />
+              </label>
               <div className="flex gap-2 pt-1">
-                <Button variant="outline" onClick={() => setOfferDialog(false)} className="flex-1">{t('dealer.cancel')}</Button>
-                <Button
-                  onClick={submitOffer}
-                  disabled={submitting || !commissionPct}
-                  className="flex-1 gap-2 bg-emerald-500 hover:bg-emerald-600"
-                >
-                  {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
-                  {t('dealer.send')}
+                <Button variant="secondary" onClick={() => setOfferDialog(false)} className="flex-1">{t('dealer.cancel')}</Button>
+                <Button onClick={submitOffer} disabled={submitting || !commissionPct} className="flex-1">
+                  {submitting ? <Loader2 className="animate-spin" /> : <Send />}{t('dealer.send')}
                 </Button>
               </div>
             </div>

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Select, SelectContent, SelectItem, SelectTrigger } from '@/components/ui/select';
 import { Plus, X } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
