@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { base44 } from '@/api/base44Client';
+import { auth } from '@/api/auth';
 import { entities, countView } from '@/api/entities';
 import { useAuth } from '@/lib/AuthContext';
 import { redirectToAccount } from '@/components/auth/requireAccount';
@@ -52,8 +52,8 @@ export default function CarDetails() {
 
   useEffect(() => {
     const loadUser = async () => {
-      const isAuth = await base44.auth.isAuthenticated();
-      if (isAuth) setUser(await base44.auth.me());
+      const isAuth = await auth.isAuthenticated();
+      if (isAuth) setUser(await auth.me());
     };
     loadUser();
   }, []);

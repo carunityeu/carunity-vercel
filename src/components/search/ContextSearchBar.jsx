@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { base44 } from '@/api/base44Client';
+import { auth } from '@/api/auth';
 import { entities } from '@/api/entities';
 import requireAccount from '@/components/auth/requireAccount';
 import { Search, Loader2, X } from 'lucide-react';
@@ -73,10 +74,10 @@ export default function ContextSearchBar({ className }) {
       const suggestions = [];
       const brands = {};
       const recentIds = JSON.parse(localStorage.getItem('recentlyViewed') || '[]').slice(0, 5);
-      const isAuth = await base44.auth.isAuthenticated();
+      const isAuth = await auth.isAuthenticated();
 
       if (isAuth) {
-        const user = await base44.auth.me();
+        const user = await auth.me();
         const savedSearches = await entities.SavedSearch.filter({ user_email: user.email }, '-created_date', 3);
         for (const ss of savedSearches) {
           if (ss.name) suggestions.push(ss.name);

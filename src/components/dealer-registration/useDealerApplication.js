@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
+import { auth } from '@/api/auth';
 import { entities } from '@/api/entities';
 
 const initial = { dealer_name:'', country:'', city:'', address:'', website:'', description:'', applicant_name:'', phone:'', contact_email:'', import_requested:false, import_url:'', data_usage_consent:false, gdpr_consent:false, terms_consent:false };
@@ -15,9 +16,9 @@ export default function useDealerApplication() {
   const load = async () => {
     setLoading(true); setLoadError(false);
     try {
-      const signedIn = await base44.auth.isAuthenticated();
+      const signedIn = await auth.isAuthenticated();
       if (!signedIn) return;
-      const me = await base44.auth.me(); setUser(me);
+      const me = await auth.me(); setUser(me);
       const {items} = await entities.DealerApplication.filter({ applicant_email:me.email }, { sort:'-created_date', limit:1 });
       const app = items[0] || null; setApplication(app);
       setForm({...initial, applicant_name:me.full_name || '', contact_email:me.email, ...(app ? Object.fromEntries(Object.keys(initial).map(key => [key, app[key] ?? initial[key]])) : {}), gdpr_consent:false, terms_consent:false, data_usage_consent:false});
@@ -33,7 +34,7 @@ export default function useDealerApplication() {
   }, [user,application?.id]);
   const update = (key,value) => {setForm(prev => ({...prev,[key]:value})); setError('');};
   const submit = async () => {
-    if (!user) {base44.auth.redirectToLogin(window.location.href); return;}
+    if (!user) {auth.redirectToLogin(window.location.href); return;}
     if (!form.gdpr_consent || !form.terms_consent || (form.import_requested && !form.data_usage_consent)) {setError('consent'); return;}
     setBusy(true); setError('');
     try {const {data} = await base44.functions.invoke('dealerApplication',{action:'submit',form}); setApplication(data.application); setEditing(false); window.scrollTo({top:0});}

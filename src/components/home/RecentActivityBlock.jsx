@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { getCarDetailsPath } from '@/lib/shortIdUtils';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { base44 } from '@/api/base44Client';
+import { auth } from '@/api/auth';
 import { entities } from '@/api/entities';
 import { useTranslation } from 'react-i18next';
 import { History, Car, ChevronRight } from 'lucide-react';
@@ -25,7 +25,7 @@ export default function RecentActivityBlock() {
 
   const { data: user } = useQuery({
     queryKey: ['me'],
-    queryFn: async () => { const ok = await base44.auth.isAuthenticated(); if (!ok) return null; return base44.auth.me(); },
+    queryFn: async () => { const ok = await auth.isAuthenticated(); if (!ok) return null; return auth.me(); },
     staleTime: 5 * 60 * 1000,
   });
 

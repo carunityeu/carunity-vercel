@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { base44 } from '@/api/base44Client';
+import { auth } from '@/api/auth';
 import { entities } from '@/api/entities';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
@@ -71,7 +71,7 @@ export default function MakeOfferModal({
     }
 
     if (!user) {
-      base44.auth.redirectToLogin();
+      auth.redirectToLogin();
       return;
     }
 

@@ -1,6 +1,6 @@
-import React, { useState } from "react";
-import { Link, useSearchParams } from "react-router-dom";
-import { base44 } from "@/api/base44Client";
+import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import { auth } from '@/api/auth';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -8,8 +8,9 @@ import { Lock, Loader2, AlertTriangle } from "lucide-react";
 import AuthLayout from "@/components/AuthLayout";
 
 export default function ResetPassword() {
-  const [searchParams] = useSearchParams();
-  const resetToken = searchParams.get("token");
+  // The e-mailed link signs the user in with a short "recovery" session and lands here
+  const [hasSession, setHasSession] = useState(null);
+  useEffect(() => { auth.isAuthenticated().then(setHasSession).catch(() => setHasSession(false)); }, []);
 
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -25,8 +26,8 @@ export default function ResetPassword() {
     }
     setLoading(true);
     try {
-      await base44.auth.resetPassword({ resetToken, newPassword });
-      window.location.href = "/login";
+      await auth.resetPassword({ newPassword });
+      window.location.href = "/";
     } catch (err) {
       setError(err.message || "Failed to reset password");
     } finally {
@@ -34,7 +35,8 @@ export default function ResetPassword() {
     }
   };
 
-  if (!resetToken) {
+  if (hasSession === null) return null;
+  if (!hasSession) {
     return (
       <AuthLayout
         icon={AlertTriangle}

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { base44 } from '@/api/base44Client';
+import { auth } from '@/api/auth';
 import { entities, countView } from '@/api/entities';
 import { redirectToAccount } from '@/components/auth/requireAccount';
 import { Button } from '@/components/ui/button';
@@ -58,8 +58,8 @@ export default function VehicleDetails() {
   const [reportDescription, setReportDescription] = useState('');
 
   useEffect(() => {
-    base44.auth.isAuthenticated().then(async (authed) => {
-      if (authed) setUser(await base44.auth.me());
+    auth.isAuthenticated().then(async (authed) => {
+      if (authed) setUser(await auth.me());
     });
   }, []);
 

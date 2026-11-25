@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Loader2 } from 'lucide-react';
-import { base44 } from '@/api/base44Client';
+import { auth } from '@/api/auth';
 import DealerRegistrationIntro from '@/components/dealer-registration/DealerRegistrationIntro';
 import DealerApplicationForm from '@/components/dealer-registration/DealerApplicationForm';
 import DealerApplicationStatus from '@/components/dealer-registration/DealerApplicationStatus';
@@ -15,7 +15,7 @@ export default function DealerRegister() {
   const state = useDealerApplication();
   const [started,setStarted] = useState(new URLSearchParams(window.location.search).get('apply') === '1');
   const start = () => {
-    if (!state.user) {base44.auth.redirectToLogin(window.location.origin+'/DealerRegister?apply=1'); return;}
+    if (!state.user) {auth.redirectToLogin(window.location.origin+'/DealerRegister?apply=1'); return;}
     setStarted(true); window.scrollTo({top:0});
   };
   return <div className="dealer-registration min-h-screen bg-background text-foreground">

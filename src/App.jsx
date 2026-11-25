@@ -34,7 +34,6 @@ import Login from '@/pages/Login';
 import Register from '@/pages/Register';
 import ForgotPassword from '@/pages/ForgotPassword';
 import ResetPassword from '@/pages/ResetPassword';
-import Mfa from '@/pages/Mfa';
 import Caro from '@/pages/Caro';
 import PrivatePricing from '@/pages/PrivatePricing';
 import DealershipPricing from '@/pages/DealershipPricing';
@@ -57,7 +56,6 @@ const AuthenticatedApp = () => {
       <Route path="/register" element={<Register />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/reset-password" element={<ResetPassword />} />
-      <Route path="/mfa" element={<Mfa />} />
       <Route path="/" element={
         <LayoutWrapper currentPageName={mainPageKey}>
           <MainPage />

@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
+import { auth } from '@/api/auth';
 import { entities } from '@/api/entities';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -99,12 +100,12 @@ export default function EditListing() {
 
   useEffect(() => {
     const loadUser = async () => {
-      const isAuth = await base44.auth.isAuthenticated();
+      const isAuth = await auth.isAuthenticated();
       if (!isAuth) {
-        base44.auth.redirectToLogin();
+        auth.redirectToLogin();
         return;
       }
-      const userData = await base44.auth.me();
+      const userData = await auth.me();
       setUser(userData);
     };
     loadUser();

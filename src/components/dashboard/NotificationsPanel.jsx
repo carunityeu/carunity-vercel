@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { base44 } from '@/api/base44Client';
+import { auth } from '@/api/auth';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
@@ -31,7 +31,7 @@ export default function NotificationsPanel({ user, onUserUpdate }) {
   const save = async () => {
     setIsSaving(true);
     try {
-      await base44.auth.updateMe(form);
+      await auth.updateMe(form);
       onUserUpdate(form);
       toast.success(t('dashboard.profile_saved'));
     } finally {

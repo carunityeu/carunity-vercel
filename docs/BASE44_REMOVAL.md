@@ -8,7 +8,7 @@
 | # | Слой | Где в коде | Чем заменяем | Статус |
 |---|------|-----------|--------------|--------|
 | 1 | Данные (`base44.entities.*`, 269 вызовов в 78 файлах) | весь `src` | `src/api/entities.js` → Supabase (PostgREST), тот же интерфейс | ✅ готово |
-| 2 | Вход и профиль (`base44.auth.*`, 35 файлов) | `lib/AuthContext.jsx`, Login/Register/Reset/Mfa, Header, кабинеты | Supabase Auth: email+пароль, Google, сброс пароля, OTP | ⏳ нужен экспорт **User** |
+| 2 | Вход и профиль (`base44.auth.*`, 35 файлов) | `lib/AuthContext.jsx`, Login/Register/Reset/Mfa, Header, кабинеты | Supabase Auth: email+пароль, Google, сброс пароля (2FA пока убрана) | 🔨 код готов (ветка `auth-supabase`), ждёт экспорт **User** и настройки Supabase — [AUTH_MIGRATION.md](AUTH_MIGRATION.md) |
 | 3 | Файлы (`UploadFile`/`UploadPublicFile`, 18 вызовов) | формы объявлений, аватар, документы дилера | Supabase Storage (бакеты `listings`, `avatars`, `private`) | ⏳ |
 | 4 | Серверные функции (`base44.functions.invoke`, 17 вызовов, 28 функций в `base44/functions`) | оплата, лиды, рейтинг цены, импорт по ссылке, письма | Vercel Functions (`/api/*`) с service-role ключом | ⏳ |
 | 5 | AI (`InvokeLLM` ×9, агент Caro ×3 файла) | Caro, сравнение, перевод сообщений, помощник | `/api/ai/*` → Claude API, ключ только на сервере | ⏳ |

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { base44 } from '@/api/base44Client';
+import { auth } from '@/api/auth';
 import { entities } from '@/api/entities';
 import { useQuery } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
@@ -16,7 +16,7 @@ export default function MotorcycleModelDetails() {
   const [user, setUser] = useState(null);
 
   useEffect(() => {
-    base44.auth.me().then(setUser).catch(() => {});
+    auth.me().then(setUser).catch(() => {});
     const voted = localStorage.getItem(`voted_moto_${modelId}`);
     if (voted) setHasVoted(true);
   }, [modelId]);
@@ -47,7 +47,7 @@ export default function MotorcycleModelDetails() {
   });
 
   const handleVote = async (rating) => {
-    if (!user) { base44.auth.redirectToLogin(); return; }
+    if (!user) { auth.redirectToLogin(); return; }
     const currentRating = model.user_rating || 0;
     const currentVotes = model.rating_votes || 0;
     const newVotes = currentVotes + 1;

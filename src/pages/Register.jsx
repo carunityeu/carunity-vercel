@@ -1,9 +1,6 @@
 import React, { useState, useEffect } from "react";
 
-import { base44 } from "@/api/base44Client";
-import { signInWithProvider } from "@/lib/authMfaFlow";
-import MfaFlow from "@/components/MfaFlow";
-import { MfaScreen } from "@/components/MfaParts";
+import { auth } from '@/api/auth';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -13,7 +10,6 @@ import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp
 import AuthLayout from "@/components/AuthLayout";
 import AuthPasswordInput from '@/components/auth/AuthPasswordInput';
 import GoogleIcon from "@/components/GoogleIcon";
-import AppleIcon from "@/components/auth/AppleIcon";
 import { toast } from "@/components/ui/use-toast";
 import { safeReturnTo } from "@/lib/authReturnTo";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -37,7 +33,6 @@ export default function Register() {
   const [loading, setLoading] = useState(false);
   const [showOtp, setShowOtp] = useState(false);
   const [otpCode, setOtpCode] = useState("");
-  const [mfaChallenge, setMfaChallenge] = useState(null);
 
 
   useEffect(() => {
@@ -46,7 +41,7 @@ export default function Register() {
 
   const saveProfile = async () => {
     try {
-      await base44.auth.updateMe({
+      await auth.updateMe({
         full_name: fullName.trim(),
         country,
         preferred_language: preferredLanguage,
@@ -72,7 +67,9 @@ export default function Register() {
     }
     setLoading(true);
     try {
-      await base44.auth.register({ email, password });
+      const { session } = await auth.register({ email, password, full_name: fullName.trim() });
+      // With e-mail confirmation off the account is signed in right away
+      if (session) { await saveProfile(); window.location.href = safeReturnTo(); return; }
       setShowOtp(true);
     } catch (err) {
       setError(err.message || t('authVisual.failed'));
@@ -85,15 +82,8 @@ export default function Register() {
     setError("");
     setLoading(true);
     try {
-      const result = await base44.auth.verifyOtp({ email, otpCode });
-      if (result?.mfa_required) {
-        setMfaChallenge(result);
-        return;
-      }
-      if (result?.access_token) {
-        base44.auth.setToken(result.access_token);
-        await saveProfile();
-      }
+      await auth.verifyOtp({ email, otpCode });
+      await saveProfile();
       window.location.href = safeReturnTo();
     } catch (err) {
       setError(err.message || t('authVisual.invalidCode'));
@@ -105,7 +95,7 @@ export default function Register() {
   const handleResend = async () => {
     setError("");
     try {
-      await base44.auth.resendOtp(email);
+      await auth.resendOtp(email);
       toast({
         title: t('authVisual.codeSent'),
         description: t('authVisual.checkEmail'),
@@ -118,13 +108,11 @@ export default function Register() {
   const handleProvider = async (provider) => {
     setError("");
     setLoading(true);
-    try { await signInWithProvider(provider, safeReturnTo()); }
+    try { await auth.loginWithProvider(provider, safeReturnTo()); }
     catch (err) { setError(err.message || t('authProvider.error', { provider })); }
     finally { setLoading(false); }
   };
 
-  // The account is verified; the second sign-in step replaces the whole page and finishes signing in.
-  if (mfaChallenge) return <MfaScreen><MfaFlow challenge={mfaChallenge} returnTo={safeReturnTo()} /></MfaScreen>;
 
   if (showOtp) {
     return (
@@ -181,10 +169,6 @@ export default function Register() {
 
   return (
     <AuthLayout reference>
-      <Button variant="outline" onClick={() => handleProvider('apple')} disabled={loading}>
-        <AppleIcon className="w-4 h-4 mr-2 text-foreground" />
-        {t('authProvider.continue', { provider: 'Apple' })}
-      </Button>
       <Button variant="outline" onClick={() => handleProvider('google')} disabled={loading}>
         <GoogleIcon className="w-4 h-4 mr-2" />
         {t('authProvider.continue', { provider: 'Google' })}

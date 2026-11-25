@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
-import { base44 } from '@/api/base44Client';
+import { auth } from '@/api/auth';
 import { entities } from '@/api/entities';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
@@ -33,7 +33,7 @@ export default function CarModelDetails() {
   const queryClient = useQueryClient();
 
   useEffect(() => {
-    base44.auth.me().then(setUser).catch(() => {});
+    auth.me().then(setUser).catch(() => {});
     const voted = localStorage.getItem(`voted_model_${modelId}`);
     if (voted) setHasVoted(true);
   }, [modelId]);
@@ -165,7 +165,7 @@ export default function CarModelDetails() {
                     <button
                       key={score}
                       onClick={() => {
-                        if (!user) { base44.auth.redirectToLogin(); return; }
+                        if (!user) { auth.redirectToLogin(); return; }
                         voteMutation.mutate(score);
                       }}
                       className="w-9 h-9 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-emerald-100 dark:hover:bg-emerald-900/30 hover:text-emerald-600 font-semibold text-sm text-slate-700 dark:text-slate-300 transition-colors"

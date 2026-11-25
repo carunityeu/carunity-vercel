@@ -4,6 +4,7 @@ import { createPageUrl } from '@/utils';
 import { formatPrice } from '@/utils/format';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
+import { auth } from '@/api/auth';
 import { entities } from '@/api/entities';
 import { Button } from '@/components/ui/button';
 import ListPagination from '@/components/ui/ListPagination';
@@ -83,9 +84,9 @@ export default function AdminPanel() {
 
   useEffect(() => {
     const loadUser = async () => {
-      const isAuth = await base44.auth.isAuthenticated();
-      if (!isAuth) { base44.auth.redirectToLogin(); return; }
-      const userData = await base44.auth.me();
+      const isAuth = await auth.isAuthenticated();
+      if (!isAuth) { auth.redirectToLogin(); return; }
+      const userData = await auth.me();
       setUser(userData);
       if (userData.role === 'admin') setIsAdmin(true);
       setIsLoading(false);

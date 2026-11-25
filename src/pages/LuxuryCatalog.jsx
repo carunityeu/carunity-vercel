@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { base44 } from '@/api/base44Client';
+import { auth } from '@/api/auth';
 import { entities } from '@/api/entities';
 import requireAccount from '@/components/auth/requireAccount';
 import { useTranslation } from 'react-i18next';
@@ -176,7 +176,7 @@ export default function LuxuryCatalog() {
 
   const handleSaveSearch = async () => {
     if (!await requireAccount()) return;
-    const user = await base44.auth.me();
+    const user = await auth.me();
     const flat = { premium: 'true' };
     if (filters.brand && filters.brand !== 'any') flat.brand = filters.brand;
     if (filters.model && filters.model !== 'any') flat.model = filters.model;

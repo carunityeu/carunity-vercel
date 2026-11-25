@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { base44 } from '@/api/base44Client';
+import { auth } from '@/api/auth';
 import { entities } from '@/api/entities';
 import { Button } from '@/components/ui/button';
 import ListPagination from '@/components/ui/ListPagination';
@@ -48,7 +48,7 @@ export default function Notifications() {
 
   const { data: user } = useQuery({
     queryKey: ['me'],
-    queryFn: () => base44.auth.me(),
+    queryFn: () => auth.me(),
   });
 
   const { data: notifications = [], isLoading } = useQuery({

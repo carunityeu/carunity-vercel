@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useQuery } from '@tanstack/react-query';
-import { base44 } from '@/api/base44Client';
+import { auth } from '@/api/auth';
 import { entities } from '@/api/entities';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -115,7 +115,7 @@ export default function AccountSettingsPanel({ user, onUserUpdate, locale }) {
     const value = field === 'phone' ? `+${phoneDigits(raw)}` : raw;
     setSavingField(true);
     try {
-      await base44.auth.updateMe({ [field]: value });
+      await auth.updateMe({ [field]: value });
       onUserUpdate({ [field]: value });
       toast.success(t('account.saved'));
       setEditingField(null);
@@ -131,7 +131,7 @@ export default function AccountSettingsPanel({ user, onUserUpdate, locale }) {
     }
     setSavingPassword(true);
     try {
-      await base44.auth.changePassword({ userId: user.id, currentPassword, newPassword });
+      await auth.changePassword({ userId: user.id, currentPassword, newPassword });
       toast.success(t('account.password_changed'));
       setPasswordOpen(false);
       setCurrentPassword('');

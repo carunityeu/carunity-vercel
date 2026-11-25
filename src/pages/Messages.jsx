@@ -6,6 +6,7 @@ import '@/components/messages/messages.css';
 import { createPageUrl } from '@/utils';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
+import { auth } from '@/api/auth';
 import { entities } from '@/api/entities';
 import { Button } from '@/components/ui/button';
 
@@ -76,9 +77,9 @@ export default function Messages() {
 
   useEffect(() => {
     const loadUser = async () => {
-      const isAuth = await base44.auth.isAuthenticated();
-      if (!isAuth) { base44.auth.redirectToLogin(); return; }
-      const userData = await base44.auth.me();
+      const isAuth = await auth.isAuthenticated();
+      if (!isAuth) { auth.redirectToLogin(); return; }
+      const userData = await auth.me();
       // In admin "view as" mode the chats belong to the previewed account.
       const resolved = await resolveViewAsUser(userData).catch(() => ({ user: userData }));
       setUser(resolved.user);

@@ -5,7 +5,7 @@ import { createPageUrl } from '@/utils';
 import { isDealerUser, syncAccountType } from '@/lib/accountType';
 import { resolveViewAsUser } from '@/lib/adminViewAs';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { base44 } from '@/api/base44Client';
+import { auth } from '@/api/auth';
 import { entities } from '@/api/entities';
 import { Loader2, Bookmark, History } from 'lucide-react';
 import { toast } from 'sonner';
@@ -45,12 +45,12 @@ export default function Dashboard() {
 
   useEffect(() => {
     const loadUser = async () => {
-      const isAuth = await base44.auth.isAuthenticated();
+      const isAuth = await auth.isAuthenticated();
       if (!isAuth) {
-        base44.auth.redirectToLogin();
+        auth.redirectToLogin();
         return;
       }
-      const currentUser = await base44.auth.me();
+      const currentUser = await auth.me();
       const { user: effectiveUser, viewAs } = await resolveViewAsUser(currentUser);
       // Admin previewing a dealer belongs in the dealer panel
       if (viewAs?.type === 'dealer') { navigate(createPageUrl('DealerDashboard'), { replace: true }); return; }

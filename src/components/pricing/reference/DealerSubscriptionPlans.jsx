@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
-import { base44 } from '@/api/base44Client';
+import { auth } from '@/api/auth';
 import { startCheckout } from '@/lib/stripeCheckout';
 import DealerPlanComparison from '@/components/pricing/reference/DealerPlanComparison';
 
@@ -21,9 +21,9 @@ export default function DealerSubscriptionPlans() {
     if (busyPlan) return;
     setBusyPlan(planId);
     try {
-      const isAuthed = await base44.auth.isAuthenticated();
-      if (!isAuthed) { base44.auth.redirectToLogin(); return; }
-      const me = await base44.auth.me();
+      const isAuthed = await auth.isAuthenticated();
+      if (!isAuthed) { auth.redirectToLogin(); return; }
+      const me = await auth.me();
       if (!me?.dealer_id) { navigate('/DealerRegister?apply=1'); return; }
       await startCheckout({ planId, billing: yearly ? 'yearly' : 'monthly' });
     } catch (err) {

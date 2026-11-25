@@ -4,6 +4,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Plus, User, Heart, MessageSquare, LogOut, Menu, X, Building2, Bell } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
+import { auth } from '@/api/auth';
 import { entities } from '@/api/entities';
 import { createPageUrl } from '@/utils';
 import { cn } from '@/lib/utils';
@@ -34,13 +35,13 @@ const accountLinks = (isDealer) => [
   !isDealer && { labelKey: 'nav.favorites', to: createPageUrl('Dashboard') + '?tab=favorites', icon: Heart },
 ].filter(Boolean);
 
-const login = () => base44.auth.redirectToLogin();
+const login = () => auth.redirectToLogin();
 
 function useHeaderUser() {
   const [user, setUser] = useState(null);
   useEffect(() => {
-    base44.auth.isAuthenticated()
-      .then((isAuth) => (isAuth ? base44.auth.me().then(resolveViewAsUser).then(({ user: u }) => setUser(u)) : null))
+    auth.isAuthenticated()
+      .then((isAuth) => (isAuth ? auth.me().then(resolveViewAsUser).then(({ user: u }) => setUser(u)) : null))
       .catch(() => {});
   }, []);
   return user;
@@ -136,7 +137,7 @@ export default function Header() {
               notifications={notifications}
               unreadNotifications={unreadNotifications.length}
               onRead={markNotificationsRead}
-              onLogout={() => base44.auth.logout()}
+              onLogout={() => auth.logout()}
               referralEnabled={false}
               className="inline-flex" />
           ) : (
@@ -185,7 +186,7 @@ export default function Header() {
               <PostAdButton user={user} full className="mt-3 w-full" onNavigate={closeMenu} />
 
               {user && (
-                <button type="button" onClick={() => { closeMenu(); base44.auth.logout(); }}
+                <button type="button" onClick={() => { closeMenu(); auth.logout(); }}
                   className="mt-1 flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm font-medium text-red-400 hover:bg-red-500/10">
                   <LogOut className="h-4 w-4" />{t('nav.logout')}
                 </button>

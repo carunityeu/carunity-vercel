@@ -4,6 +4,7 @@ import { createPageUrl } from '@/utils';
 import { getCarDetailsPath } from '@/lib/shortIdUtils';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
+import { auth } from '@/api/auth';
 import { entities } from '@/api/entities';
 import { Button } from '@/components/ui/button';
 import ListPagination from '@/components/ui/ListPagination';
@@ -117,9 +118,9 @@ export default function DealerDashboard() {
   useEffect(() => {
     const load = async () => {
       try {
-      const isAuth = await base44.auth.isAuthenticated();
-      if (!isAuth) { base44.auth.redirectToLogin(); return; }
-      const userData = await base44.auth.me();
+      const isAuth = await auth.isAuthenticated();
+      if (!isAuth) { auth.redirectToLogin(); return; }
+      const userData = await auth.me();
       setUser(userData);
 
       // Admin previews exactly the chosen salon (several salons may share an owner email)
@@ -164,7 +165,7 @@ export default function DealerDashboard() {
         setCoverForm({ cover_image: d.cover_image || '', cover_image_position: d.cover_image_position || '50% 50%', logo: d.logo || '' });
       }
       } catch (error) {
-        if ((error.status || error.response?.status) === 401) base44.auth.redirectToLogin(window.location.href);
+        if ((error.status || error.response?.status) === 401) auth.redirectToLogin(window.location.href);
         else throw error;
       } finally { setIsLoading(false); }
     };

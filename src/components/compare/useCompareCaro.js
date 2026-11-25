@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { base44 } from '@/api/base44Client';
+import { auth } from '@/api/auth';
 import { entities } from '@/api/entities';
 import useCaroStream from '@/components/caro/useCaroStream';
 import { comparisonKeys } from '@/components/compare/compareSpecs';
@@ -16,7 +17,7 @@ export default function useCompareCaro(cars,language,priorities) {
     if(locked.current||cars.length<2)return;
     locked.current=true;const run=generation.current;setResponseSignature(signature);setBusy(true);setError(false);setMessages([]);
     try {
-      if(!await base44.auth.isAuthenticated()){base44.auth.redirectToLogin(window.location.href);return;}
+      if(!await auth.isAuthenticated()){auth.redirectToLogin(window.location.href);return;}
       const records=await Promise.all(cars.map(car=>entities.Car.get(car.id)));
       const snapshot=records.map(car=>Object.fromEntries(['id','brand','model','status',...comparisonKeys].map(key=>[key,car[key]??null])));
       if(run!==generation.current)return;

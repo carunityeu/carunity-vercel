@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { base44 } from '@/api/base44Client';
+import { auth } from '@/api/auth';
 import { entities } from '@/api/entities';
 import { createPageUrl } from '@/utils';
 import { Check, Loader2 } from 'lucide-react';
@@ -72,9 +72,9 @@ export default function CreateListing() {
 
   useEffect(() => {
     (async () => {
-      const isAuth = await base44.auth.isAuthenticated();
-      if (!isAuth) { base44.auth.redirectToLogin(); return; }
-      setUser(await base44.auth.me());
+      const isAuth = await auth.isAuthenticated();
+      if (!isAuth) { auth.redirectToLogin(); return; }
+      setUser(await auth.me());
     })();
   }, []);
 

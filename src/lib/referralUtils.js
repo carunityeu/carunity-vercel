@@ -1,4 +1,4 @@
-import { base44 } from '@/api/base44Client';
+import { auth } from '@/api/auth';
 import { entities } from '@/api/entities';
 
 const STORAGE_KEY = 'cu_ref_code';
@@ -68,7 +68,7 @@ export async function ensureUserReferralCode(user) {
 
   const code = generateReferralCode();
   try {
-    await base44.auth.updateMe({ referral_code: code });
+    await auth.updateMe({ referral_code: code });
     return code;
   } catch (e) {
     console.error('Failed to save referral code:', e);

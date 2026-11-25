@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { useQuery } from '@tanstack/react-query';
-import { base44 } from '@/api/base44Client';
+import { auth } from '@/api/auth';
 import { entities } from '@/api/entities';
 import { redirectToAccount } from '@/components/auth/requireAccount';
 import { Button } from '@/components/ui/button';
@@ -49,8 +49,8 @@ export default function DealerProfile() {
   }, [filterBrand, filterModel]);
 
   useEffect(() => {
-    base44.auth.isAuthenticated().then(isAuth => {
-      if (isAuth) base44.auth.me().then(setUser);
+    auth.isAuthenticated().then(isAuth => {
+      if (isAuth) auth.me().then(setUser);
     });
   }, []);
 

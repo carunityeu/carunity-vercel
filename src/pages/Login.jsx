@@ -1,9 +1,6 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { loginWithMfa } from "@/lib/authMfa";
-import { signInWithProvider } from "@/lib/authMfaFlow";
-import MfaFlow from "@/components/MfaFlow";
-import { MfaScreen } from "@/components/MfaParts";
+import { auth } from "@/api/auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -12,7 +9,6 @@ import { useTranslation } from 'react-i18next';
 import AuthLayout from "@/components/AuthLayout";
 import AuthPasswordInput from '@/components/auth/AuthPasswordInput';
 import GoogleIcon from "@/components/GoogleIcon";
-import AppleIcon from "@/components/auth/AppleIcon";
 import { safeReturnTo } from "@/lib/authReturnTo";
 
 export default function Login() {
@@ -21,7 +17,7 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const [mfaChallenge, setMfaChallenge] = useState(null);
+  const confirmed = new URLSearchParams(window.location.search).get("confirmed") === "1";
   // Post-login destination (e.g. the MCP OAuth consent page sends users here
   // with returnTo so the grant flow can resume). Same-origin paths only.
   const returnTo = safeReturnTo();
@@ -31,14 +27,12 @@ export default function Login() {
     setError("");
     setLoading(true);
     try {
-      const result = await loginWithMfa(email, password);
-      if (result.mfa_required) {
-        setMfaChallenge(result);
-        return;
-      }
+      await auth.loginViaEmailPassword(email, password);
       window.location.href = returnTo;
     } catch (err) {
-      setError(err.message || t('authVisual.invalid'));
+      // Supabase answers in English; show our own texts for the two common cases
+      const notConfirmed = /not confirmed/i.test(err.message || '');
+      setError(notConfirmed ? t('authVisual.notConfirmed', 'Подтвердите email: откройте письмо, которое мы отправили при регистрации.') : t('authVisual.invalid'));
     } finally {
       setLoading(false);
     }
@@ -47,20 +41,18 @@ export default function Login() {
   const handleProvider = async (provider) => {
     setError("");
     setLoading(true);
-    try { await signInWithProvider(provider, returnTo); }
+    try { await auth.loginWithProvider(provider, returnTo); }
     catch (err) { setError(err.message || t('authProvider.error', { provider })); }
     finally { setLoading(false); }
   };
 
-  // The second sign-in step (authenticator app or text message) replaces the whole page.
-  if (mfaChallenge) return <MfaScreen><MfaFlow challenge={mfaChallenge} returnTo={returnTo} /></MfaScreen>;
-
   return (
     <AuthLayout reference>
-      <Button variant="outline" onClick={() => handleProvider('apple')} disabled={loading}>
-        <AppleIcon className="w-4 h-4 mr-2 text-foreground" />
-        {t('authProvider.continue', { provider: 'Apple' })}
-      </Button>
+      {confirmed && (
+        <div className="mb-4 rounded-lg bg-brand/15 p-3 text-sm text-brand-text">
+          {t('authVisual.emailConfirmed', 'Email подтверждён. Теперь можно войти.')}
+        </div>
+      )}
       <Button variant="outline" onClick={() => handleProvider('google')} disabled={loading}>
         <GoogleIcon className="w-4 h-4 mr-2" />
         {t('authProvider.continue', { provider: 'Google' })}

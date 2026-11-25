@@ -1,5 +1,6 @@
 import { useEffect, useState, useRef } from 'react';
 import { base44 } from '@/api/base44Client';
+import { auth } from '@/api/auth';
 import useCaroStream from '@/components/caro/useCaroStream';
 
 export default function useCaroConversation(language) {
@@ -12,8 +13,8 @@ export default function useCaroConversation(language) {
     let alive = true;
     (async () => {
       try {
-        if (!await base44.auth.isAuthenticated()) return;
-        const me = await base44.auth.me(); if (!alive) return; setUser(me);
+        if (!await auth.isAuthenticated()) return;
+        const me = await auth.me(); if (!alive) return; setUser(me);
         const id = sessionStorage.getItem(`caro-chat-${me.id}`);
         if (id) { const saved = await base44.agents.getConversation(id); if (alive) { setConversation(saved); setMessages(saved.messages || []); } }
       } catch (e) { if (alive) { if (e.status !== 401) setError(true); } }
@@ -28,7 +29,7 @@ export default function useCaroConversation(language) {
   }, [busy]);
   const send = async (value = text) => {
     const content = value.trim(); if (!content || busy || lock.current || loading) return;
-    if (!user) { sessionStorage.setItem('caro-draft', content); base44.auth.redirectToLogin(window.location.href); return; }
+    if (!user) { sessionStorage.setItem('caro-draft', content); auth.redirectToLogin(window.location.href); return; }
     lock.current = true; setBusy(true); setError(false);
     try {
       let current = conversation;

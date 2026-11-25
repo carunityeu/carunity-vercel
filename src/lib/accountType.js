@@ -1,4 +1,4 @@
-import { base44 } from '@/api/base44Client';
+import { auth } from '@/api/auth';
 import { entities } from '@/api/entities';
 
 // Account type is stored on the User record as user_type: 'private' | 'dealer'.
@@ -16,12 +16,12 @@ export async function syncAccountType(user) {
   const found = (Array.isArray(dealers) ? dealers : dealers?.items || [])[0];
 
   if (found) {
-    await base44.auth.updateMe({ user_type: 'dealer', dealer_id: found.id }).catch(() => {});
+    await auth.updateMe({ user_type: 'dealer', dealer_id: found.id }).catch(() => {});
     return { ...user, user_type: 'dealer', dealer_id: found.id };
   }
 
   if (!user.user_type) {
-    await base44.auth.updateMe({ user_type: 'private' }).catch(() => {});
+    await auth.updateMe({ user_type: 'private' }).catch(() => {});
     return { ...user, user_type: 'private' };
   }
 

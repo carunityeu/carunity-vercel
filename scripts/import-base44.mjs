@@ -36,6 +36,8 @@ const isBase44Id = (v) => /^[0-9a-f]{24}$/.test(v);
 
 function convert(value, type, column, warn) {
   if (value === '' || value === 'null') return null;
+  // The export protects values starting with + = - @ with an apostrophe (spreadsheet escaping)
+  if (type === 'text' && /^'[+=@-]/.test(value)) value = value.slice(1);
   switch (type) {
     case 'boolean':
       if (value === 'true') return true;
