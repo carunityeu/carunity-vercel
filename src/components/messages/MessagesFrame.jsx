@@ -19,5 +19,5 @@ export default function MessagesFrame({ children, selectedChatId }) {
     window.visualViewport?.addEventListener('resize', update);
     return () => { observer.disconnect(); window.removeEventListener('resize', update);       window.visualViewport?.removeEventListener('resize', update); };
   }, [selectedChatId]);
-  return <div ref={frameRef} className="messages-screen fixed inset-x-0 bottom-0 top-[120px] z-10 flex min-h-0 min-w-0 overflow-hidden border-t border-border bg-background">{children}</div>;
+  return <div ref={frameRef} style={{ top: 'var(--header-h)' }} className="messages-screen fixed inset-x-0 bottom-0 z-10 flex min-h-0 min-w-0 overflow-hidden border-t border-border bg-background">{children}</div>;
 }

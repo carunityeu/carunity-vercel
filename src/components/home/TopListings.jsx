@@ -12,7 +12,7 @@ import { carIcons } from '@/lib/specIcons';
 import { fuelChip } from '@/lib/fuelBadge';
 import { translateLocation } from '@/utils/locationUtils';
 import useCardExtras from '@/hooks/useCardExtras';
-import TileActions from '@/components/cars/TileActions';
+import FavoriteButton from '@/components/cars/FavoriteButton';
 import DiscountTag from '@/components/cars/DiscountTag';
 import PriceRatingBadge from '@/components/cars/PriceRatingBadge';
 import TransmissionOrEnergy from '@/components/cars/TransmissionOrEnergy';
@@ -44,16 +44,16 @@ function SlideCard({ car, rating }) {
   const location = (car.location || car.country) && translateLocation(t, car.location, car.country);
 
   return (
-    <Link to={getCarDetailsPath(car)} className="tile-card group flex h-full flex-col">
+    <Link to={getCarDetailsPath(car)} className="flex h-full flex-col">
       <div className="relative aspect-[3/2] overflow-hidden rounded-xl bg-raised">
         {car.images?.[0]
-          ? <img src={car.images[0]} alt={`${car.brand} ${car.model}`} loading="lazy" className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]" />
+          ? <img src={car.images[0]} alt={`${car.brand} ${car.model}`} loading="lazy" className="h-full w-full object-cover" />
           : <div className="flex h-full w-full items-center justify-center"><Car className="h-8 w-8 text-ink-3" /></div>}
-        <TileActions car={car} />
+        <FavoriteButton carId={car.id} />
       </div>
 
       <div className="flex flex-1 flex-col pt-3">
-        <h3 className="truncate text-base font-bold text-ink transition-colors group-hover:text-brand-text">
+        <h3 className="truncate text-base font-bold text-ink">
           {car.brand} {car.model} {car.year && <span className="font-normal text-ink-3">{car.year}</span>}
         </h3>
         {car.trim_level && <p className="truncate text-xs text-ink-3">{car.trim_level}</p>}
@@ -102,7 +102,7 @@ export default function TopListings() {
 
   if (!isLoading && !cars.length) return null;
   const scroll = (dir) => rowRef.current?.scrollBy({ left: dir * rowRef.current.clientWidth * 0.8, behavior: 'smooth' });
-  const arrow = 'flex h-9 w-9 items-center justify-center rounded-full bg-page text-ink transition-opacity hover:bg-raised disabled:opacity-30';
+  const arrow = 'flex h-9 w-9 items-center justify-center rounded-full bg-page text-ink disabled:opacity-30';
 
   return (
     <Container as="section" className="py-6 sm:py-8" aria-labelledby="top-listings-title">
@@ -115,7 +115,7 @@ export default function TopListings() {
         )}
         action={(
           <div className="flex items-center gap-2">
-            <Link to={createPageUrl('Catalog')} className="text-sm font-medium text-brand-text hover:underline">{t('home.see_all', 'Все')}</Link>
+            <Link to={createPageUrl('Catalog')} className="text-sm font-medium text-brand-text">{t('home.see_all', 'Все')}</Link>
             <div className="hidden gap-1 lg:flex">
               <button type="button" aria-label="←" disabled={edges.start} onClick={() => scroll(-1)} className={arrow}><ChevronLeft className="h-4 w-4" /></button>
               <button type="button" aria-label="→" disabled={edges.end} onClick={() => scroll(1)} className={arrow}><ChevronRight className="h-4 w-4" /></button>

@@ -109,7 +109,7 @@ export default function UserSidebar({ user, activeTab, onTabChange, favoritesCou
     <>
       {/* Desktop sidebar */}
       <aside className="hidden lg:block">
-        <div className="sticky top-[136px]">
+        <div className="sticky top-4">
           <nav className={cn(CARD, 'rounded-xl p-2')}>
             <ProfileBlock />
             <div className="border-t border-[#292a32] mx-1" />

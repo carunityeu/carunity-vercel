@@ -276,7 +276,7 @@ export default function VehicleDetails() {
           </div>
 
           {/* Sidebar */}
-          <div className="space-y-4 lg:self-start lg:sticky lg:top-[140px]">
+          <div className="space-y-4 lg:self-start lg:sticky lg:top-4">
             {/* Price & Actions */}
             <div className="bg-white dark:bg-slate-900 rounded-xl md:rounded-2xl p-4 md:p-6 shadow-sm border border-slate-100 dark:border-slate-800">
               <div className="mb-4">

@@ -6,8 +6,9 @@ import { ArrowRight } from 'lucide-react';
 import { createPageUrl } from '@/utils';
 import { entities } from '@/api/entities';
 import useCardExtras from '@/hooks/useCardExtras';
-import { Container } from '@/components/ds';
-import CompactCarCard from '@/components/cars/CompactCarCard';
+import { Container, Panel } from '@/components/ds';
+import { Button } from '@/components/ui/button';
+import ListingTile from '@/components/cars/ListingTile';
 import CarGridSkeleton from '@/components/cars/CarGridSkeleton';
 import LuxurySection from '@/components/cars/LuxurySection';
 import MagazineSection from '@/components/home/MagazineSection';
@@ -19,6 +20,8 @@ import QuickAccessPanel from '@/components/home/QuickAccessPanel';
 import AdBanner from '@/components/ads/AdBanner';
 import CaroBanner from '@/components/caro/CaroBanner';
 
+// Phones: one tile per row (the fact pills need the width); then 2 / 3 / 4 columns.
+const TILE_GRID = 'grid grid-cols-1 gap-x-5 gap-y-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4';
 const hasPhoto = (c) => typeof c.images?.[0] === 'string' && c.images[0].trim().startsWith('http');
 
 export default function Home() {
@@ -37,11 +40,11 @@ export default function Home() {
   }, [activeCars, topCars]);
   const latestCars = latestPool.slice(0, 16);
   const latestCarsMore = latestPool.slice(16, 32);
-  const { ratings: tileRatings, promotions: tilePromotions } = useCardExtras(latestPool.slice(0, 32));
+  const { ratings: tileRatings } = useCardExtras(latestPool.slice(0, 32));
 
   return (
     <div className="min-h-screen bg-page">
-      <section style={{ marginTop: 'var(--header-h)' }}>
+      <section>
         <HeroSection />
 
         {/* Phones: search sits under the banner; desktop: it covers the banner's bottom 96px */}
@@ -64,53 +67,33 @@ export default function Home() {
       {/* AD — между Hero и новыми объявлениями */}
       <AdBanner size="billboard" slot="home-top" aspectRatio="10/3" className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 py-6 sm:py-10" />
 
-      {/* Latest Cars */}
-      <section className="bg-white dark:bg-slate-900 py-6 sm:py-8">
-        <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6">
-          <div className="mb-3 sm:mb-4">
-            <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-slate-900 dark:text-white">{t('home.new_listings')}</h2>
-          </div>
-          {loadingLatest ? (
-            <CarGridSkeleton count={8} className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4" />
-          ) : (
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
-              {latestCars.map((car) =>
-              <CompactCarCard key={car.id} car={car} rating={tileRatings[car.id]} promotion={tilePromotions[car.id]} />
-              )}
+      {/* New listings: mobile.de-style tiles on a panel; the luxury block sits between the two halves */}
+      <Container as="section" className="py-6 sm:py-8" aria-labelledby="new-listings-title">
+        <Panel title={<span id="new-listings-title" className="text-xl sm:text-2xl">{t('home.new_listings')}</span>}>
+          {loadingLatest ? <CarGridSkeleton count={8} className={TILE_GRID} /> : (
+            <div className={TILE_GRID}>
+              {latestCars.map((car) => <ListingTile key={car.id} car={car} rating={tileRatings[car.id]} />)}
             </div>
           )}
-        </div>
-      </section>
+        </Panel>
+      </Container>
 
-      
-
-      {/* Luxury Section */}
       <LuxurySection />
 
-      {/* Continuation of New Listings — same style as above */}
-      <section className="bg-slate-950 py-6 sm:py-8">
-        <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6">
-          {loadingLatest ? (
-            <CarGridSkeleton count={8} className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4" />
-          ) : (
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
-              {latestCarsMore.map((car) =>
-              <CompactCarCard key={car.id} car={car} rating={tileRatings[car.id]} promotion={tilePromotions[car.id]} />
-              )}
+      {latestCarsMore.length > 0 && (
+        <Container as="section" className="py-6 sm:py-8">
+          <Panel>
+            <div className={TILE_GRID}>
+              {latestCarsMore.map((car) => <ListingTile key={car.id} car={car} rating={tileRatings[car.id]} />)}
             </div>
-          )}
-          <div className="mt-4 sm:mt-6 flex justify-center">
-            <Link
-              to={createPageUrl('Catalog')}
-              className="flex items-center gap-2 border border-slate-600 text-slate-300 hover:border-emerald-400 hover:text-emerald-400 text-sm font-medium px-5 py-2.5 rounded-xl transition-colors">
-              
-              {t('home.see_all_ads', 'Смотреть все объявления')} <ArrowRight className="w-4 h-4" />
-            </Link>
-          </div>
-        </div>
-      </section>
-
-      
+            <div className="mt-6 flex justify-center">
+              <Button asChild variant="secondary">
+                <Link to={createPageUrl('Catalog')}>{t('home.see_all_ads', 'Смотреть все объявления')}<ArrowRight /></Link>
+              </Button>
+            </div>
+          </Panel>
+        </Container>
+      )}
 
       {/* AD — перед новостями */}
       <AdBanner size="billboard" slot="home-before-news" aspectRatio="10/3" className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 py-2" />

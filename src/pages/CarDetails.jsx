@@ -298,7 +298,7 @@ export default function CarDetails() {
               lang={lang} />
           </div>
 
-          <div className="lg:sticky lg:top-[140px] lg:col-start-2 lg:row-span-2 lg:row-start-1">
+          <div className="lg:sticky lg:top-4 lg:col-start-2 lg:row-span-2 lg:row-start-1">
             <CarSummaryCard
               car={car}
               readOnly={isClosed}

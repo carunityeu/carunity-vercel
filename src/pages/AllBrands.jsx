@@ -84,7 +84,7 @@ export default function AllBrands() {
 
         {/* Selected brands bar */}
         {selected.length > 0 && (
-          <div className="sticky top-[110px] sm:top-[120px] z-20 bg-white dark:bg-slate-950 py-3 mb-4 border-b border-slate-100 dark:border-slate-800">
+          <div className="sticky top-0 z-20 bg-white dark:bg-slate-950 py-3 mb-4 border-b border-slate-100 dark:border-slate-800">
             <div className="flex flex-wrap items-center gap-2">
               <span className="text-sm text-slate-500 dark:text-slate-400 mr-1">
                 {t('allbrands.selected', 'Выбрано')}:

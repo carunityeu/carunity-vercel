@@ -20,8 +20,8 @@ export default function Layout({ children, currentPageName }) {
   const openValuation = async () => {
     if (await requireAccount()) setShowValuation(true);
   };
-  // The fixed header's real height (it differs per breakpoint and with the phone search row):
-  // pages offset their content by --header-h so nothing hides under it.
+  // The header scrolls away with the page (not sticky). Its height is still published as
+  // --header-h for full-screen layouts (Caro, messages) that fill the rest of the viewport.
   useEffect(() => {
     if (!headerRef.current) return;
     const root = document.documentElement.style;
@@ -36,20 +36,6 @@ export default function Layout({ children, currentPageName }) {
     return () => observer.disconnect();
   }, []);
 
-  // Phones/tablets: the header slides away while scrolling down and comes back on scroll up
-  const [headerHidden, setHeaderHidden] = useState(false);
-  useEffect(() => {
-    let lastY = window.scrollY;
-    const onScroll = () => {
-      const y = window.scrollY;
-      if (window.innerWidth >= 1024 || y < 160) setHeaderHidden(false);
-      else if (y > lastY + 6) setHeaderHidden(true);
-      else if (y < lastY - 6) setHeaderHidden(false);
-      lastY = y;
-    };
-    window.addEventListener('scroll', onScroll, { passive: true });
-    return () => window.removeEventListener('scroll', onScroll);
-  }, []);
 
   useEffect(() => {
     const cookieConsent = localStorage.getItem('cookie_consent');
@@ -78,8 +64,6 @@ export default function Layout({ children, currentPageName }) {
     setShowCookieBanner(false);
   };
 
-  const transparentHeaderPages = ['Home'];
-  const hasTransparentHeader = transparentHeaderPages.includes(currentPageName);
   const isMessagesPage = currentPageName === 'Messages';
   const isDealerDashboard = currentPageName === 'DealerDashboard';
 
@@ -101,12 +85,12 @@ export default function Layout({ children, currentPageName }) {
           @media (min-width: 768px) { :root { --header-h: 112px; } }
         `}</style>
 
-        <div ref={headerRef} className={`fixed top-0 left-0 right-0 z-50 shadow-md transition-transform duration-200 ${headerHidden ? '-translate-y-full' : ''}`}>
+        <div ref={headerRef} className="relative z-50">
           <Header />
           <QuickNavBar />
         </div>
 
-        <main style={hasTransparentHeader ? undefined : { paddingTop: 'var(--header-h)' }}>
+        <main>
           {children}
         </main>
 

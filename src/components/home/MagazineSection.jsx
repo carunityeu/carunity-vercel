@@ -17,7 +17,7 @@ const articleUrl = (a) => `/ArticleDetail?id=${a.id}`;
 
 function Cover({ article, className }) {
   return article.cover_image
-    ? <img src={article.cover_image} alt="" loading="lazy" className={`h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.03] ${className || ''}`} />
+    ? <img src={article.cover_image} alt="" loading="lazy" className={`h-full w-full object-cover ${className || ''}`} />
     : <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-brand/40 to-raised"><Newspaper className="h-8 w-8 text-ink-2" /></div>;
 }
 
@@ -44,7 +44,7 @@ export default function MagazineSection() {
       <Panel
         title={<span id="magazine-title">{t('news.magazine_title', 'Журнал CarUnity')}</span>}
         action={(
-          <Link to="/AutoNews" className="flex items-center gap-0.5 text-sm font-medium text-brand-text hover:underline">
+          <Link to="/AutoNews" className="flex items-center gap-0.5 text-sm font-medium text-brand-text">
             {t('news.see_all')}<ChevronRight className="h-4 w-4" />
           </Link>
         )}>
@@ -53,7 +53,7 @@ export default function MagazineSection() {
           <div className="aspect-video overflow-hidden rounded-xl bg-raised"><Cover article={lead} /></div>
           <div className="flex min-w-0 flex-col justify-center gap-2">
             <Meta article={lead} />
-            <h3 className="text-xl font-bold leading-tight text-ink transition-colors group-hover:text-brand-text sm:text-2xl lg:text-3xl">
+            <h3 className="text-xl font-bold leading-tight text-ink sm:text-2xl lg:text-3xl">
               {localized(lead, 'title', lang)}
             </h3>
             <p className="line-clamp-3 text-sm leading-relaxed text-ink-2 sm:text-base">{teaser(localized(lead, 'content', lang))}</p>
@@ -69,7 +69,7 @@ export default function MagazineSection() {
                 <div className="aspect-video w-32 flex-shrink-0 overflow-hidden rounded-lg bg-raised sm:w-40"><Cover article={a} /></div>
                 <div className="flex min-w-0 flex-col gap-1">
                   <Meta article={a} />
-                  <h4 className="line-clamp-2 text-sm font-bold leading-snug text-ink transition-colors group-hover:text-brand-text sm:text-base">
+                  <h4 className="line-clamp-2 text-sm font-bold leading-snug text-ink sm:text-base">
                     {localized(a, 'title', lang)}
                   </h4>
                   <p className="text-xs text-ink-3">{date(a)}</p>
