@@ -9,7 +9,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Link } from 'react-router-dom';
-import { Loader2, Car, Clock, Check, X, Send, History, Eye, Zap, Handshake, Phone } from 'lucide-react';
+import { translateCountry } from '@/utils/locationUtils';
+import { Loader2, Car, Clock, X, Send, History, Eye, Phone } from 'lucide-react';
 import { toast } from 'sonner';
 import { formatPrice } from '@/utils/format';
 import { getCarDetailsPath } from '@/lib/shortIdUtils';
@@ -153,19 +154,6 @@ export default function FastSaleCars({ dealer }) {
 
   return (
     <div className="space-y-4">
-      {/* Header banner */}
-      <div className="bg-gradient-to-br from-emerald-500/10 to-transparent border border-emerald-500/20 rounded-2xl p-4 sm:p-5">
-        <div className="flex items-start gap-3">
-          <div className="w-9 h-9 rounded-xl bg-emerald-500 flex items-center justify-center flex-shrink-0">
-            <Zap className="w-5 h-5 text-white" />
-          </div>
-          <div>
-            <h2 className="text-base sm:text-lg font-bold text-white">{t('fast_sale.title')}</h2>
-            <p className="text-slate-400 text-sm mt-0.5">{t('fast_sale.dealer_desc')}</p>
-          </div>
-        </div>
-      </div>
-
       {/* Tab bar */}
       <div className="flex gap-1 bg-[#101014] border border-[#292a32] rounded-xl p-1 overflow-x-auto scrollbar-hide">
         {tabs.map(item => (
@@ -211,7 +199,7 @@ export default function FastSaleCars({ dealer }) {
                         <div className="flex flex-wrap gap-1 text-xs text-slate-400">
                           {car.mileage && <span className="bg-[#292a32] px-1.5 py-0.5 rounded">{car.mileage.toLocaleString()} {t('dealer.km')}</span>}
                           {car.fuel_type && <span className="bg-[#292a32] px-1.5 py-0.5 rounded">{t(FUEL_LABELS_KEY[car.fuel_type] || car.fuel_type)}</span>}
-                          {car.country && <span className="bg-[#292a32] px-1.5 py-0.5 rounded">{car.country}</span>}
+                          {car.country && <span className="bg-[#292a32] px-1.5 py-0.5 rounded">{translateCountry(t, car.country)}</span>}
                         </div>
                         <div className="mt-auto pt-1 flex gap-2">
                           <Button size="sm" className="flex-1 bg-emerald-500 hover:bg-emerald-600 gap-1.5" onClick={() => openOffer(car)}>

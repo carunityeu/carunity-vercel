@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { entities } from '@/api/entities';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -11,9 +11,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Link } from 'react-router-dom';
 import { getCarDetailsPath } from '@/lib/shortIdUtils';
-import {
-  RefreshCw, Car, Loader2, Gauge, Fuel, Settings2, MapPin,
-  Eye, CheckCircle2, Send, ChevronDown, Search
+import { Car, Loader2, Gauge, Fuel, Settings2, MapPin,
+  Eye, Send, ChevronDown, Search
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -101,32 +100,6 @@ export default function DealerGetOffers({ dealer }) {
 
   return (
     <div className="space-y-4 md:space-y-6">
-      {/* Info block */}
-      <div className="bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-950/30 dark:to-teal-950/30 rounded-2xl p-4 sm:p-6 border border-emerald-100 dark:border-emerald-900/40">
-        <div className="flex items-start gap-3 sm:gap-4">
-          <div className="w-10 h-10 rounded-xl bg-emerald-500 flex items-center justify-center flex-shrink-0">
-            <RefreshCw className="w-5 h-5 text-white" />
-          </div>
-          <div>
-            <h2 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white mb-1">{t('dealer.get_offers_title')}</h2>
-            <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">
-              {t('dealer.get_offers_desc')}
-            </p>
-            <div className="flex flex-wrap gap-3 sm:gap-4 mt-3 text-sm">
-              <div className="flex items-center gap-2 text-emerald-700 dark:text-emerald-400">
-                <CheckCircle2 className="w-4 h-4" /> {t('dealer.motivated_sellers')}
-              </div>
-              <div className="flex items-center gap-2 text-emerald-700 dark:text-emerald-400">
-                <CheckCircle2 className="w-4 h-4" /> {t('dealer.buy_or_commission')}
-              </div>
-              <div className="flex items-center gap-2 text-emerald-700 dark:text-emerald-400">
-                <CheckCircle2 className="w-4 h-4" /> {t('dealer.direct_contact')}
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
       {/* My sent offers summary */}
       {myOffers.length > 0 && (
         <div className="bg-white dark:bg-slate-900 rounded-2xl p-4 border border-slate-100 dark:border-slate-800">
