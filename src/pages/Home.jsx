@@ -6,7 +6,7 @@ import { ArrowRight } from 'lucide-react';
 import { createPageUrl } from '@/utils';
 import { entities } from '@/api/entities';
 import useCardExtras from '@/hooks/useCardExtras';
-import { Container, Panel } from '@/components/ds';
+import { Container } from '@/components/ds';
 import { Button } from '@/components/ui/button';
 import ListingTile from '@/components/cars/ListingTile';
 import CarGridSkeleton from '@/components/cars/CarGridSkeleton';
@@ -67,31 +67,28 @@ export default function Home() {
       {/* AD — между Hero и новыми объявлениями */}
       <AdBanner size="billboard" slot="home-top" aspectRatio="10/3" className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 py-6 sm:py-10" />
 
-      {/* New listings: mobile.de-style tiles on a panel; the luxury block sits between the two halves */}
+      {/* New listings: tiles straight on the page (no panel); the luxury block sits between the two halves */}
       <Container as="section" className="py-6 sm:py-8" aria-labelledby="new-listings-title">
-        <Panel title={<span id="new-listings-title" className="text-xl sm:text-2xl">{t('home.new_listings')}</span>}>
-          {loadingLatest ? <CarGridSkeleton count={8} className={TILE_GRID} /> : (
-            <div className={TILE_GRID}>
-              {latestCars.map((car) => <ListingTile key={car.id} car={car} rating={tileRatings[car.id]} />)}
-            </div>
-          )}
-        </Panel>
+        <h2 id="new-listings-title" className="mb-4 text-xl font-bold text-ink sm:text-2xl">{t('home.new_listings')}</h2>
+        {loadingLatest ? <CarGridSkeleton count={8} className={TILE_GRID} /> : (
+          <div className={TILE_GRID}>
+            {latestCars.map((car) => <ListingTile key={car.id} car={car} rating={tileRatings[car.id]} />)}
+          </div>
+        )}
       </Container>
 
       <LuxurySection />
 
       {latestCarsMore.length > 0 && (
         <Container as="section" className="py-6 sm:py-8">
-          <Panel>
-            <div className={TILE_GRID}>
-              {latestCarsMore.map((car) => <ListingTile key={car.id} car={car} rating={tileRatings[car.id]} />)}
-            </div>
-            <div className="mt-6 flex justify-center">
-              <Button asChild variant="secondary">
-                <Link to={createPageUrl('Catalog')}>{t('home.see_all_ads', 'Смотреть все объявления')}<ArrowRight /></Link>
-              </Button>
-            </div>
-          </Panel>
+          <div className={TILE_GRID}>
+            {latestCarsMore.map((car) => <ListingTile key={car.id} car={car} rating={tileRatings[car.id]} />)}
+          </div>
+          <div className="mt-8 flex justify-center">
+            <Button asChild variant="secondary">
+              <Link to={createPageUrl('Catalog')}>{t('home.see_all_ads', 'Смотреть все объявления')}<ArrowRight /></Link>
+            </Button>
+          </div>
         </Container>
       )}
 
