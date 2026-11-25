@@ -53,9 +53,12 @@ for (const r of records) {
   const profile = {};
   for (const [col, type] of Object.entries(PROFILE)) if (!SKIP.has(col) && col in r) profile[col] = toValue(r[col], type);
   if (profile.role && !['user', 'admin'].includes(profile.role)) { problems.push(`${email}: role "${profile.role}" -> user`); profile.role = 'user'; }
+  if (profile.avatar && !/^https?:\/\//.test(profile.avatar)) { problems.push(`${email}: avatar "${profile.avatar}" is not a link -> empty`); profile.avatar = null; }
+  if (profile.user_type && !['private', 'dealer'].includes(profile.user_type)) { problems.push(`${email}: user_type "${profile.user_type}" -> private`); profile.user_type = 'private'; }
+  if (profile.preferred_language && !['ru', 'en', 'et', 'lv', 'lt'].includes(profile.preferred_language)) profile.preferred_language = null;
   users.push({ legacy_id: r.id || null, email, created_date: toValue(r.created_date, 'timestamptz'), profile });
 }
-const unknown = header.filter((h) => !(h in PROFILE) && !['id', 'created_by', 'created_by_id', 'is_sample', 'disabled', 'is_verified', 'app_id', '_app_role'].includes(h));
+const unknown = header.filter((h) => !(h in PROFILE) && !['id', 'status', 'created_by', 'created_by_id', 'is_sample', 'disabled', 'is_verified', 'app_id', '_app_role'].includes(h));
 
 const lit = (v) => `'${String(v).replace(/'/g, "''")}'`;
 const json = lit(JSON.stringify(users));
@@ -70,7 +73,7 @@ insert into auth.users (instance_id, id, aud, role, email, encrypted_password, e
                         raw_app_meta_data, raw_user_meta_data, created_at, updated_at,
                         confirmation_token, recovery_token, email_change_token_new, email_change)
 select '00000000-0000-0000-0000-000000000000', gen_random_uuid(), 'authenticated', 'authenticated', u.email, '', now(),
-       '{"provider":"email","providers":["email"]}'::jsonb,
+       '{"provider":"email","providers":["email"],"imported_from":"base44"}'::jsonb,
        jsonb_strip_nulls(jsonb_build_object('full_name', u.profile ->> 'full_name', 'legacy_id', u.legacy_id)),
        coalesce(u.created_date, now()), now(), '', '', '', ''
 from jsonb_to_recordset(${json}::jsonb) as u(legacy_id text, email text, created_date timestamptz, profile jsonb)
@@ -81,7 +84,7 @@ insert into auth.identities (id, user_id, provider_id, identity_data, provider, 
 select gen_random_uuid(), a.id, a.id::text,
        jsonb_build_object('sub', a.id::text, 'email', a.email, 'email_verified', true), 'email', now(), now()
 from auth.users a
-where a.raw_user_meta_data ? 'legacy_id'
+where a.raw_app_meta_data ->> 'imported_from' = 'base44'
   and not exists (select 1 from auth.identities i where i.user_id = a.id and i.provider = 'email');
 
 -- 3. Profiles (rows made by the on_auth_user_created trigger): Base44 fields and the old id
@@ -143,12 +146,12 @@ if (check) {
   const n = async (q) => (await db.query(q)).rows[0].n;
   const accounts = await n('select count(*)::int n from auth.users');
   const identities = await n('select count(*)::int n from auth.identities');
-  const profiles = await n('select count(*)::int n from public.profiles where legacy_id is not null');
+  const profiles = await n(`select count(*)::int n from public.profiles where email in (${users.map((u) => lit(u.email)).join(',')})`);
   let bad = 0;
   const report = (ok, msg) => { if (!ok) bad++; console.log(`${ok ? 'ok  ' : 'FAIL'} ${msg}`); };
   report(accounts === users.length, `accounts ${accounts}/${users.length} (after two runs)`);
   report(identities === users.length, `identities ${identities}/${users.length}`);
-  report(profiles === users.length, `profiles with legacy_id ${profiles}/${users.length}`);
+  report(profiles === users.length, `profiles ${profiles}/${users.length}`);
   if (first) {
     report(await n(`select count(*)::int n from public.cars where id = 'chk1' and created_by_id is not null`) === 1, 'listing linked to its author id');
     if (first.legacy_id) report(await n(`select count(*)::int n from public.cars where id = 'chk2' and seller_id = ${lit(first.email)}`) === 1, 'Base44 seller id replaced by email');
