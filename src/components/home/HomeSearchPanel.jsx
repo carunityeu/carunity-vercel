@@ -15,9 +15,10 @@ import VehicleTypeFilters from '@/components/search/VehicleTypeFilters';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Panel, fieldClass } from '@/components/ds';
+import { Panel, boxFieldClass, boxSelectClass, SelectCaret } from '@/components/ds';
 
-const selectTrigger = `${fieldClass} flex items-center justify-between text-left`;
+// Search fields follow the mobile.de-like look: 36px, thin outline, caret compartment on selects.
+const selectTrigger = boxSelectClass;
 
 const ICON_BASE = 'https://media.base44.com/images/public/6973f00466c3a37f3d8e7e53/';
 const VEHICLE_TYPES = [
@@ -92,7 +93,7 @@ function buildSearchUrl(f, generations) {
 function SelectField({ value, onChange, placeholder, anyLabel, options, disabled }) {
   return (
     <Select value={value} onValueChange={onChange} disabled={disabled}>
-      <SelectTrigger className={fieldClass}><SelectValue placeholder={placeholder} /></SelectTrigger>
+      <SelectTrigger className={boxSelectClass}><SelectValue placeholder={placeholder} /><SelectCaret /></SelectTrigger>
       <SelectContent>
         <SelectItem value="any">{anyLabel}</SelectItem>
         {options.map((o) => <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>)}
@@ -105,8 +106,8 @@ function SelectField({ value, onChange, placeholder, anyLabel, options, disabled
 function Field({ label, action, className, children }) {
   return (
     <div className={className}>
-      <div className="mb-1 flex h-5 items-center justify-between gap-2">
-        <span className="text-xs font-medium text-ink-3">{label}</span>
+      <div className="mb-1.5 flex h-5 items-center justify-between gap-2">
+        <span className="text-sm font-medium text-ink">{label}</span>
         {action}
       </div>
       {children}
@@ -119,8 +120,8 @@ function RangeField({ label, from, to, onFrom, onTo, className }) {
   return (
     <Field label={label} className={className}>
       <div className="grid grid-cols-2 gap-2">
-        <Input inputMode="numeric" placeholder={t('home.price_from', 'От')} value={from} onChange={(e) => onFrom(digits(e.target.value))} className={fieldClass} />
-        <Input inputMode="numeric" placeholder={t('home.price_to', 'До')} value={to} onChange={(e) => onTo(digits(e.target.value))} className={fieldClass} />
+        <Input inputMode="numeric" placeholder={t('home.price_from', 'От')} value={from} onChange={(e) => onFrom(digits(e.target.value))} className={boxFieldClass} />
+        <Input inputMode="numeric" placeholder={t('home.price_to', 'До')} value={to} onChange={(e) => onTo(digits(e.target.value))} className={boxFieldClass} />
       </div>
     </Field>
   );
@@ -245,6 +246,7 @@ export default function HomeSearchPanel({ className }) {
                 <MiniSearchSelect
                   value=""
                   triggerClassName={selectTrigger}
+                  caret={<SelectCaret />}
                   onChange={(b) => b && b !== 'any' && set({ brands: f.brands.includes(b) ? f.brands : [...f.brands, b], model: '', generations: [] })}
                   options={BRANDS}
                   placeholder={f.brands.length ? t('home.add_brand', '+ ещё марка') : t('home.brand_any_label')}
@@ -254,6 +256,7 @@ export default function HomeSearchPanel({ className }) {
                 <MiniSearchSelect
                   value={f.model}
                   triggerClassName={selectTrigger}
+                  caret={<SelectCaret />}
                   onChange={(m) => set({ model: m, generations: [], useGenerations: false })}
                   options={models.map((m) => ({ value: m, label: modelCounts[m] ? `${m} (${modelCounts[m]})` : m }))}
                   placeholder={t('home.model_any_label')}
@@ -263,7 +266,7 @@ export default function HomeSearchPanel({ className }) {
             </>
           )}
           {hasBasics && <RangeField label={`${t('home.price_label', 'Цена')}, €`} from={f.priceFrom} to={f.priceTo} onFrom={(v) => set({ priceFrom: v })} onTo={(v) => set({ priceTo: v })} />}
-          <Button type="button" size="lg" className="sm:col-span-2 lg:col-span-1 lg:col-start-5" onClick={() => navigate(buildSearchUrl(f, generations))}>
+          <Button type="button" size="lg" className="sm:col-span-2 lg:col-span-1 lg:col-start-5 lg:h-9 lg:rounded-lg" onClick={() => navigate(buildSearchUrl(f, generations))}>
             <Search />{t('home.search_button')}
           </Button>
         </div>

@@ -11,6 +11,7 @@
   --cu-surface: 27 27 34;       /* #1b1b22 cards, panels, header */
   --cu-raised: 42 43 51;        /* #2a2b33 fields, chips, secondary buttons */
   --cu-line: 41 42 50;          /* #292a32 borders and dividers */
+  --cu-line-strong: 126 131 143; /* #7e838f outline of form fields */
   --cu-ink: 250 250 250;        /* main text */
   --cu-ink-2: 199 199 207;      /* secondary text */
   --cu-ink-3: 154 154 165;      /* hints, captions (lowest allowed for text) */

@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { base44 } from '@/api/base44Client';
+import { useQueryClient } from '@tanstack/react-query';
 import { entities } from '@/api/entities';
+import { usePricePool } from '@/hooks/useCardExtras';
+import { rateCars } from '@/lib/priceRating';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import { Heart, Loader2 } from 'lucide-react';
@@ -30,29 +31,10 @@ export default function FavoritesPanel({ user, cars = [], isLoading = false, pag
     queryClient.invalidateQueries({ queryKey: ['favoriteCars'] });
   }), [cars, queryClient]);
 
-  // Same price comparison the catalog list view uses
-  const { data: priceRatings = {} } = useQuery({
-    queryKey: ['priceRatings', pagedCars.filter(car => car.status === 'active').map(car => car.id).join(',')],
-    enabled: pagedCars.some(car => car.status === 'active'),
-    staleTime: 5 * 60 * 1000,
-    queryFn: async () => {
-      const res = await base44.functions.invoke('getPriceRatings', {
-        cars: pagedCars.filter(car => car.status === 'active').slice(0, 60).map((car) => ({
-          id: car.id,
-          brand: car.brand,
-          model: car.model,
-          body_type: car.body_type,
-          car_class: car.car_class,
-          year: car.year,
-          mileage: car.mileage,
-          engine_power: car.engine_power,
-          price: car.price,
-          features_count: car.features?.length || 0
-        }))
-      });
-      return res.data?.ratings || {};
-    }
-  });
+  // Same price comparison the catalog uses (computed in the browser, lib/priceRating.js)
+  const activeCars = pagedCars.filter(car => car.status === 'active');
+  const { data: pricePool } = usePricePool(activeCars.length > 0);
+  const priceRatings = useMemo(() => (pricePool ? rateCars(activeCars, pricePool) : {}), [pricePool, activeCars.map(c => c.id).join(',')]);
 
   const removeFavorite = async (carId) => {
     // Remove through the shared favorites store so every screen stays in sync (no extra request)

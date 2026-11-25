@@ -48,9 +48,7 @@ export default function Home() {
         <Container className="relative z-10 mt-3 sm:-mt-10 lg:-mt-24">
           <HomeSearchPanel />
         </Container>
-        <Container className="py-6 sm:py-8">
-          <TopListings />
-        </Container>
+        <TopListings />
 
         <div className="bg-page">
         <RecentActivityBlock />

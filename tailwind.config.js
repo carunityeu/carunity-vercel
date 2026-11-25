@@ -16,6 +16,7 @@ module.exports = {
         surface: 'rgb(var(--cu-surface) / <alpha-value>)',
         raised: 'rgb(var(--cu-raised) / <alpha-value>)',
         line: 'rgb(var(--cu-line) / <alpha-value>)',
+        'line-strong': 'rgb(var(--cu-line-strong) / <alpha-value>)',
         ink: {
           DEFAULT: 'rgb(var(--cu-ink) / <alpha-value>)',
           2: 'rgb(var(--cu-ink-2) / <alpha-value>)',

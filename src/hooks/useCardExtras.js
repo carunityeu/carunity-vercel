@@ -1,6 +1,25 @@
+import { useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { base44 } from '@/api/base44Client';
+import { supabase } from '@/api/supabaseClient';
+import { rateCars } from '@/lib/priceRating';
 import { entities } from '@/api/entities';
+
+const POOL_COLUMNS = 'id,brand,model,body_type,car_class,year,mileage,engine_power,price,features';
+
+/** Active listings used as the comparison pool for price ratings (only the columns the formula needs). */
+export function usePricePool(enabled = true) {
+  return useQuery({
+    queryKey: ['pricePool'],
+    enabled,
+    staleTime: 10 * 60 * 1000,
+    queryFn: async () => {
+      const { data, error } = await supabase.from('cars').select(POOL_COLUMNS).eq('status', 'active')
+        .order('created_date', { ascending: false }).limit(500);
+      if (error) throw error;
+      return data;
+    },
+  });
+}
 
 /**
  * Extra tile data for a page of listings: the price rating (how expensive the car
@@ -11,28 +30,9 @@ export default function useCardExtras(cars = []) {
   const ids = cars.map((c) => c.id).filter(Boolean);
   const key = ids.join(',');
 
-  const { data: ratings = {} } = useQuery({
-    queryKey: ['priceRatings', key],
-    enabled: ids.length > 0,
-    staleTime: 5 * 60 * 1000,
-    queryFn: async () => {
-      const res = await base44.functions.invoke('getPriceRatings', {
-        cars: cars.slice(0, 60).map((c) => ({
-          id: c.id,
-          brand: c.brand,
-          model: c.model,
-          body_type: c.body_type,
-          car_class: c.car_class,
-          year: c.year,
-          mileage: c.mileage,
-          engine_power: c.engine_power,
-          price: c.price,
-          features_count: c.features?.length || 0
-        }))
-      });
-      return res.data?.ratings || {};
-    }
-  });
+  // Price rating is computed in the browser against all active listings (see lib/priceRating.js)
+  const { data: pool } = usePricePool(ids.length > 0);
+  const ratings = useMemo(() => (pool ? rateCars(cars, pool) : {}), [pool, key]);
 
   const { data: promotions = {} } = useQuery({
     queryKey: ['listingPromotions', key],
