@@ -10,18 +10,18 @@ import { resolveViewAsUser } from '@/lib/adminViewAs';
 import { Button } from '@/components/ui/button';
 import { Container, navLinkClass } from '@/components/ds';
 import ContextSearchBar from '@/components/search/ContextSearchBar';
-import AccountMenu, { AccountSheet, useCompactHeader } from '@/components/account/AccountMenu';
+import AccountMenu, { useCompactHeader } from '@/components/account/AccountMenu';
+import MobileMenu from '@/components/account/MobileMenu';
 import { LanguageSwitcherDropdown } from '@/components/ui/LanguageSwitcherMenu';
 
 const LOGO_URL = 'https://media.base44.com/images/public/6973f00466c3a37f3d8e7e53/fc09a8e55_culogo.png';
 
-// Main sections: in the header bar on desktop, in the account panel on phones and tablets.
+// Main sections in the header bar (desktop). Phones and tablets have them in MobileMenu.
 const NAV = [
   { labelKey: 'nav.catalog', to: createPageUrl('Catalog') },
   { labelKey: 'nav.partners', to: createPageUrl('Dealers') },
   { labelKey: 'nav.news', to: createPageUrl('AutoNews') },
 ];
-const SHEET_LINKS = [...NAV, { labelKey: 'nav.help', to: createPageUrl('Help') }];
 
 const login = () => auth.redirectToLogin();
 
@@ -111,15 +111,13 @@ export default function Header() {
           </div>
           <PostAdButton user={user} />
           {compact ? (
-            <AccountSheet
+            <MobileMenu
               user={user}
-              hasUnread={hasUnread}
               unreadMessages={unreadMessages.length}
               unreadNotifications={unreadNotifications.length}
-              onRead={markNotificationsRead}
-              onLogout={() => auth.logout()}
+              onReadNotifications={markNotificationsRead}
               onLogin={login}
-              links={SHEET_LINKS} />
+              onLogout={() => auth.logout()} />
           ) : user ? (
             <AccountMenu
               user={user}

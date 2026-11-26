@@ -6,9 +6,9 @@ import { Zap, Bookmark, Calculator } from 'lucide-react';
 import { SparkIcon, CarIcon, SuvIcon, MotorcycleIcon, TractorIcon, DamagedIcon } from '@/components/ui/QuickNavIcons';
 import { Container } from '@/components/ds';
 
-// Category shortcuts under the header (tablet and desktop). Lucide icons are drawn a bit
+// Category shortcuts under the header (tablet and desktop; phones get them in the mobile menu). Lucide icons are drawn a bit
 // smaller than the custom ones so both look the same size.
-const ITEMS = [
+export const QUICK_NAV = [
   { labelKey: 'nav.luxury', icon: SparkIcon, to: '/LuxuryCatalog', small: true },
   { labelKey: 'nav.passenger', icon: CarIcon, to: createPageUrl('Catalog') },
   { labelKey: 'nav.electric', icon: Zap, to: createPageUrl('Catalog') + '?fuelType=electric', small: true },
@@ -28,7 +28,7 @@ export default function QuickNavBar() {
   return (
     <div className="hidden w-full bg-brand-hover sm:block">
       <Container className="scrollbar-hide flex items-center gap-1 overflow-x-auto py-1 md:justify-center">
-        {ITEMS.map(({ labelKey, icon: Icon, to, onClick, small }) => {
+        {QUICK_NAV.map(({ labelKey, icon: Icon, to, onClick, small }) => {
           const content = <><Icon className={small ? 'h-4 w-4 flex-shrink-0' : 'h-5 w-5 flex-shrink-0'} />{t(labelKey)}</>;
           return to
             ? <Link key={labelKey} to={to} className={ITEM_CLASS}>{content}</Link>
