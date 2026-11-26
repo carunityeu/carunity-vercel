@@ -6,7 +6,6 @@ import { getCarDetailsPath } from '@/lib/shortIdUtils';
 import { formatNumber, formatPrice } from '@/utils/format';
 import { carIcons } from '@/lib/specIcons';
 import { isElectricFuel, isHybridFuel } from '@/lib/fuelBadge';
-import { BoltIcon, PlugIcon } from '@/components/cars/FuelIcons';
 import { cn } from '@/lib/utils';
 import { useCompare } from '@/components/compare/CompareContext';
 import PriceRatingBadge from '@/components/cars/PriceRatingBadge';
@@ -16,6 +15,9 @@ import { hasEnergyValue } from '@/components/cars/TransmissionOrEnergy';
 
 // Pills sit on the page background, one tone lighter (the tile itself has no background)
 const PILL = 'inline-flex h-8 items-center gap-1.5 rounded-lg bg-surface px-2.5 text-sm text-ink';
+// Electric and hybrid icons: the site's bolt and plug, recolored light blue (public/icons)
+const BOLT = '/icons/fuel-electric.png';
+const PLUG = '/icons/fuel-plug.png';
 const icon = (src, extra = 'invert') => <img src={src} alt="" className={cn('h-4 w-4 flex-shrink-0', extra)} />;
 // Photo buttons: shown on hover with a mouse, always visible on touch screens (design code §7)
 const ACTIONS = 'absolute right-2.5 top-2.5 z-10 flex gap-1.5 [@media(hover:hover)]:invisible [@media(hover:hover)]:group-hover:visible [@media(hover:hover)]:group-focus-within:visible';
@@ -65,8 +67,8 @@ export default function ListingTile({ car, rating }) {
       <div className="mt-3 flex flex-wrap gap-2">
         {car.fuel_type && (
           <span className={PILL}>
-            {isElectricFuel(car.fuel_type) ? <BoltIcon className="h-4 w-4 flex-shrink-0" />
-              : isHybridFuel(car.fuel_type) ? <PlugIcon className="h-4 w-4 flex-shrink-0" />
+            {isElectricFuel(car.fuel_type) ? icon(BOLT, '')
+              : isHybridFuel(car.fuel_type) ? icon(PLUG, '')
                 : icon(carIcons.fuel)}
             {t('fuel_types.' + car.fuel_type, car.fuel_type)}
           </span>
@@ -74,7 +76,7 @@ export default function ListingTile({ car, rating }) {
         {kw && <span className={PILL}>{icon(carIcons.speed)}{kw} {t('car.kw')} ({car.engine_power} {t('car.hp', 'л.с.')})</span>}
         {/* Electric cars show consumption instead of the gearbox, in the same pill as the rest */}
         {hasEnergyValue(car)
-          ? <span className={PILL}><PlugIcon className="h-4 w-4 flex-shrink-0" />{car.energy_consumption} {t('car.kwh_100km', 'kWh/100 km')}</span>
+          ? <span className={PILL}>{icon(PLUG, '')}{car.energy_consumption} {t('car.kwh_100km', 'kWh/100 km')}</span>
           : car.transmission && <span className={PILL}>{icon(carIcons.transmission)}{t('transmission_types.' + car.transmission, car.transmission)}</span>}
         {car.mileage != null && <span className={PILL}>{icon(carIcons.mileage)}{formatNumber(car.mileage)} {t('car.km')}</span>}
       </div>
