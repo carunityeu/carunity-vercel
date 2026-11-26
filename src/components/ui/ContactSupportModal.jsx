@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -12,9 +12,11 @@ const MAX_FILES = 5;
 const MAX_FILE_SIZE_MB = 25;
 const MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024;
 
-export default function ContactSupportModal({ open, onOpenChange }) {
+export default function ContactSupportModal({ open, onOpenChange, initialSubject = '' }) {
   const { t } = useTranslation();
   const [form, setForm] = useState({ name: '', email: '', subject: '', message: '' });
+  // Each opening starts with the subject it was opened for ("Report a violation" in the footer, or empty)
+  useEffect(() => { if (open) setForm((f) => ({ ...f, subject: initialSubject })); }, [open, initialSubject]);
   const [files, setFiles] = useState([]);
   const [fileError, setFileError] = useState('');
   const [isSending, setIsSending] = useState(false);

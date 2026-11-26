@@ -228,7 +228,10 @@
     "privacy": "Privātuma politika",
     "terms": "Lietošanas noteikumi",
     "cookie_policy": "Sīkdatņu politika",
-    "copyright": "© 2026 CarUnity OÜ. Visas tiesības aizsargātas."
+    "copyright": "© 2026 CarUnity OÜ. Visas tiesības aizsargātas.",
+    "tagline": "Platforma automašīnu pirkšanai un pārdošanai Baltijas valstīs.",
+    "reg_code": "Reģ. kods",
+    "report": "Ziņot par pārkāpumu"
   },
   "dashboard": {
     "title": "Mans konts",
