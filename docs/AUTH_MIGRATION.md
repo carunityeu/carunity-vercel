@@ -54,3 +54,17 @@
 - **Не переносить в main до импорта пользователей и настроек Supabase:** иначе существующие
   пользователи не смогут войти.
 - Дальше: шаги 5–6 (свои записи по id, закрытие личных колонок).
+
+## Адреса сайта в Supabase (Authentication → URL Configuration)
+
+Сайт работает на **https://carunity.eu** (старый адрес carunity-orcin.vercel.app отключён).
+
+- **Site URL:** `https://carunity.eu`
+- **Redirect URLs:**
+  - `https://carunity.eu/**`
+  - `https://www.carunity.eu/**`
+  - `https://carunity-git-*-carunityeu.vercel.app/**` — превью веток
+  - `http://localhost:5173/**` — локальная разработка
+
+В коде адрес не зашит: письма и вход через Google берут текущий домен (`window.location.origin`, `src/api/auth.js`).
+В Google Cloud (OAuth client) в «Authorized redirect URIs» остаётся только `https://phdltvlxuslsgxmoszui.supabase.co/auth/v1/callback`; в «Authorized JavaScript origins» добавить `https://carunity.eu`.
