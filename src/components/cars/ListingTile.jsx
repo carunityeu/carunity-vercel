@@ -15,9 +15,9 @@ import { hasEnergyValue } from '@/components/cars/TransmissionOrEnergy';
 
 // Pills sit on the page background, one tone lighter (the tile itself has no background)
 const PILL = 'inline-flex h-8 items-center gap-1.5 rounded-lg bg-surface px-2.5 text-sm text-ink';
-// Electric and hybrid icons: the site's bolt and plug, recolored light blue (public/icons)
-const BOLT = '/icons/fuel-electric.png';
-const PLUG = '/icons/fuel-plug.png';
+// Electric and hybrid icons: the site's bolt and plug, recolored #91BAFF (public/icons); ?v=2 skips the cached old colour
+const BOLT = '/icons/fuel-electric.png?v=2';
+const PLUG = '/icons/fuel-plug.png?v=2';
 const icon = (src, extra = 'invert') => <img src={src} alt="" className={cn('h-4 w-4 flex-shrink-0', extra)} />;
 // Photo buttons: shown on hover with a mouse, always visible on touch screens (design code §7)
 const ACTIONS = 'absolute right-2.5 top-2.5 z-10 flex gap-1.5 [@media(hover:hover)]:invisible [@media(hover:hover)]:group-hover:visible [@media(hover:hover)]:group-focus-within:visible';
