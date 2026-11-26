@@ -39,10 +39,29 @@ function CompareButton({ car }) {
 /**
  * Listing tile in the mobile.de style: photo with quick browsing (max 5), compare and save buttons,
  * name + year, trim, price with the price-rating bar, spec pills with the site's icons.
+ * `compact` (recently viewed and other short rows): photo with the same buttons, name + year and price only.
  */
-export default function ListingTile({ car, rating }) {
+export default function ListingTile({ car, rating, compact = false }) {
   const { t } = useTranslation();
   const kw = car.engine_power ? Math.round(car.engine_power * 0.7355) : null;
+
+  if (compact) {
+    return (
+      <Link to={getCarDetailsPath(car)} className="group flex h-full flex-col">
+        <PhotoScrubber car={car} alt={`${car.brand} ${car.model}`} className="aspect-[4/3] rounded-xl">
+          <div className={ACTIONS}>
+            <CompareButton car={car} />
+            <FavoriteButton carId={car.id} className="static" />
+          </div>
+        </PhotoScrubber>
+        <h3 className="mt-2.5 flex items-baseline gap-1.5 text-[15px] font-bold leading-tight text-ink" title={`${car.brand} ${car.model}`}>
+          <span className="truncate">{car.brand} {car.model}</span>
+          {car.year && <span className="flex-shrink-0 text-xs font-medium text-ink-3">{car.year}</span>}
+        </h3>
+        <span className="mt-1.5 whitespace-nowrap text-lg font-bold leading-none text-ink">{formatPrice(car.price)}</span>
+      </Link>
+    );
+  }
 
   return (
     <Link to={getCarDetailsPath(car)} className="group flex h-full flex-col">
