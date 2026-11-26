@@ -132,15 +132,23 @@ function RangeBox({ from, to, onFrom, onTo, maxLength, label }) {
   );
 }
 
-/** Two-option switch (automatic / manual): one tap picks, a second tap on the same option clears it. */
+/**
+ * Two-option switch (automatic / manual) in the field look: raised background, a full-height line
+ * in the middle, the chosen half outlined with square inner corners. A second tap clears the choice.
+ */
 function Toggle({ value, onChange, options, label }) {
   return (
-    <div role="radiogroup" aria-label={label} className="grid h-10 grid-flow-col auto-cols-fr rounded-xl border border-line p-0.5">
-      {options.map((o) => {
+    <div role="radiogroup" aria-label={label} className="relative grid h-10 grid-flow-col auto-cols-fr rounded-xl bg-raised">
+      {options.slice(1).map((o, i) => (
+        <span key={o.value} aria-hidden="true" className="pointer-events-none absolute inset-y-0 w-px bg-ink-3/40" style={{ left: `${((i + 1) * 100) / options.length}%` }} />
+      ))}
+      {options.map((o, i) => {
         const on = value === o.value;
         return (
           <button key={o.value} type="button" role="radio" aria-checked={on} onClick={() => onChange(on ? '' : o.value)}
-            className={cn('truncate rounded-[10px] px-2 text-sm', on ? 'border border-brand bg-brand/15 font-medium text-ink' : 'text-ink-3')}>
+            className={cn('relative truncate px-2 text-sm',
+              i === 0 && 'rounded-l-xl', i === options.length - 1 && 'rounded-r-xl',
+              on ? 'z-10 bg-brand/15 font-medium text-ink ring-1 ring-inset ring-brand' : 'text-ink-3')}>
             {o.label}
           </button>
         );
