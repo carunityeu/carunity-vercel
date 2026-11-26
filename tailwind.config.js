@@ -5,6 +5,14 @@ module.exports = {
   content: ["./index.html", "./src/**/*.{ts,tsx,js,jsx}"],
   theme: {
     extend: {
+      // Text one pixel larger than Tailwind's default scale (readability); spacing stays the same
+      fontSize: {
+        xs: ['0.8125rem', { lineHeight: '1.125rem' }],   // 13px (was 12)
+        sm: ['0.9375rem', { lineHeight: '1.375rem' }],   // 15px (was 14)
+        base: ['1.0625rem', { lineHeight: '1.625rem' }], // 17px (was 16)
+        lg: ['1.1875rem', { lineHeight: '1.75rem' }],    // 19px (was 18)
+        xl: ['1.3125rem', { lineHeight: '1.875rem' }],   // 21px (was 20)
+      },
       borderRadius: {
         lg: 'var(--radius)',
         md: 'calc(var(--radius) - 2px)',

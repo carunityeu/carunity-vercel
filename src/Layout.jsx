@@ -1,10 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useTranslation } from 'react-i18next';
 import Header from '@/components/ui/Header';
 import Footer from '@/components/ui/Footer';
 import QuickNavBar from '@/components/ui/QuickNavBar';
-import { Button } from '@/components/ui/button';
-import { Cookie } from 'lucide-react';
+import CookieBanner from '@/components/ui/CookieBanner';
+import ConsentGate from '@/components/auth/ConsentGate';
 import { CompareProvider } from '@/components/compare/CompareContext';
 import CompareBar from '@/components/compare/CompareBar';
 import { FavoritesProvider } from '@/components/favorites/FavoritesContext';
@@ -13,9 +12,7 @@ import PaymentReturnNotice from '@/components/PaymentReturnNotice';
 import requireAccount from '@/components/auth/requireAccount';
 
 export default function Layout({ children, currentPageName }) {
-  const [showCookieBanner, setShowCookieBanner] = useState(false);
   const [showValuation, setShowValuation] = useState(false);
-  const { t } = useTranslation();
   const headerRef = useRef(null);
   const openValuation = async () => {
     if (await requireAccount()) setShowValuation(true);
@@ -38,10 +35,6 @@ export default function Layout({ children, currentPageName }) {
 
 
   useEffect(() => {
-    const cookieConsent = localStorage.getItem('cookie_consent');
-    if (!cookieConsent) {
-      setShowCookieBanner(true);
-    }
     // Dark theme is now the default; light theme is disabled
     document.documentElement.classList.add('dark');
     localStorage.setItem('theme', 'dark');
@@ -53,16 +46,6 @@ export default function Layout({ children, currentPageName }) {
     window.addEventListener('open-valuation', handleOpenValuation);
     return () => window.removeEventListener('open-valuation', handleOpenValuation);
   }, []);
-
-  const acceptCookies = () => {
-    localStorage.setItem('cookie_consent', 'accepted');
-    setShowCookieBanner(false);
-  };
-
-  const declineCookies = () => {
-    localStorage.setItem('cookie_consent', 'declined');
-    setShowCookieBanner(false);
-  };
 
   const isMessagesPage = currentPageName === 'Messages';
   const isDealerDashboard = currentPageName === 'DealerDashboard';
@@ -103,38 +86,8 @@ export default function Layout({ children, currentPageName }) {
 
         <CarValuationModal open={showValuation} onOpenChange={setShowValuation} />
 
-        {showCookieBanner && (
-          <div className="fixed bottom-0 left-0 right-0 z-50 p-4 md:p-6">
-            <div className="max-w-4xl mx-auto bg-white dark:bg-slate-800 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-700 p-6">
-              <div className="flex flex-col md:flex-row items-start md:items-center gap-4">
-                <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center">
-                  <Cookie className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />
-                </div>
-                <div className="flex-1">
-                  <h3 className="font-semibold text-slate-900 dark:text-white mb-1">{t('cookie.title')}</h3>
-                  <p className="text-sm text-slate-600 dark:text-slate-400">
-                    {t('cookie.body')}
-                  </p>
-                </div>
-                <div className="flex gap-3 w-full md:w-auto">
-                  <Button
-                    variant="outline"
-                    onClick={declineCookies}
-                    className="flex-1 md:flex-none dark:border-slate-600 dark:text-slate-300"
-                  >
-                    {t('cookie.decline')}
-                  </Button>
-                  <Button
-                    onClick={acceptCookies}
-                    className="flex-1 md:flex-none bg-emerald-500 hover:bg-emerald-600"
-                  >
-                    {t('cookie.accept')}
-                  </Button>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
+        <CookieBanner />
+        <ConsentGate />
       </div>
      </FavoritesProvider>
     </CompareProvider>

@@ -10,6 +10,7 @@ import PromotionHeader from '@/components/listings/promote/PromotionHeader';
 import PromotionFooter from '@/components/listings/promote/PromotionFooter';
 import usePromotionWorkspace from '@/components/listings/promote/usePromotionWorkspace';
 import usePromotionCopy from '@/components/listings/promote/usePromotionCopy';
+import PaymentConsent from '@/components/PaymentConsent';
 import '@/components/listings/promote/promotionWorkspace.css';
 export { isPromotionActive } from '@/lib/promoteOptions';
 
@@ -22,12 +23,15 @@ export default function PromoteListingModal({
   const { selections, activeCar, ready } = workspace;
   const copy = usePromotionCopy();
   const [isProcessing, setIsProcessing] = useState(false);
-  useEffect(() => { if (open) setIsProcessing(false); }, [open]);
+  const [consent, setConsent] = useState(false);
+  const [consentHighlight, setConsentHighlight] = useState(false);
+  useEffect(() => { if (open) { setIsProcessing(false); setConsent(false); setConsentHighlight(false); } }, [open]);
   const selFor = id => selections[id] || EMPTY_SELECTION;
   const total = roundPrice(ready.reduce((sum, c) => sum + selectionTotal(selections[c.id]), 0));
 
   const handlePay = async () => {
     if (!ready.length || isProcessing) return;
+    if (total > 0 && !consent) { setConsentHighlight(true); toast.error(t('payment.consent_required', 'Отметьте согласие перед оплатой')); return; }
     setIsProcessing(true);
     try {
       await purchasePromotion({ cars: ready, selections, dealerId });
@@ -49,6 +53,7 @@ export default function PromoteListingModal({
             <div className="promo-editor">{activeCar ? <PromoteCarServices car={activeCar} value={selFor(activeCar.id)} onChange={workspace.change} onSkip={workspace.skip} /> : <p className="promo-empty">{copy('empty')}</p>}</div>
           </fieldset>
         </div>
+        {total > 0 && <div className="px-4 pt-3"><PaymentConsent checked={consent} onChange={(v) => { setConsent(v); setConsentHighlight(false); }} highlight={consentHighlight} className="text-xs" /></div>}
         <PromotionFooter ready={ready} selections={selections} total={total} activeCar={activeCar} same={workspace.same} onSame={workspace.toggleSame} processing={isProcessing} onPay={handlePay} />
       </DialogContent>
     </Dialog>

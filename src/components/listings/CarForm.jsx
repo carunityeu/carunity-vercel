@@ -28,6 +28,7 @@ import CityAutocomplete from '@/components/listings/CityAutocomplete';
 import { grantMainBonus } from '@/lib/referralUtils';
 import { ensureShortId } from '@/lib/shortIdUtils';
 import { generateListingConfirmationEmail, getListingEmailItemLabels, getListingEmailSubject } from '@/lib/listingConfirmationEmail';
+import { listingDescriptionPrompt } from '@/lib/listingDescriptionPrompt';
 
 const carBrands = [
   'Abarth','Acura','Aiways','Alfa Romeo','Alpine','Arcfox','Ariel','Aston Martin','Audi','BAIC',
@@ -808,7 +809,7 @@ export default function CarForm({ user, dealerId, onBack }) {
                         setIsGeneratingDesc(true);
                         try {
                           const res = await base44.integrations.Core.InvokeLLM({
-                            prompt: `Write a compelling sales description for a car listing. Language: ${localStorage.getItem('i18nextLng')||'ru'}. Car: ${form.brand} ${form.model} ${form.year}, mileage: ${form.mileage}km, fuel: ${form.fuel_type}, transmission: ${form.transmission}, engine: ${form.engine_volume}L ${form.engine_power}hp, color: ${form.color}. Write 3-5 paragraphs, honest and compelling.`,
+                            prompt: listingDescriptionPrompt(form, form.powerUnit === 'kw' ? 'kW' : 'hp'),
                           });
                           updateForm('description', typeof res === 'string' ? res : res?.description || res);
                           toast.success(t('listing.desc_generated'));

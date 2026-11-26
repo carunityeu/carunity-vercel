@@ -1,6 +1,7 @@
 // Design code building blocks (docs/DESIGN_CODE.md). Sections reworked to the design code
 // are assembled from these instead of repeating long class strings.
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { cn } from '@/lib/utils';
 
 /** Page-width wrapper: the same max width and side gutters everywhere. */
@@ -50,5 +51,16 @@ export function NativeSelect({ className, wrapperClassName, children, ...props }
       <select {...props} className={cn(fieldClass, 'cursor-pointer appearance-none truncate border-0 pr-9', className)}>{children}</select>
       <svg aria-hidden="true" viewBox="0 0 24 24" className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-3" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6" /></svg>
     </div>
+  );
+}
+
+/** "Approximate" mark next to estimates (fair price, prices by country, car tax). */
+export function ApproxTag({ className }) {
+  const { t } = useTranslation();
+  return (
+    <span title={t('common.approx_hint', 'Расчётная оценка, а не точные данные')}
+      className={cn('inline-flex h-5 items-center rounded-md bg-white/10 px-1.5 text-[11px] font-medium normal-case tracking-normal text-ink-3', className)}>
+      {t('common.approx', 'ориентировочно')}
+    </span>
   );
 }

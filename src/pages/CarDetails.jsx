@@ -27,6 +27,7 @@ import CarGallery from '@/components/car-details/CarGallery';
 import PhotoViewer from '@/components/car-details/PhotoViewer';
 import CarSummaryCard from '@/components/car-details/CarSummaryCard';
 import SellerSection from '@/components/car-details/SellerSection';
+import ReportListing from '@/components/car-details/ReportListingDialog';
 import ContactSellerDialog from '@/components/car-details/ContactSellerDialog';
 
 
@@ -309,6 +310,7 @@ export default function CarDetails() {
               onOffer={() => { if (!blockIfClosed() && !requireLogin()) setShowOfferForm(true); }}
               onFavorite={handleFavoriteToggle}
               onShare={() => setShowShareModal(true)} />
+            {!isOwner && <ReportListing car={car} user={user} />}
           </div>
 
           {!isClosed && <div className="space-y-4 md:space-y-6 lg:col-start-1 lg:row-start-2">

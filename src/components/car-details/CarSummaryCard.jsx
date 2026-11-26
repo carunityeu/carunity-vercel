@@ -9,6 +9,7 @@ import { translateLocation } from '@/utils/locationUtils';
 import useCardExtras from '@/hooks/useCardExtras';
 import DiscountTag from '@/components/cars/DiscountTag';
 import PriceRatingBadge from '@/components/cars/PriceRatingBadge';
+import { ApproxTag } from '@/components/ds';
 import TransmissionOrEnergy from '@/components/cars/TransmissionOrEnergy';
 import { isElectricAccent } from '@/lib/electricAccent';
 
@@ -47,7 +48,12 @@ export default function CarSummaryCard({ car, dealer, isOwner, isFavorite, onCon
         {hasDiscount && <span className="text-sm text-slate-500 line-through">{formatPrice(car.original_price)}</span>}
         {hasDiscount && <DiscountTag label={`-${formatPrice(car.original_price - car.price)}`} electric={isElectricAccent(car)} />}
       </div>
-      <PriceRatingBadge score={ratings[car.id]?.score} className="mt-2" />
+      {ratings[car.id]?.score && (
+        <div className="mt-2 flex items-end gap-2">
+          <PriceRatingBadge score={ratings[car.id]?.score} />
+          <ApproxTag />
+        </div>
+      )}
 
       <div className="mt-4 flex flex-wrap gap-2">
         {car.year && (

@@ -1,5 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+import { ApproxTag } from '@/components/ds';
 
 // Static translations for the motor-vehicle tax block.
 // Values are placeholders (same for every car) until real data is wired in.
@@ -18,7 +19,7 @@ export default function CarTaxBlock() {
 
   return (
     <section className="rounded-2xl border border-slate-800 bg-slate-900 p-5 md:p-6">
-      <h2 className="mb-4 text-lg font-semibold text-white md:mb-5">{labels.title}</h2>
+      <h2 className="mb-4 flex items-center gap-2 text-lg font-semibold text-white md:mb-5">{labels.title}<ApproxTag /></h2>
       <div className="grid grid-cols-2 gap-3 sm:gap-6">
         <div className="rounded-xl bg-slate-950 px-4 py-4 sm:px-5 sm:py-5">
           <p className="mb-2 text-xs font-medium text-slate-400 sm:text-sm">{labels.registration}</p>

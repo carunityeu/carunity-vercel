@@ -58,6 +58,14 @@ export const auth = {
     window.location.href = `/login?returnTo=${encodeURIComponent(localPath(returnTo))}`;
   },
 
+  /** Deletes the signed-in account (supabase/migrations/…_delete_account.sql), then signs out. */
+  async deleteAccount() {
+    const { error } = await supabase.rpc('delete_my_account');
+    if (error) throw fail(error);
+    await supabase.auth.signOut();
+    window.location.href = '/?account_deleted=1';
+  },
+
   async logout(redirectTo) {
     await supabase.auth.signOut();
     window.location.href = redirectTo ? localPath(redirectTo) : '/';

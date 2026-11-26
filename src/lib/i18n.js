@@ -33,6 +33,10 @@ import { consignmentTranslations } from '@/lib/consignmentTranslations';
 import { viewAsTranslations } from '@/lib/viewAsTranslations';
 import { authTranslations } from '@/components/auth/authTranslations';
 import { paymentTranslations } from '@/lib/paymentTranslations';
+import { UI_TEXTS, buildResources } from '@/lib/uiTranslations';
+import { FEATURE_TEXTS } from '@/lib/featureTranslations';
+
+const uiResources = buildResources(UI_TEXTS, FEATURE_TEXTS);
 
 // Личный кабинет: боковое меню, обзор, настройки аккаунта
 const accountResources = {
@@ -470,6 +474,7 @@ for (const lng of allLangs) {
       viewAsTranslations[lng] || {},
       paymentTranslations[lng] || {},
       authTranslations[lng] || {},
+      uiResources[lng] || {},
       { authProvider: {
         en: { continue: 'Continue with {{provider}}', error: 'Unable to sign in with {{provider}}' },
         ru: { continue: 'Продолжить с {{provider}}', error: 'Не удалось войти через {{provider}}' },
@@ -481,8 +486,27 @@ for (const lng of allLangs) {
   };
 }
 
+// First visit (nothing saved yet): a browser language the site has wins; otherwise the country
+// is guessed from the time zone (Tallinn → et, Riga → lv, Vilnius → lt); otherwise English.
+const BALTIC_ZONES = { 'Europe/Tallinn': 'et', 'Europe/Riga': 'lv', 'Europe/Vilnius': 'lt' };
+const detector = new LanguageDetector();
+detector.addDetector({
+  name: 'siteCountry',
+  lookup() {
+    const langs = (navigator.languages?.length ? navigator.languages : [navigator.language]).filter(Boolean)
+      .map((l) => l.slice(0, 2).toLowerCase());
+    const native = langs.find((l) => ['ru', 'et', 'lv', 'lt'].includes(l));
+    if (native) return native;
+    try {
+      const zone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+      if (BALTIC_ZONES[zone]) return BALTIC_ZONES[zone];
+    } catch { /* no Intl time zone */ }
+    return langs.includes('en') ? 'en' : undefined;
+  },
+});
+
 i18n
-  .use(LanguageDetector)
+  .use(detector)
   .use(initReactI18next)
   .init({
     fallbackLng: 'ru',
@@ -492,7 +516,7 @@ i18n
     defaultNS: 'translation',
     resources: mergedResources,
     detection: {
-      order: ['localStorage', 'navigator'],
+      order: ['localStorage', 'siteCountry', 'navigator'],
       cacheUserLanguage: true,
     },
     interpolation: {

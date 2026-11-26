@@ -14,7 +14,7 @@ import { toast } from "@/components/ui/use-toast";
 import { safeReturnTo } from "@/lib/authReturnTo";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Link } from "react-router-dom";
+import { ConsentText, CONSENT_PENDING_KEY } from "@/components/auth/ConsentGate";
 import { COUNTRIES } from "@/lib/countries";
 import { translateCountry } from "@/utils/locationUtils";
 import { LANGUAGES } from "@/components/ui/LanguageSwitcherMenu";
@@ -24,8 +24,8 @@ export default function Register() {
   const [fullName, setFullName] = useState("");
   const [country, setCountry] = useState("");
   const [preferredLanguage, setPreferredLanguage] = useState(i18n.language?.slice(0, 2) || "ru");
-  const [agreeTerms, setAgreeTerms] = useState(false);
-  const [agreePrivacy, setAgreePrivacy] = useState(false);
+  // One box: 18+, Terms of Use and Privacy Policy (needed for e-mail and for Google sign-up)
+  const [agreed, setAgreed] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -57,7 +57,7 @@ export default function Register() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
-    if (!fullName.trim() || !country || !agreeTerms || !agreePrivacy) {
+    if (!fullName.trim() || !country || !agreed) {
       setError(t('authVisual.consentRequired'));
       return;
     }
@@ -107,6 +107,13 @@ export default function Register() {
 
   const handleProvider = async (provider) => {
     setError("");
+    if (!agreed) {
+      setError(t('authVisual.consentFirst', 'Отметьте согласие внизу формы: возраст 18+ и условия.'));
+      document.getElementById('consent-all')?.scrollIntoView({ block: 'center', behavior: 'smooth' });
+      return;
+    }
+    // The account is created on return from Google; the consent is saved then (ConsentGate)
+    try { localStorage.setItem(CONSENT_PENDING_KEY, new Date().toISOString()); } catch { /* storage blocked */ }
     setLoading(true);
     try { await auth.loginWithProvider(provider, safeReturnTo()); }
     catch (err) { setError(err.message || t('authProvider.error', { provider })); }
@@ -262,28 +269,8 @@ export default function Register() {
         </div>
         <div className="space-y-2.5 pt-1">
           <div className="flex items-start gap-2">
-            <Checkbox
-              id="consent-terms"
-              checked={agreeTerms}
-              onCheckedChange={(value) => setAgreeTerms(value === true)}
-              className="mt-0.5 shrink-0"
-            />
-            <p className="text-[11px] sm:text-xs leading-relaxed text-muted-foreground">
-              <label htmlFor="consent-terms" className="cursor-pointer">{t('authVisual.consentTerms')}</label>{' '}
-              <Link to="/Terms" className="text-foreground underline underline-offset-2">{t('authVisual.termsLink')}</Link>
-            </p>
-          </div>
-          <div className="flex items-start gap-2">
-            <Checkbox
-              id="consent-privacy"
-              checked={agreePrivacy}
-              onCheckedChange={(value) => setAgreePrivacy(value === true)}
-              className="mt-0.5 shrink-0"
-            />
-            <p className="text-[11px] sm:text-xs leading-relaxed text-muted-foreground">
-              <label htmlFor="consent-privacy" className="cursor-pointer">{t('authVisual.consentPrivacy')}</label>{' '}
-              <Link to="/PrivacyPolicy" className="text-foreground underline underline-offset-2">{t('authVisual.privacyLink')}</Link>
-            </p>
+            <Checkbox id="consent-all" checked={agreed} onCheckedChange={(value) => setAgreed(value === true)} className="mt-0.5 shrink-0" />
+            <label htmlFor="consent-all" className="cursor-pointer text-[11px] leading-relaxed text-muted-foreground sm:text-xs"><ConsentText /></label>
           </div>
         </div>
         <Button type="submit" className="w-full h-10 font-medium" disabled={loading}>

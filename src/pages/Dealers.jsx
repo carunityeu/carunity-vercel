@@ -23,10 +23,12 @@ import {
   Loader2,
   SlidersHorizontal,
   ShieldCheck,
+  Check,
   X } from
 'lucide-react';
 import { translateCity, translateCountry } from '@/utils/locationUtils';
 import ListPagination from '@/components/ui/ListPagination';
+import { Container } from '@/components/ds';
 import useDealerDirectory from '@/hooks/useDealerDirectory';
 
 export default function Dealers() {
@@ -305,23 +307,24 @@ export default function Dealers() {
         }
       </div>
 
-      {/* CTA */}
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 pb-12">
-        <div className="bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-2xl p-6 sm:p-8 text-center text-white">
-          <h2 className="text-xl font-bold mb-2">
-            {t('dealers.cta_title')}
-          </h2>
-          <p className="text-emerald-50 mb-6 max-w-xl mx-auto">
-            {t('dealers.cta_desc')}
-          </p>
-          <Link to={createPageUrl('DealerRegister')}>
-            <Button className="bg-white text-emerald-600 hover:bg-emerald-50 gap-2">
-              <Building2 className="w-4 h-4" />
-              {t('dealers.cta_btn')}
-            </Button>
-          </Link>
+      {/* For dealership owners: a concrete offer and two clear actions */}
+      <Container as="section" className="pb-12">
+        <div className="flex flex-col gap-6 rounded-2xl border border-line bg-surface p-6 sm:p-8 lg:flex-row lg:items-center lg:justify-between">
+          <div className="max-w-2xl">
+            <h2 className="text-xl font-bold text-ink sm:text-2xl">{t('dealers.owner_title', 'Вы владелец автосалона?')}</h2>
+            <p className="mt-2 text-sm leading-relaxed text-ink-2 sm:text-base">{t('dealers.owner_desc', 'Разместите свой склад на CarUnity и получайте обращения от покупателей из Эстонии, Латвии и Литвы.')}</p>
+            <ul className="mt-4 grid gap-2 text-sm text-ink-2 sm:grid-cols-3">
+              {[t('dealers.owner_point1', 'Страница салона с логотипом'), t('dealers.owner_point2', 'Все объявления в одном кабинете'), t('dealers.owner_point3', 'Заявки и статистика просмотров')].map((p) => (
+                <li key={p} className="flex items-start gap-2"><Check className="mt-0.5 h-4 w-4 flex-shrink-0 text-brand-text" />{p}</li>
+              ))}
+            </ul>
+          </div>
+          <div className="flex flex-shrink-0 flex-col gap-2 sm:flex-row">
+            <Button asChild size="lg"><Link to={createPageUrl('DealerRegister')}><Building2 />{t('dealers.owner_cta', 'Подключить автосалон')}</Link></Button>
+            <Button asChild size="lg" variant="secondary"><Link to={createPageUrl('DealerPricing')}>{t('dealers.owner_pricing', 'Тарифы')}</Link></Button>
+          </div>
         </div>
-      </div>
+      </Container>
     </div>);
 
 }

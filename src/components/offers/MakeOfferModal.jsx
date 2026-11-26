@@ -66,7 +66,7 @@ export default function MakeOfferModal({
 
   const handleSubmit = async () => {
     if (!offerAmount || parseInt(offerAmount) <= 0) {
-      toast.error('Введите сумму предложения');
+      toast.error(t('offer.enter_amount', 'Введите сумму предложения'));
       return;
     }
 
@@ -88,7 +88,7 @@ export default function MakeOfferModal({
     const sellerEmail = car.created_by || dealer?.owner_email || car.seller_id;
 
     if (!sellerEmail) {
-      toast.error('Не удалось определить продавца');
+      toast.error(t('offer.no_seller', 'Не удалось определить продавца'));
       setIsSubmitting(false);
       setStep('input');
       return;
@@ -136,17 +136,17 @@ export default function MakeOfferModal({
               <Clock className="w-12 h-12 text-slate-400 animate-pulse" />
             </div>
             <h3 className="text-xl font-semibold text-slate-900 dark:text-white mb-2">
-              Your offer is being processed
+              {t('offer.sent_title', 'Предложение отправлено')}
             </h3>
             <p className="text-slate-500 dark:text-slate-400 text-sm max-w-xs mx-auto">
-              Please check notifications periodically to see if your offer was accepted or rejected by the seller
+              {t('offer.sent_text', 'Продавец получит его в сообщениях. Ответ придёт в уведомления и в чат.')}
             </p>
             <Button 
               onClick={handleClose}
               variant="outline" 
               className="mt-8"
             >
-              Back to Home
+              {t('offer.close', 'Закрыть')}
             </Button>
           </motion.div>
         );
@@ -162,10 +162,10 @@ export default function MakeOfferModal({
               <Check className="w-12 h-12 text-emerald-500" />
             </div>
             <h3 className="text-xl font-semibold text-slate-900 dark:text-white mb-2">
-              Congrats! Your offer has been accepted!
+              {t('offer.accepted_title', 'Продавец принял ваше предложение')}
             </h3>
             <p className="text-slate-500 dark:text-slate-400 text-sm">
-              Your offer has been accepted by the seller for
+              {t('offer.accepted_text', 'Согласованная цена')}
             </p>
             <p className="text-2xl font-bold text-emerald-600 mt-2">
               €{formatPrice(offerAmount)}
@@ -177,7 +177,7 @@ export default function MakeOfferModal({
               }}
               className="mt-8 bg-emerald-500 hover:bg-emerald-600"
             >
-              Proceed to Checkout
+              {t('offer.continue', 'Продолжить')}
             </Button>
           </motion.div>
         );
@@ -197,10 +197,10 @@ export default function MakeOfferModal({
               />
             </div>
             <h3 className="text-xl font-semibold text-slate-900 dark:text-white mb-2">
-              We're sorry, your offer has been rejected
+              {t('offer.rejected_title', 'Продавец отклонил предложение')}
             </h3>
             <p className="text-slate-500 dark:text-slate-400 text-sm max-w-xs mx-auto">
-              Don't worry, you can always be able to make another offer. We'll leave a notification so that you know when new offers available for your offer
+              {t('offer.rejected_text', 'Вы можете предложить другую цену или написать продавцу.')}
             </p>
             <Button 
               onClick={() => {
@@ -209,7 +209,7 @@ export default function MakeOfferModal({
               }}
               className="mt-8 bg-slate-900 dark:bg-white dark:text-slate-900 hover:bg-slate-800"
             >
-              Make an Offer Again
+              {t('offer.again', 'Предложить другую цену')}
             </Button>
           </motion.div>
         );
@@ -218,21 +218,21 @@ export default function MakeOfferModal({
         return (
           <>
             <DialogHeader className="pb-3 border-b dark:border-slate-700">
-              <DialogTitle className="text-center">Предложить цену</DialogTitle>
+              <DialogTitle className="text-center">{t('offer.title', 'Предложить цену')}</DialogTitle>
               <p className="text-sm text-slate-500 dark:text-slate-400 text-center mt-1">
-                Цена продавца: <strong>€{formatPrice(car?.price || 0)}</strong>
+                {t('offer.seller_price', 'Цена продавца')}: <strong>€{formatPrice(car?.price || 0)}</strong>
               </p>
             </DialogHeader>
 
             <div className="py-4 space-y-4">
               {/* Input */}
               <div>
-                <label className="text-sm text-slate-500 mb-1 block">Ваше предложение (€)</label>
+                <label className="text-sm text-slate-500 mb-1 block">{t('offer.your_offer', 'Ваше предложение')} (€)</label>
                 <input
                   type="number"
                   value={offerAmount}
                   onChange={e => setOfferAmount(e.target.value)}
-                  placeholder="Введите сумму"
+                  placeholder={t('offer.amount_placeholder', 'Введите сумму')}
                   className="w-full h-12 px-4 text-xl font-bold border border-slate-200 dark:border-slate-700 rounded-xl bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white outline-none focus:border-emerald-500"
                 />
               </div>
@@ -259,7 +259,7 @@ export default function MakeOfferModal({
                 disabled={!offerAmount || isSubmitting}
                 className="w-full h-11 bg-emerald-500 hover:bg-emerald-600 text-white"
               >
-                {isSubmitting ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Отправить предложение'}
+                {isSubmitting ? <Loader2 className="w-5 h-5 animate-spin" /> : t('offer.send', 'Отправить предложение')}
               </Button>
             </div>
           </>

@@ -63,6 +63,11 @@ export const BOOST_OPTIONS = [
 ];
 
 export const BASE_LISTING_PRICE = 4.99;
+// Listing periods the seller can pay for (ids match base44/shared/paymentCatalog.ts)
+export const LISTING_PLANS = [
+  { id: 'listing_30', days: 30, price: 4.99 },
+  { id: 'listing_90', days: 90, price: 9.99 },
+];
 export const TOP_SPOT_PRICE = 59.99;
 
 export const VEHICLE_TYPES = [

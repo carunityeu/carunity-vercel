@@ -10,5 +10,7 @@ export const base44 = createClient({
   functionsVersion,
   serverUrl: '',
   requiresAuth: false,
-  appBaseUrl
+  appBaseUrl,
+  // No Base44 usage analytics: trackers only with cookie consent, and the site no longer reports to Base44
+  analytics: { enabled: false },
 });

@@ -98,6 +98,7 @@ export default function MetaAdsTab({ car, sellerEmail, dealerId, onClose, onSucc
         <p className="text-xs text-slate-400 leading-relaxed">
           {t('meta_ads.section_desc', 'Мы настроим и запустим рекламу вашего автомобиля в Facebook и Instagram. Рекламу увидят тысячи потенциальных покупателей в Балтии.')}
         </p>
+        <p className="mt-1 text-[11px] text-slate-500">{t('meta_ads.forecast_note', 'Охват — прогноз: фактическое число показов зависит от аукциона Meta.')}</p>
       </div>
 
       {/* Package cards */}

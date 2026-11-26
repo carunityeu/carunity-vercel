@@ -29,6 +29,43 @@ function Section({ title, children }) {
   );
 }
 
+/** Danger zone: deleting the account needs a typed confirmation. */
+function DeleteAccount() {
+  const { t } = useTranslation();
+  const [open, setOpen] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState('');
+  const run = async () => {
+    setBusy(true); setError('');
+    try { await auth.deleteAccount(); }
+    catch (e) {
+      setError(/dealer_owner/.test(e.message) ? t('account.delete_dealer', 'Аккаунт владельца автосалона удаляется через поддержку: напишите нам на info@carunity.eu.') : (e.message || t('account.delete_failed', 'Не удалось удалить аккаунт')));
+      setBusy(false);
+    }
+  };
+  return (
+    <Section title={t('account.delete_title', 'Удаление аккаунта')}>
+      <p className="mt-1 text-sm text-slate-400">{t('account.delete_desc', 'Аккаунт, ваши объявления, избранное и сохранённые поиски будут удалены без возможности восстановления.')}</p>
+      {!open ? (
+        <Button variant="outline" className="mt-3 h-9 border-red-500/40 bg-transparent text-red-300 hover:bg-red-500/10" onClick={() => setOpen(true)}>
+          {t('account.delete_btn', 'Удалить аккаунт')}
+        </Button>
+      ) : (
+        <div className="mt-3 space-y-3 rounded-lg border border-red-500/30 bg-red-500/10 p-3">
+          <p className="text-sm text-red-200">{t('account.delete_confirm', 'Точно удалить аккаунт? Это действие нельзя отменить.')}</p>
+          {error && <p className="text-sm text-red-300">{error}</p>}
+          <div className="flex gap-2">
+            <Button variant="outline" className="h-9 border-[#3a3b45] bg-transparent text-slate-200" disabled={busy} onClick={() => { setOpen(false); setError(''); }}>{t('dashboard.cancel', 'Отмена')}</Button>
+            <Button className="h-9 bg-red-600 text-white hover:bg-red-700" disabled={busy} onClick={run}>
+              {busy && <Loader2 className="mr-1.5 h-4 w-4 animate-spin" />}{t('account.delete_final', 'Удалить навсегда')}
+            </Button>
+          </div>
+        </div>
+      )}
+    </Section>
+  );
+}
+
 function Row({ label, value, action, children }) {
   return (
     <div className="py-3 border-b border-[#292a32] last:border-0 last:pb-0">
@@ -340,6 +377,8 @@ export default function AccountSettingsPanel({ user, onUserUpdate, locale }) {
           </div>
         )}
       </Section>
+
+      <DeleteAccount />
     </div>
   );
 }

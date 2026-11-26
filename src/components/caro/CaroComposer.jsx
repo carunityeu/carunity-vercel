@@ -15,6 +15,7 @@ export default function CaroComposer({ text, setText, send, busy, loading, error
         {busy || loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <SendHorizontal className="w-5 h-5" />}
       </button>
     </form>
+    <p className="caro-disclaimer mt-2">{t('caro.ai_note', 'Это ИИ-ассистент, ответы могут содержать ошибки.')}</p>
     {!loading && !authenticated && <p className="caro-disclaimer mt-2">{t('caro.login')}</p>}
     <div className="caro-links"><Link to="/Terms">{t('caro.terms')}</Link><Link to="/PrivacyPolicy">{t('caro.privacy')}</Link></div>
   </div>;

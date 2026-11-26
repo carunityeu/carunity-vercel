@@ -28,7 +28,7 @@ import ListingContactSection from '@/components/listings/create/ListingContactSe
 import ListingColorInterior from '@/components/listings/create/ListingColorInterior';
 import ListingEquipment from '@/components/listings/create/ListingEquipment';
 import { TextField } from '@/components/listings/create/fields';
-import { BASE_LISTING_PRICE, TOP_SPOT_PRICE } from '@/components/listings/create/constants';
+import { LISTING_PLANS, TOP_SPOT_PRICE } from '@/components/listings/create/constants';
 import useListingDraft from '@/components/listings/create/useListingDraft';
 
 export default function CreateListing() {
@@ -41,6 +41,9 @@ export default function CreateListing() {
   const [descTranslations, setDescTranslations] = useState({});
   const [selectedBoost, setSelectedBoost] = useState(null);
   const [addTopSpot, setAddTopSpot] = useState(false);
+  const [listingPlan, setListingPlan] = useState(LISTING_PLANS[0]);
+  const [payConsent, setPayConsent] = useState(false);
+  const [consentHighlight, setConsentHighlight] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [published, setPublished] = useState(false);
   const [createdCarId, setCreatedCarId] = useState(null);
@@ -87,7 +90,7 @@ export default function CreateListing() {
   const step2Done = !!(step1Done && form.body_type && form.fuel_type && form.transmission);
   const tile1Valid = step1Done && step2Done;
   const step5Done = !!(form.images.length > 0 && form.description?.trim());
-  const planTotal = ((form.is_damaged ? 0 : BASE_LISTING_PRICE) + (addTopSpot ? TOP_SPOT_PRICE : 0) + (selectedBoost?.price || 0)).toFixed(2);
+  const planTotal = ((form.is_damaged ? 0 : listingPlan.price) + (addTopSpot ? TOP_SPOT_PRICE : 0) + (selectedBoost?.price || 0)).toFixed(2);
 
   const completed = {
     vehicle: !!savedSections.vehicle && tile1Valid,
@@ -95,7 +98,7 @@ export default function CreateListing() {
     details: !!savedSections.details && step5Done && Number(form.price) > 0,
     contact: !!savedSections.contact && !!(form.country.trim() && form.location.trim() && (dealerId || form.seller_phone.trim())),
   };
-  const values = { form, descTranslations, vehicleType, vehicleChosen, activeSection, fillMode, selectedBoost, addTopSpot, savedSections };
+  const values = { form, descTranslations, vehicleType, vehicleChosen, activeSection, fillMode, selectedBoost, addTopSpot, savedSections, listingPlanId: listingPlan.id };
   const draft = useListingDraft({ user, dealerId, values, published, t, restore: saved => {
     if (saved.form) setForm(prev => ({ ...prev, ...saved.form }));
     setDescTranslations(saved.descTranslations || {});
@@ -103,6 +106,7 @@ export default function CreateListing() {
     setFillMode(saved.fillMode || 'manual');
     setSelectedBoost(saved.selectedBoost || null);
     setAddTopSpot(!!saved.addTopSpot);
+    setListingPlan(LISTING_PLANS.find((p) => p.id === saved.listingPlanId) || LISTING_PLANS[0]);
     setSavedSections(saved.savedSections || {});
     setVehicleChosen(saved.vehicleChosen ?? !!(saved.form?.brand || saved.savedSections?.vehicle));
     setActiveSection(LISTING_SECTIONS.includes(saved.activeSection) ? saved.activeSection : 'vehicle');
@@ -112,14 +116,24 @@ export default function CreateListing() {
     setActiveSection(section);
     window.scrollTo({ top: 0, behavior: 'instant' });
   };
+  // What is still empty in a section, by name, so the seller sees what to fill instead of a generic error
+  const missingIn = (section) => {
+    const need = {
+      vehicle: [[form.brand, t('listing.brand', 'Марка')], [form.model, t('listing.model', 'Модель')], [form.year, t('listing.year', 'Год выпуска')],
+        [form.mileage, t('listing.mileage', 'Пробег')], [form.body_type, t('listing.body_type', 'Тип кузова')],
+        [form.fuel_type, t('listing.fuel_type', 'Тип топлива')], [form.transmission, t('listing.transmission', 'Коробка передач')]],
+      equipment: [],
+      details: [[form.images.length > 0, t('listing.photos_short', 'Фото')], [form.description?.trim(), t('listing.description', 'Описание')],
+        [Number(form.price) > 0, t('listing.price', 'Цена')]],
+      contact: [[form.country.trim(), t('listing.country', 'Страна')], [form.location.trim(), t('listing.city', 'Город')],
+        [dealerId || form.seller_phone.trim(), t('listing.phone', 'Телефон')]],
+    }[section] || [];
+    return need.filter(([ok]) => !ok).map(([, label]) => label);
+  };
+  const showMissing = (fields) => toast.error(t('listing.fill_fields', 'Заполните: {{fields}}', { fields: fields.join(', ') }));
   const saveSection = () => {
-    const valid = {
-      vehicle: tile1Valid,
-      equipment: true,
-      details: step5Done && Number(form.price) > 0,
-      contact: !!(form.country.trim() && form.location.trim() && (dealerId || form.seller_phone.trim())),
-    };
-    if (!valid[activeSection]) { toast.error(t('listing.fix_errors')); return; }
+    const missing = missingIn(activeSection);
+    if (missing.length) { showMissing(missing); return; }
     if (!draft.save()) return;
     setSavedSections(prev => ({ ...prev, [activeSection]: true }));
     toast.success(t('listing.cr_draft_saved'));
@@ -132,9 +146,20 @@ export default function CreateListing() {
   };
 
   const handleSubmit = async () => {
-    if (!Object.values(completed).every(Boolean)) { toast.error(t('listing.fix_errors')); return; }
-    setIsSubmitting(true);
+    const firstOpen = LISTING_SECTIONS.find((sec) => sec in completed && !completed[sec]);
+    if (firstOpen) {
+      const missing = missingIn(firstOpen);
+      if (missing.length) showMissing(missing); else toast.error(t('listing.save_section_first', 'Сохраните раздел «{{section}}»', { section: t('listing.wizard_' + firstOpen) }));
+      openSection(firstOpen);
+      return;
+    }
     const total = Number(planTotal) || 0;
+    if (total > 0 && !payConsent) {
+      setConsentHighlight(true);
+      toast.error(t('payment.consent_required', 'Отметьте согласие перед оплатой'));
+      return;
+    }
+    setIsSubmitting(true);
     try {
       const features = [...form.features];
       if (form.auto_start_stop && !features.includes('auto_start_stop')) features.push('auto_start_stop');
@@ -203,7 +228,7 @@ export default function CreateListing() {
       if (total > 0) {
         const base = { listingId: carId, listingType: 'car', listingTitle: carData.title };
         const items = [];
-        if (!form.is_damaged) items.push({ id: 'listing_30', ...base });
+        if (!form.is_damaged) items.push({ id: listingPlan.id, ...base });
         if (addTopSpot) items.push({ id: 'top_spot_7', ...base });
         if (selectedBoost) {
           const boostId = { 1: 'boost_1', 3: 'boost_3', 7: 'boost_7', 14: 'boost_14', 30: 'boost_30' }[selectedBoost.days];
@@ -262,7 +287,8 @@ export default function CreateListing() {
           </StepCard>}
           {activeSection === 'contact' && <StepCard title={t('listing.wizard_contact')}><ListingContactSection form={form} updateForm={updateForm} dealerId={dealerId} t={t} /></StepCard>}
           {activeSection === 'plan' && <>
-            <StepCard title={t('listing.cr_plan')}><StepPlan selectedBoost={selectedBoost} setSelectedBoost={setSelectedBoost} addTopSpot={addTopSpot} setAddTopSpot={setAddTopSpot} isDamaged={form.is_damaged} onDamagedChange={value => updateForm('is_damaged', value)} t={t} /></StepCard>
+            <StepCard title={t('listing.cr_plan')}><StepPlan selectedBoost={selectedBoost} setSelectedBoost={setSelectedBoost} addTopSpot={addTopSpot} setAddTopSpot={setAddTopSpot} isDamaged={form.is_damaged} onDamagedChange={value => updateForm('is_damaged', value)}
+              listingPlan={listingPlan} setListingPlan={setListingPlan} total={Number(planTotal)} consent={payConsent} setConsent={(v) => { setPayConsent(v); setConsentHighlight(false); }} consentHighlight={consentHighlight} t={t} /></StepCard>
             <ListingNotice action={<Link to="/FAQ" target="_blank" rel="noopener noreferrer" onClick={saveDraft}>{t('listing.cr_open_faq')}</Link>}>{t('listing.cr_faq_hint')}</ListingNotice>
           </>}
           <div className="lc-actions">

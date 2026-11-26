@@ -5,6 +5,7 @@ import { Building2, Mail, MapPin } from 'lucide-react';
 import { createPageUrl } from '@/utils';
 import { Container } from '@/components/ds';
 import ContactSupportModal from '@/components/ui/ContactSupportModal';
+import { openCookieSettings } from '@/lib/cookieConsent';
 
 const COMPANY = 'CarUnity OÜ';
 const REG_CODE = '17302573';
@@ -96,6 +97,7 @@ export default function Footer() {
             <Link to={createPageUrl('Terms')} className="text-ink-2">{t('footer.terms')}</Link>
             <Link to={createPageUrl('PrivacyPolicy')} className="text-ink-2">{t('footer.privacy')}</Link>
             <Link to={createPageUrl('CookiePolicy')} className="text-ink-2">{t('footer.cookie_policy')}</Link>
+            <button type="button" onClick={openCookieSettings} className="text-ink-2">{t('footer.cookie_settings', 'Настройки cookie')}</button>
             <button type="button" onClick={() => setContact(t('footer.report', 'Сообщить о нарушении'))} className="text-brand-text">{t('footer.report', 'Сообщить о нарушении')}</button>
           </nav>
         </div>

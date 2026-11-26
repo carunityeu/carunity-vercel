@@ -4,6 +4,7 @@ import { Plus, X, Loader2, ImageIcon, Sparkles, Languages } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { toast } from 'sonner';
 import ImageCropModal from '@/components/listings/ImageCropModal';
+import { listingDescriptionPrompt } from '@/lib/listingDescriptionPrompt';
 
 const LANGS = ['ru', 'en', 'et', 'lv', 'lt'];
 
@@ -31,7 +32,7 @@ export default function StepPhotosDescription({ form, updateForm, setDescTransla
     setIsGenerating(true);
     try {
       const res = await base44.integrations.Core.InvokeLLM({
-        prompt: `Write a compelling sales description for a car listing. Language: ${localStorage.getItem('i18nextLng') || 'ru'}. Car: ${form.brand} ${form.model} ${form.year}, mileage: ${form.mileage}km, fuel: ${form.fuel_type}, transmission: ${form.transmission}, engine: ${form.engine_volume}L ${form.engine_power}, color: ${form.color}. Write 3-5 paragraphs, honest and compelling.`,
+        prompt: listingDescriptionPrompt(form, form.powerUnit === 'kw' ? 'kW' : 'hp'),
       });
       updateForm('description', typeof res === 'string' ? res : res?.description || res);
       toast.success(t('listing.desc_generated'));

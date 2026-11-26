@@ -5,6 +5,7 @@ import { Info } from 'lucide-react';
 import CountryPriceScale from '@/components/cars/CountryPriceScale';
 import countryPriceLabels from '@/lib/countryPriceLabels';
 import '@/components/cars/countryPricing.css';
+import { ApproxTag } from '@/components/ds';
 
 const COUNTRIES = [
   { code: 'EE', key: 'countries.ee', fallback: 'Эстония', bar: 'bg-indigo-700' },
@@ -44,7 +45,7 @@ export default function CrossBorderPricing({ car }) {
   const format = value => `${new Intl.NumberFormat(i18n.language, { maximumFractionDigits: 0 }).format(value)} €`;
   return (
     <div className="country-pricing">
-      <CollapsibleCard title={<>{t('pricing.cross_border_title', 'Цены по странам')}<span className="country-market">{l[0]}</span></>}>
+      <CollapsibleCard title={<>{t('pricing.cross_border_title', 'Цены по странам')}<span className="country-market">{l[0]}</span><ApproxTag className="ml-2 align-middle" /></>}>
         <div className="country-verdict">
           <div className="country-score"><svg viewBox="0 0 60 60" aria-hidden="true"><circle cx="30" cy="30" r="25" strokeDasharray={`${score * 1.57} 157`} /></svg>{score}</div>
           <div><h3>{l[difference > 3 ? 3 : difference < -3 ? 2 : 1]}</h3><p>{l[4]} — <b>{format(average)}</b>. {l[difference >= 0 ? 5 : 6]} {l[7]} <b>{Math.abs(difference).toLocaleString(i18n.language, { maximumFractionDigits: 1 })}%</b>.</p></div>

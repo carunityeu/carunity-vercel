@@ -5,6 +5,7 @@ export const CURRENCY = 'eur';
 
 export const CATALOG = {
   listing_30: { name: 'CarUnity listing (30 days)', amount: 499, kind: 'listing', days: 30 },
+  listing_90: { name: 'CarUnity listing (90 days)', amount: 999, kind: 'listing', days: 90 },
   boost_1: { name: 'Boost (1 day)', amount: 199, kind: 'boost', days: 1 },
   boost_3: { name: 'Boost (3 days)', amount: 499, kind: 'boost', days: 3 },
   boost_7: { name: 'Boost (7 days)', amount: 999, kind: 'boost', days: 7 },

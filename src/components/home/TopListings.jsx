@@ -2,7 +2,8 @@ import React, { useRef, useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useQuery } from '@tanstack/react-query';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Info } from 'lucide-react';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { entities } from '@/api/entities';
 import { createPageUrl } from '@/utils';
 import { cn } from '@/lib/utils';
@@ -30,7 +31,7 @@ const ARROW = 'absolute z-20 hidden h-10 w-10 -translate-y-1/2 items-center just
 export default function TopListings() {
   const { t } = useTranslation();
   const { data: cars = [], isLoading } = useTopCars();
-  const { ratings } = useCardExtras(cars);
+  const { ratings, promotions } = useCardExtras(cars);
   const rowRef = useRef(null);
   const [edges, setEdges] = useState({ start: true, end: false });
   const [photoMid, setPhotoMid] = useState(0); // arrows sit at the vertical middle of the photos
@@ -59,7 +60,19 @@ export default function TopListings() {
   return (
     <Container as="section" className="py-6 sm:py-8" aria-labelledby="top-listings-title">
       <div className="mb-4 flex items-baseline justify-between gap-3">
-        <h2 id="top-listings-title" className="text-xl font-bold text-ink sm:text-2xl">{t('home.top_listings', 'Топ объявления')}</h2>
+        <div className="flex items-center gap-2">
+          <h2 id="top-listings-title" className="text-xl font-bold text-ink sm:text-2xl">{t('home.top_listings', 'Топ объявления')}</h2>
+          <Popover>
+            <PopoverTrigger asChild>
+              <button type="button" aria-label={t('home.top_info_label', 'Что это за объявления')} className="flex h-7 w-7 items-center justify-center rounded-full text-ink-3">
+                <Info className="h-4 w-4" />
+              </button>
+            </PopoverTrigger>
+            <PopoverContent align="start" className="w-72 border-line bg-surface text-sm leading-relaxed text-ink-2">
+              {t('home.top_info', 'Платные места: продавцы оплачивают показ здесь. Объявления меняются со временем.')}
+            </PopoverContent>
+          </Popover>
+        </div>
         <Link to={createPageUrl('Catalog')} className="flex-shrink-0 text-sm font-medium text-brand-text">{t('home.see_all', 'Все')}</Link>
       </div>
 
@@ -71,7 +84,7 @@ export default function TopListings() {
           className="scrollbar-hide -mx-4 flex snap-x snap-mandatory gap-4 overflow-x-auto scroll-px-4 px-4 sm:-mx-6 sm:scroll-px-6 sm:px-6 lg:mx-0 lg:gap-5 lg:scroll-px-0 lg:px-0">
           {isLoading
             ? Array.from({ length: 4 }, (_, i) => <div key={i} className={cn(ITEM, 'aspect-[3/4] animate-pulse rounded-xl bg-surface')} />)
-            : cars.map((car) => <div key={car.id} className={ITEM}><ListingTile car={car} rating={ratings[car.id]} /></div>)}
+            : cars.map((car) => <div key={car.id} className={ITEM}><ListingTile car={car} rating={ratings[car.id]} promotion={promotions[car.id] || 'top_spot'} /></div>)}
         </div>
         <button type="button" aria-label="→" disabled={edges.end} onClick={() => scroll(1)} className={cn(ARROW, '-right-5')} style={{ top: photoMid }}>
           <ChevronRight className="h-5 w-5" />
