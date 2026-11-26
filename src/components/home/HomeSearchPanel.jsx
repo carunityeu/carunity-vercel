@@ -35,12 +35,12 @@ const MAIN_TYPES = 5;
 const BODY_TYPES = ['sedan', 'suv', 'hatchback', 'wagon', 'coupe'];
 const FUEL_TYPES = ['petrol', 'diesel', 'electric', 'hybrid', 'plugin_hybrid', 'gas', 'petrol_cng', 'petrol_lng', 'diesel_cng', 'diesel_lng', 'lpg', 'cng', 'lng', 'hydrogen', 'ethanol'];
 const COLORS = ['white', 'black', 'gray', 'silver', 'blue', 'red', 'green', 'brown', 'beige', 'gold', 'orange', 'yellow', 'purple'];
-const KW_TO_HP = 1.36; // power is entered in kW, the catalog filters by hp
+const KW_TO_HP = 1.36; // power is entered in kW or hp (switch on the field), the catalog filters by hp
 
 const EMPTY = {
   vehicleType: '', brands: [], model: '', fuelType: '', bodyType: '',
   yearFrom: '', yearTo: '', useGenerations: false, generations: [],
-  priceFrom: '', priceTo: '', powerFrom: '', powerTo: '', mileageFrom: '', mileageTo: '',
+  priceFrom: '', priceTo: '', powerFrom: '', powerTo: '', powerUnit: 'kw', mileageFrom: '', mileageTo: '',
   country: '', city: '', color: '', driveType: '', transmission: '',
   vehicleFilters: {},
 };
@@ -53,8 +53,9 @@ function buildSearchUrl(f, generations) {
   const params = new URLSearchParams();
   const put = (key, value) => { if (isSet(value)) params.set(key, String(value)); };
   const putPower = () => {
-    if (f.powerFrom) params.set('powerFrom', String(Math.round(Number(f.powerFrom) * KW_TO_HP)));
-    if (f.powerTo) params.set('powerTo', String(Math.round(Number(f.powerTo) * KW_TO_HP)));
+    const toHp = (v) => String(Math.round(Number(v) * (f.powerUnit === 'hp' ? 1 : KW_TO_HP)));
+    if (f.powerFrom) params.set('powerFrom', toHp(f.powerFrom));
+    if (f.powerTo) params.set('powerTo', toHp(f.powerTo));
   };
 
   if (f.vehicleType && f.vehicleType !== 'car') {
@@ -203,11 +204,30 @@ export default function HomeSearchPanel({ className }) {
         options={[{ value: 'automatic', label: t('home.gear_auto', 'Автомат') }, { value: 'manual', label: t('home.gear_manual', 'Механика') }]} />
     </Field>
   );
-  const mileage = isCar && (
-    <Field label={`${t('home.mileage_label', 'Пробег')}, ${t('car.km', 'км')}`} className={secondary}>
-      <RangeBox label={t('home.mileage_label', 'Пробег')} from={f.mileageFrom} to={f.mileageTo} onFrom={(v) => set({ mileageFrom: v })} onTo={(v) => set({ mileageTo: v })} />
+  // Power: kW by default, the label switch turns the field into hp and converts what is typed
+  const setPowerUnit = (unit) => {
+    if (unit === f.powerUnit) return;
+    const k = unit === 'hp' ? KW_TO_HP : 1 / KW_TO_HP;
+    const conv = (v) => (v ? String(Math.round(Number(v) * k)) : '');
+    set({ powerUnit: unit, powerFrom: conv(f.powerFrom), powerTo: conv(f.powerTo) });
+  };
+  const units = [{ value: 'kw', label: t('car.kw', 'кВт') }, { value: 'hp', label: t('car.hp', 'л.с.') }];
+  const power = hasBasics && (
+    <Field label={t('home.power_label', 'Мощность')} className={secondary}
+      action={(
+        <div role="radiogroup" aria-label={t('home.power_unit', 'Единицы мощности')} className="flex items-center gap-0.5 text-xs">
+          {units.map((u) => (
+            <button key={u.value} type="button" role="radio" aria-checked={f.powerUnit === u.value} onClick={() => setPowerUnit(u.value)}
+              className={cn('rounded-md px-1.5 py-0.5', f.powerUnit === u.value ? 'bg-raised font-semibold text-brand-text' : 'text-ink-3')}>
+              {u.label}
+            </button>
+          ))}
+        </div>
+      )}>
+      <RangeBox label={t('home.power_label', 'Мощность')} from={f.powerFrom} to={f.powerTo} onFrom={(v) => set({ powerFrom: v })} onTo={(v) => set({ powerTo: v })} />
     </Field>
   );
+
   const fuel = isCar && (
     <Field label={t('home.search_fuel', 'Топливо')} className={secondary}>
       <SelectField value={f.fuelType} onChange={(v) => set({ fuelType: v })} placeholder={t('home.any_fuel_short', 'Любое')} anyLabel={t('home.any_fuel_short', 'Любое')}
@@ -254,7 +274,7 @@ export default function HomeSearchPanel({ className }) {
           <VehicleTypeFilters vehicleType={f.vehicleType} filters={f.vehicleFilters} setFilters={(fn) => setForm((prev) => ({ ...prev, vehicleFilters: typeof fn === 'function' ? fn(prev.vehicleFilters) : fn }))} />
         )}
 
-        {/* Row 1: brand, model, price, fuel · row 2: gearbox, year, country, mileage */}
+        {/* Row 1: brand, model, price, fuel · row 2: gearbox, year, country, power */}
         <div className={GRID}>
           {isCar && (
             <>
@@ -308,7 +328,7 @@ export default function HomeSearchPanel({ className }) {
               </Field>
           )}
           {hasBasics && country}
-          {mileage}
+          {power}
         </div>
 
         {/* Everything else opens with "All filters" */}
@@ -320,9 +340,11 @@ export default function HomeSearchPanel({ className }) {
                   options={BODY_TYPES.map((v) => ({ value: v, label: t('body_types.' + v) }))} />
               </Field>
             )}
-            <Field label={`${t('home.power_label', 'Мощность')}, ${t('car.kw', 'кВт')}`}>
-              <RangeBox label={t('home.power_label', 'Мощность')} from={f.powerFrom} to={f.powerTo} onFrom={(v) => set({ powerFrom: v })} onTo={(v) => set({ powerTo: v })} />
-            </Field>
+            {isCar && (
+              <Field label={`${t('home.mileage_label', 'Пробег')}, ${t('car.km', 'км')}`}>
+                <RangeBox label={t('home.mileage_label', 'Пробег')} from={f.mileageFrom} to={f.mileageTo} onFrom={(v) => set({ mileageFrom: v })} onTo={(v) => set({ mileageTo: v })} />
+              </Field>
+            )}
             {isCar && (
               <Field label={t('home.search_city', 'Город')}>
                 <SelectField value={f.city} onChange={(v) => set({ city: v })} placeholder={isSet(f.country) ? t('home.any_city') : t('home.city_pick_country', 'Сначала страна')} anyLabel={t('home.any_city')} disabled={!isSet(f.country)}
