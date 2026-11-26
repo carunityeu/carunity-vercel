@@ -40,7 +40,7 @@ const KW_TO_HP = 1.36; // power is entered in kW, the catalog filters by hp
 const EMPTY = {
   vehicleType: '', brands: [], model: '', fuelType: '', bodyType: '',
   yearFrom: '', yearTo: '', useGenerations: false, generations: [],
-  priceFrom: '', priceTo: '', powerFrom: '', powerTo: '',
+  priceFrom: '', priceTo: '', powerFrom: '', powerTo: '', mileageFrom: '', mileageTo: '',
   country: '', city: '', color: '', driveType: '', transmission: '',
   vehicleFilters: {},
 };
@@ -84,6 +84,7 @@ function buildSearchUrl(f, generations) {
     if (years.length) { params.set('yearFrom', String(Math.min(...years))); params.set('yearTo', String(Math.max(...years))); }
   } else { put('yearFrom', f.yearFrom); put('yearTo', f.yearTo); }
   put('priceFrom', f.priceFrom); put('priceTo', f.priceTo); putPower();
+  put('mileageFrom', f.mileageFrom); put('mileageTo', f.mileageTo);
   put('color', f.color); put('transmission', f.transmission); put('driveType', f.driveType);
   put('country', f.country); put('city', f.city);
   const query = params.toString();
@@ -130,9 +131,25 @@ function RangeBox({ from, to, onFrom, onTo, maxLength, label }) {
   );
 }
 
-// One grid for the main row and the extra filters: phones 1 column, tablets 2, laptops 4,
-// wide screens everything in one row with the button at the end (7 fields + button).
-const GRID = 'grid grid-cols-1 gap-x-3 gap-y-3 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-[minmax(0,1fr)_minmax(0,1.15fr)_minmax(0,1.2fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,0.85fr)_minmax(0,0.85fr)_160px] xl:items-end';
+/** Two-option switch (automatic / manual): one tap picks, a second tap on the same option clears it. */
+function Toggle({ value, onChange, options, label }) {
+  return (
+    <div role="radiogroup" aria-label={label} className="grid h-10 grid-flow-col auto-cols-fr rounded-xl border border-line p-0.5">
+      {options.map((o) => {
+        const on = value === o.value;
+        return (
+          <button key={o.value} type="button" role="radio" aria-checked={on} onClick={() => onChange(on ? '' : o.value)}
+            className={cn('truncate rounded-[10px] px-2 text-sm', on ? 'border border-brand bg-brand/15 font-medium text-ink' : 'text-ink-3')}>
+            {o.label}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
+// Two rows of four fields: phones 1 column, tablets 2, from laptops 4.
+const GRID = 'grid grid-cols-1 gap-x-3 gap-y-3 sm:grid-cols-2 lg:grid-cols-4';
 
 export default function HomeSearchPanel({ className }) {
   const { t } = useTranslation();
@@ -161,8 +178,8 @@ export default function HomeSearchPanel({ className }) {
     staleTime: 10 * 60 * 1000,
   });
 
-  // Fields of the main row that wide screens always show; smaller screens show them with "All filters"
-  const secondary = allFilters ? '' : 'hidden xl:block';
+  // Fields that laptops always show; phones and tablets show them with "All filters"
+  const secondary = allFilters ? '' : 'hidden lg:block';
   const typeLabel = (v) => (v.key === 'car' ? t('nav.passenger', 'Легковые') : t(v.labelKey));
   const pickType = (key) => set({ vehicleType: key === 'car' ? '' : key, vehicleFilters: {} });
   // A type chosen from the "more" list gets its own tab while it is active
@@ -182,8 +199,19 @@ export default function HomeSearchPanel({ className }) {
   );
   const gearbox = hasBasics && (
     <Field label={t('home.gearbox', 'Коробка')} className={secondary}>
-      <SelectField value={f.transmission} onChange={(v) => set({ transmission: v })} placeholder={t('home.any_gearbox', 'Любая')} anyLabel={t('home.any_gearbox', 'Любая')}
-        options={['automatic', 'manual'].map((v) => ({ value: v, label: t('transmission_types.' + v) }))} />
+      <Toggle label={t('home.gearbox', 'Коробка')} value={f.transmission} onChange={(v) => set({ transmission: v })}
+        options={[{ value: 'automatic', label: t('home.gear_auto', 'Автомат') }, { value: 'manual', label: t('home.gear_manual', 'Механика') }]} />
+    </Field>
+  );
+  const mileage = isCar && (
+    <Field label={`${t('home.mileage_label', 'Пробег')}, ${t('car.km', 'км')}`} className={secondary}>
+      <RangeBox label={t('home.mileage_label', 'Пробег')} from={f.mileageFrom} to={f.mileageTo} onFrom={(v) => set({ mileageFrom: v })} onTo={(v) => set({ mileageTo: v })} />
+    </Field>
+  );
+  const fuel = isCar && (
+    <Field label={t('home.search_fuel', 'Топливо')} className={secondary}>
+      <SelectField value={f.fuelType} onChange={(v) => set({ fuelType: v })} placeholder={t('home.any_fuel_short', 'Любое')} anyLabel={t('home.any_fuel_short', 'Любое')}
+        options={FUEL_TYPES.map((v) => ({ value: v, label: t('fuel_types.' + v) }))} />
     </Field>
   );
 
@@ -226,9 +254,8 @@ export default function HomeSearchPanel({ className }) {
           <VehicleTypeFilters vehicleType={f.vehicleType} filters={f.vehicleFilters} setFilters={(fn) => setForm((prev) => ({ ...prev, vehicleFilters: typeof fn === 'function' ? fn(prev.vehicleFilters) : fn }))} />
         )}
 
-        {/* Main row */}
+        {/* Row 1: brand, model, price, fuel · row 2: gearbox, year, country, mileage */}
         <div className={GRID}>
-          {hasBasics && country}
           {isCar && (
             <>
               <Field label={t('home.search_brand', 'Марка')}>
@@ -249,6 +276,12 @@ export default function HomeSearchPanel({ className }) {
                   placeholder={t('home.model_any_label', 'Любая модель')}
                   anyLabel={t('common.any_model')} />
               </Field>
+            </>
+          )}
+          {price}
+          {fuel}
+          {gearbox}
+          {isCar && (
               <Field className={secondary}
                 label={generations.length > 0 && f.useGenerations ? t('home.generation_label') : t('home.year_label', 'Год')}
                 action={generations.length > 0 && (
@@ -273,19 +306,9 @@ export default function HomeSearchPanel({ className }) {
                   <RangeBox label={t('home.year_label', 'Год')} maxLength={4} from={f.yearFrom} to={f.yearTo} onFrom={(v) => set({ yearFrom: v })} onTo={(v) => set({ yearTo: v })} />
                 )}
               </Field>
-            </>
           )}
-          {price}
-          {isCar && (
-            <Field label={t('home.search_fuel', 'Топливо')} className={secondary}>
-              <SelectField value={f.fuelType} onChange={(v) => set({ fuelType: v })} placeholder={t('home.any_fuel_short', 'Любое')} anyLabel={t('home.any_fuel_short', 'Любое')}
-                options={FUEL_TYPES.map((v) => ({ value: v, label: t('fuel_types.' + v) }))} />
-            </Field>
-          )}
-          {gearbox}
-          <Button type="button" size="lg" className="h-10 w-full self-end xl:col-start-8" onClick={() => navigate(buildSearchUrl(f, generations))}>
-            <Search />{t('home.search_button', 'Найти')}
-          </Button>
+          {hasBasics && country}
+          {mileage}
         </div>
 
         {/* Everything else opens with "All filters" */}
@@ -317,14 +340,15 @@ export default function HomeSearchPanel({ className }) {
               </Field>
             )}
             {isCar && (
-              <Link to="/DetailedSearch" className="flex h-10 items-center text-sm font-medium text-brand-text xl:col-span-2 xl:self-end">
+              <Link to="/DetailedSearch" className="flex h-10 items-center self-end text-sm font-medium text-brand-text">
                 {t('home.extended_search', 'Расширенный поиск')} →
               </Link>
             )}
           </div>
         )}
 
-        <div className="flex flex-wrap items-center justify-end gap-x-6 gap-y-2">
+        <div className="flex flex-col-reverse gap-3 sm:flex-row sm:items-center sm:justify-end sm:gap-6">
+          <div className="flex items-center justify-end gap-6">
           {hasBasics && (
             <button type="button" aria-expanded={allFilters} onClick={() => setAllFilters((v) => !v)}
               className="flex items-center gap-2 text-sm font-semibold text-brand-text">
@@ -335,6 +359,10 @@ export default function HomeSearchPanel({ className }) {
           <button type="button" onClick={() => setForm(EMPTY)} className="flex items-center gap-1.5 text-sm font-medium text-ink-2">
             <X className="h-4 w-4" />{t('catalog.reset_all', 'Сбросить')}
           </button>
+          </div>
+          <Button type="button" size="lg" className="h-10 w-full sm:w-[200px]" onClick={() => navigate(buildSearchUrl(f, generations))}>
+            <Search />{t('home.search_button', 'Найти')}
+          </Button>
         </div>
       </div>
     </div>
