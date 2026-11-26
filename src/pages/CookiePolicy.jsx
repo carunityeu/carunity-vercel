@@ -1,7 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
-import { createPageUrl } from '@/utils';
-import { ChevronRight, ArrowLeft } from 'lucide-react';
+import { openCookieSettings } from '@/lib/cookieConsent';
 import { useTranslation } from 'react-i18next';
 
 const ui = {
@@ -11,11 +9,11 @@ const ui = {
 
 const bodyRu = `
 **ПОЛИТИКА ИСПОЛЬЗОВАНИЯ COOKIE-ФАЙЛОВ**
-CarUnity OÜ
+Carunity OÜ
 
 **1. Общие положения**
 
-**1.1.** Настоящая Политика использования cookie-файлов (далее — Политика cookies) определяет порядок использования файлов cookie и аналогичных технологий на платформе Carunity, управляемой обществом с ограниченной ответственностью CarUnity OÜ (далее — Компания, мы).
+**1.1.** Настоящая Политика использования cookie-файлов (далее — Политика cookies) определяет порядок использования файлов cookie и аналогичных технологий на платформе Carunity, управляемой обществом с ограниченной ответственностью Carunity OÜ (далее — Компания, мы).
 
 **1.2.** Для целей настоящей Политики под платформой CarUnity (далее — Платформа) понимаются веб-сайт, мобильное приложение, а также иные цифровые решения, сервисы и интерфейсы, используемые Компанией для предоставления услуг пользователям на территории Эстонской Республики, Латвийской Республики, Литовской Республики, а также иных государств Европейской экономической зоны.
 
@@ -85,7 +83,7 @@ CarUnity OÜ
 
 **10. Контактная информация**
 
-CarUnity OÜ
+Carunity OÜ
 Email: info@carunity.eu
 Адрес: Harju maakond, Viimsi vald, Laiaküla, Väike-Käspre tee 7, 74008, Estonia
 
@@ -96,11 +94,11 @@ Email: info@carunity.eu
 
 const bodyEn = `
 **COOKIE POLICY**
-CarUnity OÜ
+Carunity OÜ
 
 **1. General Provisions**
 
-**1.1.** This Cookie Policy (hereinafter — the "Cookie Policy") defines the procedure for the use of cookies and similar technologies on the CarUnity platform operated by CarUnity OÜ (hereinafter — the "Company", "we").
+**1.1.** This Cookie Policy (hereinafter — the "Cookie Policy") defines the procedure for the use of cookies and similar technologies on the CarUnity platform operated by Carunity OÜ (hereinafter — the "Company", "we").
 
 **1.2.** For the purposes of this Policy, the CarUnity platform (hereinafter — the "Platform") means the website, mobile application, as well as other digital solutions, services and interfaces used by the Company to provide services to users in the Republic of Estonia, the Republic of Latvia, the Republic of Lithuania, as well as other states of the European Economic Area.
 
@@ -170,7 +168,7 @@ CarUnity OÜ
 
 **10. Contact Information**
 
-CarUnity OÜ
+Carunity OÜ
 Email: info@carunity.eu
 Address: Harju maakond, Viimsi vald, Laiaküla, Väike-Käspre tee 7, 74008, Estonia
 
@@ -209,7 +207,7 @@ function renderBody(text) {
 }
 
 export default function CookiePolicy() {
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
   const isRu = i18n.language?.startsWith('ru');
   const c = isRu ? ui.ru : ui.en;
   const body = isRu ? bodyRu : bodyEn;
@@ -222,7 +220,10 @@ export default function CookiePolicy() {
         </div>
 
         <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">{c.pageTitle}</h1>
-        <p className="text-slate-400 text-xs mb-10">CarUnity OÜ</p>
+        <p className="text-slate-400 text-xs mb-6">Carunity OÜ</p>
+        <button type="button" onClick={openCookieSettings} className="mb-10 inline-flex h-10 items-center rounded-xl bg-raised px-4 text-sm font-semibold text-ink">
+          {t('footer.cookie_settings', 'Настройки cookie')}
+        </button>
 
         <div>
           {renderBody(body)}

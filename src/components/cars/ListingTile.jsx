@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { GitCompareArrows } from 'lucide-react';
+import { Crown, GitCompareArrows, Rocket } from 'lucide-react';
 import { getCarDetailsPath } from '@/lib/shortIdUtils';
 import { formatNumber, formatPrice } from '@/utils/format';
 import { carIcons } from '@/lib/specIcons';
@@ -22,14 +22,19 @@ const icon = (src, extra = 'invert') => <img src={src} alt="" className={cn('h-4
 // Photo buttons: shown on hover with a mouse, always visible on touch screens (design code §7)
 const ACTIONS = 'absolute right-2.5 top-2.5 z-10 flex gap-1.5 [@media(hover:hover)]:invisible [@media(hover:hover)]:group-hover:visible [@media(hover:hover)]:group-focus-within:visible';
 
-/** Paid placement mark on the photo: Top Spot is an ad, Boost lifts the listing in search. */
+/** Paid placement: a small crown (Top Spot) or rocket (Boost) on the photo; the name shows on hover / tap. */
 function PaidMark({ car, promotion }) {
   const { t } = useTranslation();
   const kind = promotion || (car.is_premium ? 'top_spot' : null);
   if (!kind) return null;
+  const label = kind === 'top_spot' ? t('ads.top_spot_hint', 'Top Spot') : t('ads.boost_mark', 'Boost');
+  const Icon = kind === 'top_spot' ? Crown : Rocket;
   return (
-    <span className="absolute left-2.5 top-2.5 z-10 inline-flex h-6 items-center rounded-md bg-page/90 px-2 text-xs font-semibold text-ink">
-      {kind === 'top_spot' ? t('ads.top_spot_mark', 'Top Spot · Реклама') : t('ads.boost_mark', 'Boost')}
+    <span title={label} aria-label={label} role="img"
+      onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
+      className="group/mark absolute left-2.5 top-2.5 z-10 flex h-8 w-8 items-center justify-center rounded-full bg-page/90 text-amber-300">
+      <Icon className="h-4 w-4" />
+      <span className="pointer-events-none absolute left-0 top-full mt-1.5 hidden whitespace-nowrap rounded-md bg-page px-2 py-1 text-xs font-semibold text-ink shadow-lg group-hover/mark:block group-active/mark:block">{label}</span>
     </span>
   );
 }
@@ -53,7 +58,7 @@ function CompareButton({ car }) {
  * name + year, trim, price with the price-rating bar, spec pills with the site's icons.
  * `compact` (recently viewed and other short rows): photo with the same buttons, name + year and price only.
  */
-export default function ListingTile({ car, rating, promotion, compact = false }) {
+export default function ListingTile({ car, rating, promotion, compact = false, hidePaidMark = false }) {
   const { t } = useTranslation();
   const kw = car.engine_power ? Math.round(car.engine_power * 0.7355) : null;
 
@@ -78,7 +83,7 @@ export default function ListingTile({ car, rating, promotion, compact = false })
   return (
     <Link to={getCarDetailsPath(car)} className="group flex h-full flex-col">
       <PhotoScrubber car={car} alt={`${car.brand} ${car.model}`} className="aspect-[4/3] rounded-xl">
-        <PaidMark car={car} promotion={promotion} />
+        {!hidePaidMark && <PaidMark car={car} promotion={promotion} />}
         <div className={ACTIONS}>
           <CompareButton car={car} />
           <FavoriteButton carId={car.id} className="static" />

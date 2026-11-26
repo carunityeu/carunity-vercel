@@ -11,11 +11,11 @@ const ui = {
 
 const bodyEn = `
 **PRIVACY POLICY**
-CarUnity OÜ
+Carunity OÜ
 
 **1. General Provisions**
 
-**1.1.** This Privacy Policy (hereinafter — the "Policy") defines the procedure, purposes, legal grounds and conditions for the processing of personal data of users of the CarUnity platform by CarUnity OÜ (hereinafter — the "Company", the "Controller", "we").
+**1.1.** This Privacy Policy (hereinafter — the "Policy") defines the procedure, purposes, legal grounds and conditions for the processing of personal data of users of the CarUnity platform by Carunity OÜ (hereinafter — the "Company", the "Controller", "we").
 
 **1.2.** For the purposes of this Policy, the Carunity platform (hereinafter — the "Platform") means the website, as well as other digital solutions, services and interfaces used by the Company to provide services to users in Estonia, Latvia, Lithuania and, where necessary, other countries of the European Economic Area.
 
@@ -138,11 +138,11 @@ Email: info@carunity.eu
 
 const bodyRu = `
 **ПОЛИТИКА КОНФИДЕНЦИАЛЬНОСТИ**
-CarUnity OÜ
+Carunity OÜ
 
 **1. Общие положения**
 
-**1.1.** Настоящая Политика конфиденциальности (далее — Политика) определяет порядок, цели, правовые основания и условия обработки персональных данных пользователей платформы CarUnity обществом с ограниченной ответственностью CarUnity OÜ (далее — Компания, Оператор, мы).
+**1.1.** Настоящая Политика конфиденциальности (далее — Политика) определяет порядок, цели, правовые основания и условия обработки персональных данных пользователей платформы CarUnity обществом с ограниченной ответственностью Carunity OÜ (далее — Компания, Оператор, мы).
 
 **1.2.** Для целей настоящей Политики под платформой Carunity (далее — Платформа) понимаются веб-сайт, а также иные цифровые решения, сервисы и интерфейсы, используемые Компанией для предоставления услуг пользователям в Эстонии, Латвии, Литве и, при необходимости, иных странах Европейской экономической зоны.
 
@@ -166,7 +166,7 @@ CarUnity OÜ
 
 **2.5.** Контент — любые данные, материалы и информация, размещаемые пользователем на Платформе.
 
-**2.6.** Оператор — CarUnity OÜ, самостоятельно определяющий цели и средства обработки персональных данных.
+**2.6.** Оператор — Carunity OÜ, самостоятельно определяющий цели и средства обработки персональных данных.
 
 **2.7.** Обработчик — физическое или юридическое лицо, обрабатывающее персональные данные от имени Оператора.
 
@@ -316,7 +316,7 @@ export default function PrivacyPolicy() {
         </div>
 
         <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">{c.pageTitle}</h1>
-        <p className="text-slate-400 text-xs mb-10">CarUnity OÜ</p>
+        <p className="text-slate-400 text-xs mb-10">Carunity OÜ</p>
 
         <div>
           {renderBody(body)}

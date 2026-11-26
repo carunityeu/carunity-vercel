@@ -29,7 +29,10 @@ export default function ContextSearchBar({ className }) {
 
   const [suggestionsLoaded, setSuggestionsLoaded] = useState(false);
 
+  // The list is followed by a copy of its first line: after the last example the strip scrolls
+  // one more step onto that copy and then jumps back to the start without animation (seamless loop)
   const [carouselIndex, setCarouselIndex] = useState(0);
+  const [carouselJump, setCarouselJump] = useState(false);
   const [reducedMotion, setReducedMotion] = useState(false);
 
   const SEARCH_EXAMPLES = [
@@ -51,6 +54,9 @@ export default function ContextSearchBar({ className }) {
     t('search.example_16', 'Ford Focus'),
     t('search.example_17', 'Nissan Qashqai'),
     t('search.example_18', 'Kia Sportage'),
+    // Model names read the same in every language
+    'Toyota Corolla', 'Volkswagen Passat', 'BMW X5', 'Audi Q5', 'Skoda Superb',
+    'Hyundai Tucson', 'Mercedes-Benz E-Class', 'Volvo XC90', 'Toyota Land Cruiser', 'Lexus RX',
   ];
 
   useEffect(() => {
@@ -63,7 +69,7 @@ export default function ContextSearchBar({ className }) {
 
   useEffect(() => {
     if (reducedMotion || query || focused) return;
-    const id = setInterval(() => setCarouselIndex((i) => (i + 1) % SEARCH_EXAMPLES.length), 2500);
+    const id = setInterval(() => { setCarouselJump(false); setCarouselIndex((i) => (i >= SEARCH_EXAMPLES.length ? 1 : i + 1)); }, 2500);
     return () => clearInterval(id);
   }, [reducedMotion, query, focused]);
 
@@ -155,11 +161,12 @@ export default function ContextSearchBar({ className }) {
               <div aria-hidden="true" className="pointer-events-none absolute inset-0 flex items-center overflow-hidden">
                 <div className="overflow-hidden w-full" style={{ height: CAROUSEL_LINE }}>
                   <div
-                    className={reducedMotion ? '' : 'transition-transform duration-500 ease-out'}
+                    className={reducedMotion || carouselJump ? '' : 'transition-transform duration-500 ease-out'}
                     style={{ transform: `translateY(-${carouselIndex * CAROUSEL_LINE}px)` }}
+                    onTransitionEnd={() => { if (carouselIndex >= SEARCH_EXAMPLES.length) { setCarouselJump(true); setCarouselIndex(0); } }}
                   >
-                    {SEARCH_EXAMPLES.map((ex) => (
-                      <div key={ex} className="whitespace-nowrap truncate text-sm text-ink-3" style={{ height: CAROUSEL_LINE, lineHeight: `${CAROUSEL_LINE}px` }}>
+                    {[...SEARCH_EXAMPLES, SEARCH_EXAMPLES[0]].map((ex, i) => (
+                      <div key={`${i}-${ex}`} className="whitespace-nowrap truncate text-sm text-ink-3" style={{ height: CAROUSEL_LINE, lineHeight: `${CAROUSEL_LINE}px` }}>
                         {ex}
                       </div>
                     ))}

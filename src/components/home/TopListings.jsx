@@ -31,7 +31,7 @@ const ARROW = 'absolute z-20 hidden h-10 w-10 -translate-y-1/2 items-center just
 export default function TopListings() {
   const { t } = useTranslation();
   const { data: cars = [], isLoading } = useTopCars();
-  const { ratings, promotions } = useCardExtras(cars);
+  const { ratings } = useCardExtras(cars);
   const rowRef = useRef(null);
   const [edges, setEdges] = useState({ start: true, end: false });
   const [photoMid, setPhotoMid] = useState(0); // arrows sit at the vertical middle of the photos
@@ -84,7 +84,7 @@ export default function TopListings() {
           className="scrollbar-hide -mx-4 flex snap-x snap-mandatory gap-4 overflow-x-auto scroll-px-4 px-4 sm:-mx-6 sm:scroll-px-6 sm:px-6 lg:mx-0 lg:gap-5 lg:scroll-px-0 lg:px-0">
           {isLoading
             ? Array.from({ length: 4 }, (_, i) => <div key={i} className={cn(ITEM, 'aspect-[3/4] animate-pulse rounded-xl bg-surface')} />)
-            : cars.map((car) => <div key={car.id} className={ITEM}><ListingTile car={car} rating={ratings[car.id]} promotion={promotions[car.id] || 'top_spot'} /></div>)}
+            : cars.map((car) => <div key={car.id} className={ITEM}><ListingTile car={car} rating={ratings[car.id]} hidePaidMark /></div>)}
         </div>
         <button type="button" aria-label="→" disabled={edges.end} onClick={() => scroll(1)} className={cn(ARROW, '-right-5')} style={{ top: photoMid }}>
           <ChevronRight className="h-5 w-5" />

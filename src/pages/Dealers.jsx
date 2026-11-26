@@ -312,7 +312,7 @@ export default function Dealers() {
         <div className="flex flex-col gap-6 rounded-2xl border border-line bg-surface p-6 sm:p-8 lg:flex-row lg:items-center lg:justify-between">
           <div className="max-w-2xl">
             <h2 className="text-xl font-bold text-ink sm:text-2xl">{t('dealers.owner_title', 'Вы владелец автосалона?')}</h2>
-            <p className="mt-2 text-sm leading-relaxed text-ink-2 sm:text-base">{t('dealers.owner_desc', 'Разместите свой склад на CarUnity и получайте обращения от покупателей из Эстонии, Латвии и Литвы.')}</p>
+            <p className="mt-2 text-sm leading-relaxed text-ink-2 sm:text-base">{t('dealers.owner_desc', 'Разместите свои объявления на CarUnity и получайте обращения от покупателей из Эстонии, Латвии и Литвы.')}</p>
             <ul className="mt-4 grid gap-2 text-sm text-ink-2 sm:grid-cols-3">
               {[t('dealers.owner_point1', 'Страница салона с логотипом'), t('dealers.owner_point2', 'Все объявления в одном кабинете'), t('dealers.owner_point3', 'Заявки и статистика просмотров')].map((p) => (
                 <li key={p} className="flex items-start gap-2"><Check className="mt-0.5 h-4 w-4 flex-shrink-0 text-brand-text" />{p}</li>

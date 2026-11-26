@@ -34,9 +34,9 @@ import { viewAsTranslations } from '@/lib/viewAsTranslations';
 import { authTranslations } from '@/components/auth/authTranslations';
 import { paymentTranslations } from '@/lib/paymentTranslations';
 import { UI_TEXTS, buildResources } from '@/lib/uiTranslations';
-import { FEATURE_TEXTS } from '@/lib/featureTranslations';
+import { FEATURE_TEXTS, GAP_TEXTS, MAP_TEXTS } from '@/lib/featureTranslations';
 
-const uiResources = buildResources(UI_TEXTS, FEATURE_TEXTS);
+const uiResources = buildResources(UI_TEXTS, FEATURE_TEXTS, GAP_TEXTS, MAP_TEXTS);
 
 // Личный кабинет: боковое меню, обзор, настройки аккаунта
 const accountResources = {

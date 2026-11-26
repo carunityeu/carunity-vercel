@@ -5,9 +5,8 @@ import { Building2, Mail, MapPin } from 'lucide-react';
 import { createPageUrl } from '@/utils';
 import { Container } from '@/components/ds';
 import ContactSupportModal from '@/components/ui/ContactSupportModal';
-import { openCookieSettings } from '@/lib/cookieConsent';
 
-const COMPANY = 'CarUnity OÜ';
+const COMPANY = 'Carunity OÜ';
 const REG_CODE = '17302573';
 const ADDRESS = ['Väike-Käspre tee 7, Laiaküla,', 'Viimsi vald, 74008 Harjumaa, Eesti'];
 const EMAIL = 'info@carunity.eu';
@@ -47,7 +46,7 @@ function Contact({ icon: Icon, children }) {
 /** Site footer: brand and socials, two link columns, company contacts; legal line with policies below. */
 export default function Footer() {
   const { t } = useTranslation();
-  const [contact, setContact] = useState(null); // null = closed, '' = general message, text = preset subject
+  const [contact, setContact] = useState(null); // null = closed, '' = the contact form
   const regLabel = t('footer.reg_code', 'Рег. код');
 
   return (
@@ -97,8 +96,6 @@ export default function Footer() {
             <Link to={createPageUrl('Terms')} className="text-ink-2">{t('footer.terms')}</Link>
             <Link to={createPageUrl('PrivacyPolicy')} className="text-ink-2">{t('footer.privacy')}</Link>
             <Link to={createPageUrl('CookiePolicy')} className="text-ink-2">{t('footer.cookie_policy')}</Link>
-            <button type="button" onClick={openCookieSettings} className="text-ink-2">{t('footer.cookie_settings', 'Настройки cookie')}</button>
-            <button type="button" onClick={() => setContact(t('footer.report', 'Сообщить о нарушении'))} className="text-brand-text">{t('footer.report', 'Сообщить о нарушении')}</button>
           </nav>
         </div>
       </Container>

@@ -174,9 +174,10 @@ export function buildResources(...tables) {
     for (const [key, values] of Object.entries(table)) {
       const parts = key.split('.');
       LANGS.forEach((lng, i) => {
+        if (values[i] === null) return; // null = keep the existing translation of that language
         let node = out[lng];
         parts.slice(0, -1).forEach((p) => { node = node[p] = node[p] || {}; });
-        node[parts[parts.length - 1]] = values[i] ?? values[0];
+        node[parts[parts.length - 1]] = values[i];
       });
     }
   }

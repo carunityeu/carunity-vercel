@@ -11,7 +11,7 @@ const content = {
     back: 'Back',
     body: `
 **TERMS OF USE OF THE PLATFORM**
-CarUnity OÜ
+Carunity OÜ
 
 **1. General Provisions**
 
@@ -154,7 +154,7 @@ The user expressly requests the immediate commencement of the service after paym
 
 **17. Contact Information**
 
-CarUnity OÜ
+Carunity OÜ
 Email: info@carunity.eu
 Address: Harju maakond, Viimsi vald, Laiaküla, Väike-Käspre tee 7, 74008, Estonia
 `
@@ -165,13 +165,13 @@ Address: Harju maakond, Viimsi vald, Laiaküla, Väike-Käspre tee 7, 74008, Est
     back: 'Назад',
     body: `
 **УСЛОВИЯ ИСПОЛЬЗОВАНИЯ ПЛАТФОРМЫ**
-CarUnity OÜ
+Carunity OÜ
 
 **1. Общие положения**
 
 **1.1.** Настоящие Условия использования (далее — Условия) регулируют доступ к платформе CarUnity и порядок её использования пользователями.
 
-**1.2.** Платформа Carunity (далее — Платформа) управляется обществом с ограниченной ответственностью CarUnity OÜ (далее — Компания, мы).
+**1.2.** Платформа Carunity (далее — Платформа) управляется обществом с ограниченной ответственностью Carunity OÜ (далее — Компания, мы).
 
 **1.3.** Платформа представляет собой онлайн-сервис, позволяющий пользователям размещать объявления о продаже транспортных средств, искать предложения и взаимодействовать друг с другом.
 
@@ -308,7 +308,7 @@ CarUnity OÜ
 
 **17. Контактная информация**
 
-CarUnity OÜ
+Carunity OÜ
 Email: info@carunity.eu
 Адрес: Harju maakond, Viimsi vald, Laiaküla, Väike-Käspre tee 7, 74008, Estonia
 `
@@ -319,13 +319,13 @@ Email: info@carunity.eu
     back: 'Tagasi',
     body: `
 **PLATVORMI KASUTUSTINGIMUSED**
-CarUnity OÜ
+Carunity OÜ
 
 **1. Üldsätted**
 
 **1.1.** Käesolevad kasutustingimused (edaspidi — Tingimused) reguleerivad juurdepääsu CarUnity platvormile ja selle kasutamise korda kasutajate poolt.
 
-**1.2.** Platvorm Carunity (edaspidi — Platvorm) haldab osaühing CarUnity OÜ (edaspidi — Ettevõte, meie).
+**1.2.** Platvorm Carunity (edaspidi — Platvorm) haldab osaühing Carunity OÜ (edaspidi — Ettevõte, meie).
 
 **1.3.** Platvorm kujutab endast veebiteenust, mis võimaldab kasutajatel avaldada sõidukite müügikuulutusi, otsida pakkumisi ja omavahel suhelda.
 
@@ -452,7 +452,7 @@ Kasutaja taotleb sõnaselgelt teenuse kohest alustamist pärast makse sooritamis
 
 **16. Kontaktandmed**
 
-CarUnity OÜ
+Carunity OÜ
 Email: info@carunity.eu
 Aadress: Harju maakond, Viimsi vald, Laiaküla, Väike-Käspre tee 7, 74008, Estonia
 `
@@ -463,13 +463,13 @@ Aadress: Harju maakond, Viimsi vald, Laiaküla, Väike-Käspre tee 7, 74008, Est
     back: 'Atpakaļ',
     body: `
 **PLATFORMAS LIETOŠANAS NOTEIKUMI**
-CarUnity OÜ
+Carunity OÜ
 
 **1. Vispārīgie noteikumi**
 
 **1.1.** Šie Lietošanas noteikumi (turpmāk — Noteikumi) regulē piekļuvi CarUnity platformai un tās izmantošanas kārtību lietotājiem.
 
-**1.2.** Platformu Carunity (turpmāk — Platforma) pārvalda sabiedrība ar ierobežotu atbildību CarUnity OÜ (turpmāk — Uzņēmums, mēs).
+**1.2.** Platformu Carunity (turpmāk — Platforma) pārvalda sabiedrība ar ierobežotu atbildību Carunity OÜ (turpmāk — Uzņēmums, mēs).
 
 **1.3.** Platforma ir tiešsaistes pakalpojums, kas ļauj lietotājiem izvietot transportlīdzekļu pārdošanas sludinājumus, meklēt piedāvājumus un savstarpēji mijiedarboties.
 
@@ -596,7 +596,7 @@ Lietotājs skaidri pieprasa pakalpojuma nekavējošu uzsākšanu pēc maksājuma
 
 **16. Kontaktinformācija**
 
-CarUnity OÜ
+Carunity OÜ
 E-pasts: info@carunity.eu
 Adrese: Harju maakond, Viimsi vald, Laiaküla, Väike-Käspre tee 7, 74008, Estonia
 `
@@ -607,13 +607,13 @@ Adrese: Harju maakond, Viimsi vald, Laiaküla, Väike-Käspre tee 7, 74008, Esto
     back: 'Atgal',
     body: `
 **NAUDOJIMOSI PLATFORMA SĄLYGOS**
-CarUnity OÜ
+Carunity OÜ
 
 **1. Bendrosios nuostatos**
 
 **1.1.** Šios naudojimosi sąlygos (toliau — Sąlygos) reglamentuoja prieigą prie CarUnity platformos ir jos naudojimo tvarką naudotojams.
 
-**1.2.** Platformą Carunity (toliau — Platforma) valdo ribotos atsakomybės bendrovė CarUnity OÜ (toliau — Bendrovė, mes).
+**1.2.** Platformą Carunity (toliau — Platforma) valdo ribotos atsakomybės bendrovė Carunity OÜ (toliau — Bendrovė, mes).
 
 **1.3.** Platforma yra internetinė paslauga, leidžianti naudotojams skelbti transporto priemonių pardavimo skelbimus, ieškoti pasiūlymų ir bendrauti tarpusavyje.
 
@@ -740,7 +740,7 @@ Naudotojas aiškiai prašo nedelsiant pradėti teikti paslaugą po mokėjimo ir 
 
 **16. Kontaktinė informacija**
 
-CarUnity OÜ
+Carunity OÜ
 Email: info@carunity.eu
 Adresas: Harju maakond, Viimsi vald, Laiaküla, Väike-Käspre tee 7, 74008, Estonia
 `
@@ -798,7 +798,7 @@ export default function Terms() {
         </div>
 
         <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">{c.pageTitle}</h1>
-        <p className="text-slate-400 text-xs mb-10">CarUnity OÜ</p>
+        <p className="text-slate-400 text-xs mb-10">Carunity OÜ</p>
 
         <div>
           {renderBody(c.body)}
