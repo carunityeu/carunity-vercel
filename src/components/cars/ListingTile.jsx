@@ -5,7 +5,8 @@ import { GitCompareArrows } from 'lucide-react';
 import { getCarDetailsPath } from '@/lib/shortIdUtils';
 import { formatNumber, formatPrice } from '@/utils/format';
 import { carIcons } from '@/lib/specIcons';
-import { fuelChip, ENERGY_PLUG_ICON } from '@/lib/fuelBadge';
+import { isElectricFuel, isHybridFuel } from '@/lib/fuelBadge';
+import { BoltIcon, PlugIcon } from '@/components/cars/FuelIcons';
 import { cn } from '@/lib/utils';
 import { useCompare } from '@/components/compare/CompareContext';
 import PriceRatingBadge from '@/components/cars/PriceRatingBadge';
@@ -39,7 +40,6 @@ function CompareButton({ car }) {
  */
 export default function ListingTile({ car, rating }) {
   const { t } = useTranslation();
-  const fuel = car.fuel_type ? fuelChip(car.fuel_type, carIcons.fuel) : null;
   const kw = car.engine_power ? Math.round(car.engine_power * 0.7355) : null;
 
   return (
@@ -63,11 +63,18 @@ export default function ListingTile({ car, rating }) {
       </div>
 
       <div className="mt-3 flex flex-wrap gap-2">
-        {fuel && <span className={PILL} style={fuel.style}><img src={fuel.icon} alt="" className={cn('h-4 w-4 flex-shrink-0', fuel.iconClass)} />{t('fuel_types.' + car.fuel_type, car.fuel_type)}</span>}
+        {car.fuel_type && (
+          <span className={PILL}>
+            {isElectricFuel(car.fuel_type) ? <BoltIcon className="h-4 w-4 flex-shrink-0" />
+              : isHybridFuel(car.fuel_type) ? <PlugIcon className="h-4 w-4 flex-shrink-0" />
+                : icon(carIcons.fuel)}
+            {t('fuel_types.' + car.fuel_type, car.fuel_type)}
+          </span>
+        )}
         {kw && <span className={PILL}>{icon(carIcons.speed)}{kw} {t('car.kw')} ({car.engine_power} {t('car.hp', 'л.с.')})</span>}
         {/* Electric cars show consumption instead of the gearbox, in the same pill as the rest */}
         {hasEnergyValue(car)
-          ? <span className={PILL}>{icon(ENERGY_PLUG_ICON, 'mix-blend-screen')}{car.energy_consumption} {t('car.kwh_100km', 'kWh/100 km')}</span>
+          ? <span className={PILL}><PlugIcon className="h-4 w-4 flex-shrink-0" />{car.energy_consumption} {t('car.kwh_100km', 'kWh/100 km')}</span>
           : car.transmission && <span className={PILL}>{icon(carIcons.transmission)}{t('transmission_types.' + car.transmission, car.transmission)}</span>}
         {car.mileage != null && <span className={PILL}>{icon(carIcons.mileage)}{formatNumber(car.mileage)} {t('car.km')}</span>}
       </div>
